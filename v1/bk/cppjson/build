@@ -1,2 +1,0 @@
-g++ main.cpp  jsontest.cpp  json_reader.cpp  json_writer.cpp  json_value.cpp   -I./include -std=c++11
-
