@@ -11,19 +11,19 @@ class CameraData:public JsonData
 {
 public:
     string url;
-    vector <DataPacket >channels;
+    vector <DataPacket >detect_region;
     CameraData(DataPacket pkt):JsonData(pkt)
     {
     }
     void decode()
     {
         GET_STRING(url);
-        GET_ARRAY(channels);
+        GET_ARRAY(detect_region);
     }
     void encode()
     {
         SET_STRING(url);
-        SET_ARRAY(channels);
+        SET_ARRAY(detect_region);
     }
 };
 
