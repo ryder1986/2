@@ -11,58 +11,49 @@ public:
     VdPoint(DataPacket pkt):JsonData(pkt)
     {
 
-    }
-    void decode()
-    {
-        GET_INT(x);
-        GET_INT(y);
-    }
-    void encode()
-    {
-        SET_INT(x);
-        SET_INT(y);
+        DECODE_INT_MEM(x);
+        DECODE_INT_MEM(y);
     }
 };
 
-class PolyVers:public JsonDataArray
+class PolyVers:public JsonData
 {
 public:
     vector <VdPoint>poly_vers;
-    PolyVers(vector<DataPacket> pkt):JsonDataArray(pkt)
+    PolyVers(DataPacket pkt):JsonData(pkt)
+    {
+        DECODE_OBJ_ARRAY_MEM(poly_vers);
+    }
+
+    PolyVers()
     {
 
-    }
-    void decode()
-    {
-        GET_ARRAY(poly_vers);
-    }
-    void encode()
-    {
-        SET_ARRAY(poly_vers);
     }
 };
 class DetectRegionData:public JsonData
 {
+
 public:
     int region_id;
+    string detector_type;
+    PolyVers poly_vers;
     DetectRegionData(DataPacket pkt):JsonData(pkt)
     {
-
+        DECODE_OBJ_MEM(poly_vers);
+        DECODE_INT_MEM(region_id);
+        DECODE_STRING_MEM(detector_type);
     }
-    void decode()
-    {
 
-    }
-    void encode()
-    {
-
-    }
 };
 
 class DetectRegion : public VdData<DetectRegionData>
 {
 public:
     DetectRegion(DataPacket pkt):VdData(pkt)
+    {
+
+    }
+    DetectRegion(DetectRegionData pkt):VdData(pkt)
     {
 
     }

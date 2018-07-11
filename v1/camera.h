@@ -11,19 +11,11 @@ class CameraData:public JsonData
 {
 public:
     string url;
-    vector <DataPacket >detect_region;
+    vector <DetectRegionData >detect_region;
     CameraData(DataPacket pkt):JsonData(pkt)
     {
-    }
-    void decode()
-    {
-        GET_STRING(url);
-        GET_ARRAY(detect_region);
-    }
-    void encode()
-    {
-        SET_STRING(url);
-        SET_ARRAY(detect_region);
+       DECODE_STRING_MEM(url);
+       DECODE_OBJ_ARRAY_MEM(detect_region);
     }
 };
 
@@ -35,7 +27,7 @@ public:
     {
 
         //    set_config(cfg);
-        for(DataPacket p:private_data.channels){
+        for(DetectRegionData p:private_data.detect_region){
             // if(GET_STRING_VALUE_FROM_PKT(selected_alg,p)=="pvd_c4")
             //pros.push_back(new PvdC4Processor(p.get_pkt("pvd_c4")));
             //  pros.push_back(new PvdC4Processor(p));
@@ -45,7 +37,20 @@ public:
         src=new VideoSource(private_data.url);
         start();
     }
+    Camera(CameraData cfg,function <void(Camera *,const char *,int)>fc):VdData(cfg),quit(false),callback_result(fc)
+    {
 
+        //    set_config(cfg);
+        for(DetectRegionData p:private_data.detect_region){
+            // if(GET_STRING_VALUE_FROM_PKT(selected_alg,p)=="pvd_c4")
+            //pros.push_back(new PvdC4Processor(p.get_pkt("pvd_c4")));
+            //  pros.push_back(new PvdC4Processor(p));
+            //        pros.push_back(new PvdMvncProcessor(p.get_pkt("pvd_c4")));
+            // pros.push_back(new PvdHogProcessor(p.get_pkt("pvd_c4")));
+        }
+        src=new VideoSource(private_data.url);
+        start();
+    }
     ~Camera()
     {
         for(DetectRegion *pro:drs)

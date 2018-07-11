@@ -117,16 +117,8 @@ public:
     }
     void set_array_packet(string name,vector<DataPacket> ar)
     {
-
-//        JsonValue v;
-//        int sz=ar.size();
-//        for(int i=0;i<sz;i++){
-//            v.append(ar[i]);
-//        }
         set_value(name,DataPacket(ar).value());
     }
-
-
     vector <JsonValue>  array_value()
     {
         int sz=val.size();

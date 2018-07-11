@@ -8,21 +8,20 @@
 #include "jsondatadealer.h"
 class AppData:public JsonData{
 public:
-    vector <DataPacket> cameras;
+    vector <CameraData> cameras;
     int server_port;
-
+    int test;
     AppData(DataPacket pkt):JsonData(pkt)
     {
-    }
-    void decode()
-    {
-        GET_INT(server_port);
-        GET_ARRAY(cameras);
-    }
-    void encode()
-    {
-        SET_INT(server_port);
-        SET_ARRAY(cameras);
+        //GET_INT(server_port);
+        DECODE_INT_MEM(server_port);
+        DECODE_OBJ_ARRAY_MEM(cameras);
+      //  ASSIGN_ARRAY1(cameras);
+        //ASSIGN_ARRAY(cameras);
+        //        vector <DataPacket > p= GET_ARRAY1(cameras);
+        //       cameras.assign(p.begin(),p.end());
+
+
     }
 };
 class App:public VdData<AppData>
@@ -43,7 +42,7 @@ private:
     }
     void start_cams()
     {
-        for(DataPacket p:private_data.cameras){
+        for(CameraData p:private_data.cameras){
             cms.push_back(new Camera(p,bind(&App::process_camera_data,
                                             this,placeholders::_1,
                                             placeholders::_2,
