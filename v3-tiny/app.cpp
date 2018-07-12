@@ -35,15 +35,12 @@ void App::process_client_cmd(Session *clt, char *data, int len)
             p_cm->set_config(data.get_string("data"));
             restart_all();
         }
-
         if(cmd=="get config"){
             DataPacket cfg=  p_cm->get_config();
             DataPacket cfg_root;
             cfg_root.set_pkt("config",cfg);
             cfg_root.set_string("cmd",cmd);
             clt->send(cfg_root.data().data(),cfg_root.data().length());
-        }
-        if(cmd=="reset alg"){
         }
         if(cmd=="delete camera"){
             int index=data.get_int("index");

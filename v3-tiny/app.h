@@ -6,6 +6,7 @@
 #include "datapacket.h"
 #include "camera.h"
 #include "jsondatadealer.h"
+
 class AppData:public JsonData{
 public:
     vector <CameraData> cameras;
