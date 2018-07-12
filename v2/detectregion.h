@@ -14,33 +14,18 @@ public:
         DECODE_INT_MEM(y);
     }
 };
-
-class PolyVers:public JsonData
-{
-public:
-    vector <VdPoint>poly_vers;
-    PolyVers(DataPacket pkt):JsonData(pkt)
-    {
-        auto tm1p=config.get_array_packet("poly_vers");
-        DECODE_OBJ_ARRAY_MEM(poly_vers);
-    }
-
-    PolyVers()
-    {
-
-    }
-};
 class DetectRegionData:public JsonData
 {
 
 public:
     int region_id;
     string detector_type;
-    PolyVers poly_vers;
+    vector <VdPoint>poly_vers;
+    //PolyVers poly_vers;
     DetectRegionData(DataPacket pkt):JsonData(pkt)
     {
-        DECODE_OBJ_MEM(poly_vers);
         DECODE_INT_MEM(region_id);
+        DECODE_OBJ_ARRAY_MEM(poly_vers);
         DECODE_STRING_MEM(detector_type);
     }
 
@@ -55,7 +40,10 @@ public:
     }
     DetectRegion(DetectRegionData pkt):VdData(pkt)
     {
-
+        for(VdPoint p:private_data.poly_vers)
+        {
+            prt(info,"(%d,%d) ",p.x,p.y);
+        }
     }
     void work()
     {

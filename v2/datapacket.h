@@ -143,7 +143,7 @@ public:
 
     JsonValue get_value(string name)
     {
-
+        name_check(name,"get value");
         return val[name];
     }
     DataPacket get_pkt(string name)

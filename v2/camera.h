@@ -14,8 +14,8 @@ public:
     vector <DetectRegionData >detect_regions;
     CameraData(DataPacket pkt):JsonData(pkt)
     {
-       DECODE_STRING_MEM(url);
-       DECODE_OBJ_ARRAY_MEM(detect_regions);
+        DECODE_STRING_MEM(url);
+        DECODE_OBJ_ARRAY_MEM(detect_regions);
     }
 };
 
@@ -29,7 +29,7 @@ public:
         //    set_config(cfg);
         for(DetectRegionData p:private_data.detect_regions){
 
-          //      drs.push_back(new DetectRegion(p));
+            drs.push_back(new DetectRegion(p));
             //  pros.push_back(new PvdC4Processor(p));
             //        pros.push_back(new PvdMvncProcessor(p.get_pkt("pvd_c4")));
             // pros.push_back(new PvdHogProcessor(p.get_pkt("pvd_c4")));
@@ -42,6 +42,7 @@ public:
 
         //    set_config(cfg);
         for(DetectRegionData p:private_data.detect_regions){
+               drs.push_back(new DetectRegion(p));
             // if(GET_STRING_VALUE_FROM_PKT(selected_alg,p)=="pvd_c4")
             //pros.push_back(new PvdC4Processor(p.get_pkt("pvd_c4")));
             //  pros.push_back(new PvdC4Processor(p));
