@@ -50,6 +50,7 @@ public:
             //  pros.push_back(new PvdC4Processor(p));
             //        pros.push_back(new PvdMvncProcessor(p.get_pkt("pvd_c4")));
             // pros.push_back(new PvdHogProcessor(p.get_pkt("pvd_c4")));
+
         }
         src=new VideoSource(private_data.url);
         start();
@@ -66,8 +67,11 @@ public:
         Mat frame;
         while(!quit){
             this_thread::sleep_for(chrono::milliseconds(10));
-            if(src->get_frame(frame)&&frame.cols>0&&frame.rows>0){
+            if(src->get_frame(frame)){
               //  prt(info,"get a frame ");
+                for(DetectRegion *r:drs){
+                    r->work(frame);
+                }
             }
         }
     }
