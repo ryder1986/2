@@ -53,7 +53,7 @@ void VideoSource::run()
             }else{
                 frame_rate++;
                 lock.lock();
-                if(frame_list.size()<3){
+                if(frame_list.size()<3&&frame.rows>0&&frame.cols>0){
                     frame_list.push_back(frame);
                 }
                 lock.unlock();

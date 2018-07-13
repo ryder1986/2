@@ -527,12 +527,13 @@ public:
 private:
     void start_config()
     {
+
         for(CameraData d:cfg.cameras)
         {
             ui->comboBox_cameras->addItem(d.url.data());
             players.push_back(new PlayerWidget(d));
-            ui->groupBox_video->layout()->addWidget(players.front());
 
+            ui->groupBox_video->layout()->addWidget(*(players.end()-1));
 
 
 //                PlayerWidget *w=new PlayerWidget(cfg.cameras[0]);

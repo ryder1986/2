@@ -116,6 +116,11 @@
       <property name="title">
        <string>video</string>
       </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_video"/>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
