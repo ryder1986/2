@@ -3,8 +3,8 @@
 # Project created by QtCreator 2018-07-12T11:30:37
 #
 #-------------------------------------------------
-
-QT       += core gui network
+greaterThan(QT_MAJOR_VERSION, 4) QT += widgets
+QT       += core  network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

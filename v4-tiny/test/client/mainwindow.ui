@@ -21,6 +21,13 @@
        <string>text</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="8" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_start">
+         <property name="text">
+          <string>start all</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="0">
         <widget class="QPlainTextEdit" name="plainTextEdit_recive"/>
        </item>
@@ -38,12 +45,12 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="lineEdit_addcamera"/>
        </item>
        <item row="4" column="1">
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="pushButton_addcamera">
          <property name="text">
-          <string>PushButton</string>
+          <string>add camera</string>
          </property>
         </widget>
        </item>
@@ -61,8 +68,45 @@
          </property>
         </widget>
        </item>
+       <item row="5" column="0">
+        <widget class="QLineEdit" name="lineEdit_delcamera"/>
+       </item>
        <item row="1" column="0" colspan="2">
         <widget class="QComboBox" name="comboBox_cameras"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="pushButton_delcamera">
+         <property name="text">
+          <string>del camera</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLineEdit" name="lineEdit_setconfig"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QPushButton" name="pushButton_getconfig">
+         <property name="text">
+          <string>get config</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QPushButton" name="pushButton_setconfig">
+         <property name="text">
+          <string>set config</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLineEdit" name="lineEdit_getconfig"/>
+       </item>
+       <item row="9" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_stop">
+         <property name="text">
+          <string>stop all</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

@@ -512,7 +512,7 @@ private :
 };
 
 #include "ui_mainwindow.h"
-
+#include     "playerwidget.h"
 namespace Ui {
 class MainWindow;
 }
@@ -528,7 +528,17 @@ private:
     void start_config()
     {
         for(CameraData d:cfg.cameras)
-        ui->comboBox_cameras->addItem(d.url.data());
+        {
+            ui->comboBox_cameras->addItem(d.url.data());
+            players.push_back(new PlayerWidget(d));
+            ui->groupBox_video->layout()->addWidget(players.front());
+
+
+
+//                PlayerWidget *w=new PlayerWidget(cfg.cameras[0]);
+//                ui->groupBox_video->layout()->addWidget(w);
+        }
+
     }
 
 private slots:
@@ -544,7 +554,8 @@ private slots:
         prt(info,"1");
         if(pkt.get_string("app_op")=="get config"){
             cfg=pkt.get_pkt("return");
-            start_config();
+            ui->lineEdit_getconfig->setText(cfg.data().data().data());
+         //   start_config();
           //  prt(info,"%d",cfg.server_port);
         }
     }
@@ -556,13 +567,20 @@ private slots:
 
     void on_pushButton_recive_clicked();
 
-    void on_pushButton_4_clicked();
+
+    void on_pushButton_getconfig_clicked();
+
+    void on_pushButton_start_clicked();
+
+    void on_pushButton_stop_clicked();
 
 private:
     Ui::MainWindow *ui;
     ServerInfoSearcher searcher;
     Client clt;
     AppData cfg;
+
+    vector <PlayerWidget *> players;
 };
 
 #endif // MAINWINDOW_H
