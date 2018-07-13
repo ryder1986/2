@@ -1,7 +1,20 @@
 #include "app.h"
 #include "configmanager.h"
 #include "datapacket.h"
+//class AppOutput:public JsonData{
+//public:
+//    vector <CameraData> cameras;
+//    int server_port;
+//    AppData(DataPacket pkt):JsonData(pkt)
+//    {
+//        DECODE_INT_MEM(server_port);
+//        DECODE_OBJ_ARRAY_MEM(cameras);
+//    }
+//    AppData()
+//    {
 
+//    }
+//};
 App::App(ConfigManager *p_config_manager):str_stream(""),
     VdData(p_config_manager->get_config()),lservice()
 {

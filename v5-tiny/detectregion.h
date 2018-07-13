@@ -24,6 +24,10 @@ public:
         DECODE_INT_MEM(x);
         DECODE_INT_MEM(y);
     }
+    VdPoint(int x,int y)
+    {
+
+    }
 };
 class DetectRegionData:public JsonData
 {

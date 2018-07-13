@@ -101,9 +101,29 @@ public:
         return val.asString();
     }
 
+    DataPacket to_pkt(DataPacket p)
+    {
+        return p;
+    }
+
+    DataPacket to_pkt()
+    {
+        return DataPacket(val);
+    }
+
     vector <DataPacket> to_array(DataPacket p)
     {
         JsonValue v=p.val;
+        vector<DataPacket>  ar;
+        int sz=v.size();
+        for(int i=0;i<sz;i++){
+            ar.push_back( v[i]);
+        }
+        return ar;
+    }
+    vector <DataPacket> to_array()
+    {
+        JsonValue v=val;
         vector<DataPacket>  ar;
         int sz=v.size();
         for(int i=0;i<sz;i++){
