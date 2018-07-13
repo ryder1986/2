@@ -67,7 +67,7 @@ public:
         while(!quit){
             this_thread::sleep_for(chrono::milliseconds(10));
             if(src->get_frame(frame)&&frame.cols>0&&frame.rows>0){
-                prt(info,"get a frame ");
+              //  prt(info,"get a frame ");
             }
         }
     }
