@@ -559,6 +559,12 @@ private slots:
             start_config();
           //  prt(info,"%d",cfg.server_port);
         }
+        if(pkt.get("app_op").to_string()=="data"){
+            cfg=pkt.get("return");
+
+            start_config();
+          //  prt(info,"%d",cfg.server_port);
+        }
     }
     void on_pushButton_search_clicked();
 
