@@ -17,11 +17,10 @@
 #include "tool.h"
 
 
-#ifdef IS_UNIX
-#include <sys/stat.h>
-
+#ifdef IS_WIN
+#include <direct.h>
 #else
-//#include <direct.h>
+#include <sys/stat.h>
 #endif
 using namespace std;
 
@@ -61,10 +60,11 @@ private:
         //            cout<<"exist"<<endl;
         //        }
 
-#ifdef IS_UNIX
-        mkdir(dirname,0755);
-#else
+#ifdef IS_WIN
         mkdir(dirname);
+#else
+        mkdir(dirname,0755);
+
 #endif
 
 
