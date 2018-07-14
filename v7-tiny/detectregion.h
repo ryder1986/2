@@ -1,8 +1,8 @@
 #ifndef DETECTREGION_H
 #define DETECTREGION_H
 
-#include "jsondatadealer.h"
-#include "datapacket.h"
+
+#include "jsonpacket.h"
 
 
 #include <opencv2/core/core.hpp>
@@ -19,14 +19,23 @@ class VdPoint:public JsonData
 public:
     int x;
     int y;
-    VdPoint(DataPacket pkt):JsonData(pkt)
+    VdPoint(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    VdPoint(int x,int y):x(x),y(y)
+    {
+        encode();
+    }
+    void decode()
     {
         DECODE_INT_MEM(x);
         DECODE_INT_MEM(y);
     }
-    VdPoint(int x,int y)
+    void encode()
     {
-
+        ENCODE_INT_MEM(x);
+        ENCODE_INT_MEM(y);
     }
 };
 class DetectRegionData:public JsonData
@@ -36,12 +45,23 @@ public:
     int region_id;
     string detector_type;
     vector <VdPoint>poly_vers;
-    //PolyVers poly_vers;
-    DetectRegionData(DataPacket pkt):JsonData(pkt)
+    DetectRegionData(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+
+
+    void decode()
     {
         DECODE_INT_MEM(region_id);
         DECODE_OBJ_ARRAY_MEM(poly_vers);
         DECODE_STRING_MEM(detector_type);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(region_id);
+        ENCODE_OBJ_ARRAY_MEM(poly_vers);
+        ENCODE_STRING_MEM(detector_type);
     }
 
 };
@@ -49,7 +69,7 @@ public:
 class DetectRegion : public VdData<DetectRegionData>
 {
 public:
-    DetectRegion(DataPacket pkt):VdData(pkt)
+    DetectRegion(JsonPacket pkt):VdData(pkt)
     {
 
     }

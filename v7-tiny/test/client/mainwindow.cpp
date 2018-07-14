@@ -47,7 +47,8 @@ void MainWindow::on_pushButton_getconfig_clicked()
 {
 //    PlayerWidget *w=new PlayerWidget(cfg.cameras[0]);
 //    ui->groupBox_video->layout()->addWidget(w);
-    clt.send("{\"app_op\"\:\"get config\"\"}");
+ //   clt.send("{\"app_op\"\:\"get config\"\"}");
+    clt.get_config();
 }
 
 void MainWindow::on_pushButton_start_clicked()

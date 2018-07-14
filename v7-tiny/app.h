@@ -3,22 +3,31 @@
 
 #include "server.h"
 #include "tool.h"
-#include "datapacket.h"
 #include "camera.h"
-#include "jsondatadealer.h"
+#include "configmanager.h"
 
 class AppData:public JsonData{
 public:
     vector <CameraData> cameras;
     int server_port;
-    AppData(DataPacket pkt):JsonData(pkt)
+    AppData(JsonPacket pkt):JsonData(pkt)
     {
-        DECODE_INT_MEM(server_port);
-        DECODE_OBJ_ARRAY_MEM(cameras);
+        decode();
     }
     AppData()
     {
 
+    }
+
+    void decode()
+    {
+        DECODE_INT_MEM(server_port);
+        DECODE_OBJ_ARRAY_MEM(cameras);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(server_port);
+        ENCODE_OBJ_ARRAY_MEM(cameras);
     }
 };
 class App:public VdData<AppData>
@@ -53,7 +62,7 @@ private:
         }
         cms.clear();
     }
-    void add_camera(int index,DataPacket data)//after who ?  0~size
+    void add_camera(int index,JsonPacket data)//after who ?  0~size
     {
         if(0<=index&&index<=cms.size()){
             Camera *c=new Camera(data,bind(&App::process_camera_data,

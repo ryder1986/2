@@ -3,7 +3,7 @@
 #include <iostream>
 #include <mutex>
 #include "tool.h"
-
+#include "jsonpacket.h"
 class DataPacket;
 using namespace std;
 class FileDatabase
@@ -81,7 +81,16 @@ public:
     {
 
     }
-    DataPacket get_config();
+    JsonPacket get_config()
+    {
+        string data;
+        if(db.load(data)){
+            return JsonPacket(data);
+        }else{
+            return JsonPacket();
+        }
+    }
+
     void set_config(string cfg)
     {
         db.save(cfg);

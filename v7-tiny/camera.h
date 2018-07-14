@@ -2,22 +2,30 @@
 #define CAMERA_H
 #include "tool.h"
 #include "videosource.h"
-#include "datapacket.h"
-#include "jsondatadealer.h"
 #include "detectregion.h"
 class CameraData:public JsonData
 {
 public:
     string url;
     vector <DetectRegionData >detect_regions;
-    CameraData(DataPacket pkt):JsonData(pkt)
+    CameraData(JsonPacket pkt):JsonData(pkt)
     {
-        DECODE_STRING_MEM(url);
-        DECODE_OBJ_ARRAY_MEM(detect_regions);
+        decode();
     }
     CameraData()
     {
 
+    }
+
+    void decode()
+    {
+        DECODE_STRING_MEM(url);
+        DECODE_OBJ_ARRAY_MEM(detect_regions);
+    }
+    void encode()
+    {
+        ENCODE_STRING_MEM(url);
+        ENCODE_OBJ_ARRAY_MEM(detect_regions);
     }
 };
 
@@ -25,7 +33,7 @@ class Camera:public VdData<CameraData>
 {
     function <void(Camera *,const char *,int)>callback_result;
 public:
-    Camera(DataPacket cfg,function <void(Camera *,const char *,int)>fc):VdData(cfg),quit(false),callback_result(fc)
+    Camera(JsonPacket cfg,function <void(Camera *,const char *,int)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
 
         //    set_config(cfg);

@@ -42,7 +42,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
     while(JsonStr::get_valid_buf(str_stream,valid_buf)) {//Get valid json object, TODO:we only check {} matches, we should check json grammar
         prt(info,"process string   %s",valid_buf.data());
         prt(info,"left string   %s",str_stream.data());
-        DataPacket data(valid_buf);
+        JsonPacket data(valid_buf);
 
 #if 0
 
@@ -71,7 +71,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
 #else
         string op=data.get("app_op").to_string();
         if(op=="get config"){
-            data.set_pkt("return",p_cm->get_config());
+            data.add("return",p_cm->get_config());
         }
         string ret=data.data();
         clt->send(ret.data(),ret.length());

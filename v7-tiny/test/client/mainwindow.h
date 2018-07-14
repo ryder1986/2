@@ -38,6 +38,7 @@ public:
         QJsonDocument doc(obj);
 
         bool ret= send(doc.toJson());//talk to server
+        prt(info,"%s",doc.toJson().data());
         if(!ret){
             prt(info,"fail send");
         }
@@ -551,12 +552,11 @@ private slots:
     {
         ui->plainTextEdit_recive->setPlainText(msg);
         string str(msg.toUtf8());
-        DataPacket pkt(str);
-        prt(info,"1");
-        if(pkt.get_string("app_op")=="get config"){
-            cfg=pkt.get_pkt("return");
+        JsonPacket pkt(str);
+        if(pkt.get("app_op").to_string()=="get config"){
+            cfg=pkt.get("return");
             ui->lineEdit_getconfig->setText(cfg.data().data().data());
-         //   start_config();
+            start_config();
           //  prt(info,"%d",cfg.server_port);
         }
     }
