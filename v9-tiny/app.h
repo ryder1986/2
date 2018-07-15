@@ -5,6 +5,14 @@
 #include "tool.h"
 #include "camera.h"
 #include "configmanager.h"
+enum AppRequest{
+    SET_CONFIG,
+    GET_CONFIG,
+    ADD_CAMERA,
+    DEL_CAMERA,
+    MOD_CAMERA,
+    CHANGE_NAME
+};
 
 class AppData:public JsonData{
 public:
@@ -15,6 +23,31 @@ public:
         decode();
     }
     AppData()
+    {
+
+    }
+
+    void decode()
+    {
+        DECODE_INT_MEM(server_port);
+        DECODE_OBJ_ARRAY_MEM(cameras);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(server_port);
+        ENCODE_OBJ_ARRAY_MEM(cameras);
+    }
+};
+class AppReq:public JsonData{
+public:
+    int request;
+    int index;
+    DataPacket pri;
+    AppReq(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    AppReq()
     {
 
     }
@@ -82,6 +115,11 @@ private:
             cms.erase(it+index-1);
         }
     }
+    bool process_request(DataPacket req)
+    {
+
+    }
+
 private:
     vector <Session*> *stream_cmd;//clients who connected to our server
     string str_stream;//
