@@ -42,7 +42,7 @@ class AppReq:public JsonData{
 public:
     int request;
     int index;
-    DataPacket pri;
+    JsonPacket pri;
     AppReq(JsonPacket pkt):JsonData(pkt)
     {
         decode();
@@ -54,13 +54,15 @@ public:
 
     void decode()
     {
-        DECODE_INT_MEM(server_port);
-        DECODE_OBJ_ARRAY_MEM(cameras);
+        DECODE_INT_MEM(request);
+        DECODE_INT_MEM(index);
+        DECODE_OBJ_MEM(pri);
     }
     void encode()
     {
-        ENCODE_INT_MEM(server_port);
-        ENCODE_OBJ_ARRAY_MEM(cameras);
+        ENCODE_INT_MEM(request);
+        ENCODE_INT_MEM(index);
+        ENCODE_OBJ_MEM(pri);
     }
 };
 class App:public VdData<AppData>
@@ -115,9 +117,23 @@ private:
             cms.erase(it+index-1);
         }
     }
-    bool process_request(DataPacket req)
+    bool process_request(AppReq req,string ret_pkt)
     {
-
+        switch (req.request) {
+        case AppRequest::SET_CONFIG:
+            {
+                AppData data=req.data();
+                p_cm->set_config(data.data().data());
+                private_data=data;
+                restart_all();
+            }
+            break;
+        case AppRequest::GET_CONFIG:
+            private_data.config;
+            break;
+        default:
+            break;
+        }
     }
 
 private:

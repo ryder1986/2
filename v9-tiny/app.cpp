@@ -16,9 +16,10 @@
 //    }
 //};
 App::App(ConfigManager *p_config_manager):str_stream(""),
-    VdData(p_config_manager->get_config()),lservice()
+    VdData(p_config_manager->get_config()),lservice(),p_cm(p_config_manager)
 {
-    p_cm=p_config_manager;
+
+    restart_all();
     static Tcpserver server_cmd(stream_cmd,
                                 private_data.server_port,
                                 bind(&App::process_client_cmd,
@@ -27,7 +28,7 @@ App::App(ConfigManager *p_config_manager):str_stream(""),
                                      placeholders::_3
                                      )
                                 );
-    start_cams();
+
 }
 //deal with clients command
 void App::process_client_cmd(Session *clt, char *data, int len)

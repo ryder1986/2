@@ -237,8 +237,9 @@ private:
 
 class JsonData{
 protected:
-    JsonPacket config;
+
 public:
+    JsonPacket config;
     JsonData(JsonPacket pkt)
     {
         config=pkt;
