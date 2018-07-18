@@ -84,6 +84,19 @@ public:
     {
 
     }
+    void change_detector(string name)
+    {
+
+    }
+    void change_area()
+    {
+
+    }
+
+    void modify()
+    {
+
+    }
 };
 
 #endif // DETECTREGION_H

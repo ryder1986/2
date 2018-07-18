@@ -3,6 +3,12 @@
 #include "tool.h"
 #include "videosource.h"
 #include "detectregion.h"
+
+class CameraReq:public JsonData
+{
+public:
+    CameraReq(){}
+};
 class CameraData:public JsonData
 {
 public:
@@ -29,7 +35,7 @@ public:
     }
 };
 
-class Camera:public VdData<CameraData>
+class Camera:public VdData<CameraData>,public VdEvent
 {
     function <void(Camera *,const char *,int)>callback_result;
 public:
@@ -52,7 +58,7 @@ public:
 
         //    set_config(cfg);
         for(DetectRegionData p:private_data.detect_regions){
-               drs.push_back(new DetectRegion(p));
+            drs.push_back(new DetectRegion(p));
             // if(GET_STRING_VALUE_FROM_PKT(selected_alg,p)=="pvd_c4")
             //pros.push_back(new PvdC4Processor(p.get_pkt("pvd_c4")));
             //  pros.push_back(new PvdC4Processor(p));
@@ -76,7 +82,7 @@ public:
         while(!quit){
             this_thread::sleep_for(chrono::milliseconds(10));
             if(src->get_frame(frame)){
-              //  prt(info,"get a frame ");
+                //  prt(info,"get a frame ");
                 for(DetectRegion *r:drs){
                     r->work(frame);
                 }
@@ -96,6 +102,19 @@ public:
     {
         quit=true;
     }
+
+    void change_source(string url)
+    {
+        if(src)
+            delete src;
+        src=new VideoSource(url);
+    }
+    void modify_detect_region(JsonPacket pkt)
+    {
+        int index=pkt.get("index").to_int();
+        drs[index-1]->modify(pkt.get("data"));
+    }
+
 
 private:
     vector<DetectRegion*> drs;

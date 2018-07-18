@@ -43,6 +43,7 @@ public:
     int request;
     int index;
     JsonPacket pri;
+    JsonPacket ret;
     AppReq(JsonPacket pkt):JsonData(pkt)
     {
         decode();
@@ -57,12 +58,14 @@ public:
         DECODE_INT_MEM(request);
         DECODE_INT_MEM(index);
         DECODE_OBJ_MEM(pri);
+        DECODE_OBJ_MEM(ret);
     }
     void encode()
     {
         ENCODE_INT_MEM(request);
         ENCODE_INT_MEM(index);
         ENCODE_OBJ_MEM(pri);
+        ENCODE_OBJ_MEM(ret);
     }
 };
 class App:public VdData<AppData>
@@ -117,19 +120,35 @@ private:
             cms.erase(it+index-1);
         }
     }
-    bool process_request(AppReq req,string ret_pkt)
+    void mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
+    {
+        if(1<=index&&index<=cms.size()){
+           cms[index-1].modify_camera(pkt);
+        }
+    }
+    bool process_request(AppReq &req)
     {
         switch (req.request) {
         case AppRequest::SET_CONFIG:
-            {
-                AppData data=req.data();
-                p_cm->set_config(data.data().data());
-                private_data=data;
-                restart_all();
-            }
+        {
+            AppData data=req.data();
+            p_cm->set_config(data.data().data());
+            private_data=data;
+            restart_all();
+        }
             break;
         case AppRequest::GET_CONFIG:
-            private_data.config;
+            req.ret=private_data.config;
+            break;
+        case AppRequest::ADD_CAMERA:
+            CameraData data=req.data();
+            int index=req.index;
+            add_camera(index,data);
+            break;
+        case AppRequest::MOD_CAMERA:
+            JsonPacket data=req.data();
+            int index=req.index;
+            modi
             break;
         default:
             break;
