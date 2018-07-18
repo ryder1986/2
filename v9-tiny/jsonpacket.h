@@ -267,12 +267,32 @@ public:
 };
 
 
+
+#define DECODE_INT_MEM(mem) {this->mem=config.get(#mem).to_int();}
+#define DECODE_STRING_MEM(mem) {this->mem=config.get(#mem).to_string();}
+#define DECODE_DOUBLE_MEM(mem) {this->mem=config.get(#mem).to_double();}
+#define DECODE_BOOL_MEM(mem) {this->mem=config.get(#mem).to_bool();}
+#define DECODE_OBJ_MEM(mem) {this->mem=config.get(#mem);}
+#define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
+
+#define ENCODE_MEM(mem) {config.add(#mem,this->mem);}
+#define ENCODE_INT_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_STRING_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_DOUBLE_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.data());}
+#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
+    for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
+    config.add(#mem,pkts);}
+
+
+template <typename T>
 class RequestData:public JsonData
 {
 public:
     int op;
     int index;
-    JsonPacket data;
+    T data;
     RequestData()
     {
 
@@ -300,31 +320,17 @@ private:
         ENCODE_OBJ_MEM(data);
     }
 };
-class VdEvent{
-public:
-    RequestData e;
-    virtual void process_event(JsonPacket data)
-    {
-         e=data;
-    }
+//class VdEvent{
+//public:
+//    RequestData e;
+//    virtual void process_event(JsonPacket data)
+//    {
+//         e=data;
+//    }
 
 
-};
+//};
 
-#define DECODE_INT_MEM(mem) {this->mem=config.get(#mem).to_int();}
-#define DECODE_STRING_MEM(mem) {this->mem=config.get(#mem).to_string();}
-#define DECODE_DOUBLE_MEM(mem) {this->mem=config.get(#mem).to_double();}
-#define DECODE_BOOL_MEM(mem) {this->mem=config.get(#mem).to_bool();}
-#define DECODE_OBJ_MEM(mem) {this->mem=config.get(#mem);}
-#define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
 
-#define ENCODE_MEM(mem) {config.add(#mem,this->mem);}
-#define ENCODE_INT_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_STRING_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_DOUBLE_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.data());}
-#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
-    for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
-    config.add(#mem,pkts);}
+
 #endif // JSONPACKET_H
