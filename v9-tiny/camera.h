@@ -35,7 +35,7 @@ public:
     }
 };
 
-class Camera:public VdData<CameraData>,public VdEvent
+class Camera:public VdData<CameraData>
 {
     function <void(Camera *,const char *,int)>callback_result;
 public:
@@ -112,7 +112,7 @@ public:
     void modify_detect_region(JsonPacket pkt)
     {
         int index=pkt.get("index").to_int();
-        drs[index-1]->modify(pkt.get("data"));
+     //   drs[index-1]->modify(pkt.get("data"));
     }
 
 

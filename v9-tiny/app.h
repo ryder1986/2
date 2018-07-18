@@ -123,7 +123,7 @@ private:
     void mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
     {
         if(1<=index&&index<=cms.size()){
-           cms[index-1].modify_camera(pkt);
+           //cms[index-1].modify_camera(pkt);
         }
     }
     bool process_request(AppReq &req)
@@ -141,14 +141,14 @@ private:
             req.ret=private_data.config;
             break;
         case AppRequest::ADD_CAMERA:
-            CameraData data=req.data();
-            int index=req.index;
-            add_camera(index,data);
+//            CameraData data=req.data();
+//            int index=req.index;
+            //add_camera(index,data);
             break;
         case AppRequest::MOD_CAMERA:
-            JsonPacket data=req.data();
-            int index=req.index;
-            modi
+//            JsonPacket data=req.data();
+//            int index=req.index;
+//            modi
             break;
         default:
             break;

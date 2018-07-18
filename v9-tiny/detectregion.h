@@ -27,6 +27,10 @@ public:
     {
         encode();
     }
+    VdPoint()
+    {
+
+    }
     void decode()
     {
         DECODE_INT_MEM(x);
@@ -65,10 +69,14 @@ public:
     }
 
 };
-
+class change_region:public RequestData <VdPoint>{
+public:
+    change_region(){}
+};
 class DetectRegion : public VdData<DetectRegionData>
 {
 public:
+
     DetectRegion(JsonPacket pkt):VdData(pkt)
     {
 
@@ -88,9 +96,9 @@ public:
     {
 
     }
-    void change_area()
+    void change_area( vector <VdPoint>poly_vers)
     {
-
+        private_data.poly_vers=poly_vers;
     }
 
     void modify()

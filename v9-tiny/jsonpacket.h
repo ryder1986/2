@@ -293,6 +293,7 @@ public:
     int op;
     int index;
     T data;
+
     RequestData()
     {
 
