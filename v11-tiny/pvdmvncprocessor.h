@@ -2,7 +2,7 @@
 #define PVDMVNCPROCESSOR_H
 
 #include "videoprocessor.h"
-#include "movidiusprocessor.h"
+//#include "movidiusprocessor.h"
 class PvdMvncProcessor : public VideoProcessor
 {
     typedef struct process_result{

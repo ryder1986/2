@@ -3,7 +3,7 @@
 
 
 #include "jsonpacket.h"
-#include "pvdmvncprocessor.h"
+//#include "pvdmvncprocessor.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -91,8 +91,8 @@ public:
     }
     DetectRegion(DetectRegionData pkt):VdData(pkt)
     {
-        p=new PvdMvncProcessor();
-       //     p=new PvdC4Processor(pkt.data());
+      //  p=new PvdMvncProcessor();
+          p=new PvdC4Processor(pkt.data());
         for(VdPoint p:private_data.poly_vers)
         {
             prt(info,"(%d,%d) ",p.x,p.y);
