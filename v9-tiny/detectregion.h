@@ -69,10 +69,10 @@ public:
     }
 
 };
-class change_region:public RequestData <VdPoint>{
-public:
-    change_region(){}
-};
+//class change_region:public RequestData <VdPoint>{
+//public:
+//    change_region(){}
+//};
 class DetectRegion : public VdData<DetectRegionData>
 {
 public:

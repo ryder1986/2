@@ -285,7 +285,6 @@ public:
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
     config.add(#mem,pkts);}
 
-
 template <typename T>
 class RequestData:public JsonData
 {
@@ -294,33 +293,62 @@ public:
     int index;
     T data;
 
+    RequestData(int op,int index , T data):op(op),index(index),data(data)
+    {
+
+    }
     RequestData()
     {
 
     }
 
-    RequestData(JsonPacket pkt)
-    {
-        decode();
-    }
-    RequestData(int o,int i,int d):op(o),index(i),data(d)
-    {
-        encode();
-    }
-private:
-    void decode()
-    {
-        DECODE_STRING_MEM(op);
-        DECODE_STRING_MEM(index);
-        DECODE_OBJ_MEM(data);
-    }
     void encode()
     {
-        ENCODE_STRING_MEM(op);
-        ENCODE_STRING_MEM(index);
-        ENCODE_OBJ_MEM(data);
+
     }
+    void decode()
+    {
+
+    }
+
 };
+
+
+//template <typename T>
+//class RequestData:public JsonData
+//{
+//public:
+//    int op;
+//    int index;
+//    T data;
+
+//    RequestData()
+//    {
+
+//    }
+
+//    RequestData(JsonPacket pkt)
+//    {
+//        decode();
+//    }
+//    RequestData(int o,int i,int d):op(o),index(i),data(d)
+//    {
+//        encode();
+//    }
+//private:
+//    void decode()
+//    {
+//        DECODE_STRING_MEM(op);
+//        DECODE_STRING_MEM(index);
+//        DECODE_OBJ_MEM(data);
+//    }
+//    void encode()
+//    {
+//        ENCODE_STRING_MEM(op);
+//        ENCODE_STRING_MEM(index);
+//        ENCODE_OBJ_MEM(data);
+//    }
+//};
 //class VdEvent{
 //public:
 //    RequestData e;

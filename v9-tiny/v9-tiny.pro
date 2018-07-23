@@ -18,6 +18,6 @@ HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/i
 SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
 
 
-LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video   -lopencv_videoio  -lpthread
+LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video     -lpthread
 
 HEADERS+=jsonpacket.h
