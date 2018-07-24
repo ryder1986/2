@@ -44,6 +44,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         prt(info,"process string   %s",valid_buf.data());
         prt(info,"left string   %s",str_stream.data());
         JsonPacket data(valid_buf);
+        process_event(data);
 
 #if 0
 
@@ -70,10 +71,10 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         }
 
 #else
-        string op=data.get("app_op").to_string();
-        if(op=="get config"){
-            data.add("return",p_cm->get_config());
-        }
+//        string op=data.get("app_op").to_string();
+//        if(op=="get config"){
+//            data.add("return",p_cm->get_config());
+//        }
         string ret=data.data();
         clt->send(ret.data(),ret.length());
 

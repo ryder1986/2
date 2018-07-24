@@ -313,6 +313,37 @@ public:
 
 };
 
+class VdEvent:public JsonData
+{
+public:
+    int op;
+    int index;
+    JsonPacket data;
+
+    VdEvent(int op,int index , JsonPacket data):op(op),index(index),data(data)
+    {
+
+    }
+    VdEvent(JsonPacket p):JsonData(p)
+    {
+        decode();
+    }
+
+    void encode()
+    {
+        ENCODE_INT_MEM(index);
+        ENCODE_INT_MEM(op);
+        config.set("data",data);
+
+    }
+    void decode()
+    {
+        DECODE_INT_MEM(index);
+        DECODE_INT_MEM(op);
+        data=config.get("data");
+    }
+
+};
 
 //template <typename T>
 //class RequestData:public JsonData

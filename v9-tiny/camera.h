@@ -12,6 +12,7 @@ public:
 class CameraData:public JsonData
 {
 public:
+
     string url;
     vector <DetectRegionData >detect_regions;
     CameraData(JsonPacket pkt):JsonData(pkt)
@@ -37,6 +38,13 @@ public:
 
 class Camera:public VdData<CameraData>
 {
+public:
+    enum OP{
+        ADD_REGION,
+        DEL_REGION,
+        MOD_REGION,
+        CHANGE_SRC_URL
+    };
     function <void(Camera *,const char *,int)>callback_result;
 public:
     Camera(JsonPacket cfg,function <void(Camera *,const char *,int)>fc):VdData(cfg),quit(false),callback_result(fc)

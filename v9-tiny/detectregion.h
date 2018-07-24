@@ -76,7 +76,9 @@ public:
 class DetectRegion : public VdData<DetectRegionData>
 {
 public:
-
+    enum OP{
+        CHANGE_RECT
+    };
     DetectRegion(JsonPacket pkt):VdData(pkt)
     {
 
@@ -102,6 +104,10 @@ public:
     }
 
     void modify()
+    {
+
+    }
+    bool process(JsonPacket data)
     {
 
     }

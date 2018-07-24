@@ -79,9 +79,9 @@ public:
 class CameraSetUrl:public RequestData<string>{
 public:
     AppEventModifyCamera app_req;
-    CameraSetUrl(int app_op,int app_index,int camera_op,int camera_index, string url):RequestData(camera_op,camera_index,url)
+    CameraSetUrl(AppEventModifyCamera a,int camera_op,int camera_index, string url):RequestData(camera_op,camera_index,url)
     {
-        app_req=AppEventModifyCamera(app_op,app_index,config);
+        //     app_req=AppEventModifyCamera(app_op,app_index,config);
     }
 };
 class CameraEvent:public AppEvent<JsonPacket>{
@@ -95,6 +95,37 @@ public:
 
     }
 };
+// change area rect
+//struct change_app_data{
+//     int op;
+//     int index;
+//     struct change_camera_data{
+//        int op;//which region
+//        int index;
+//        struct change_region_data{
+//            int op;
+//            int index;
+//            Rect r;
+//        };
+//     };
+//};
+////change camera url
+//struct app_req_data{
+//     int op;
+//     int index;
+//     JsonPacket data;
+//};
+//struct camera_req_data{
+//   int op;//which region
+//   int index;
+//   JsonPacket data;
+//};
+//struct region_req_data{
+//   int op;//which region
+//   int index;
+//   JsonPacket data;
+//};
+
 //class RegionChangeArea
 //{
 //public:
@@ -122,6 +153,7 @@ public:
 //};
 class AppReq:public JsonData{
 public:
+
     int request;
     int index;
     JsonPacket pri;
@@ -154,6 +186,13 @@ public:
 class App:public VdData<AppData>
 {
 public:
+    enum OP{
+        ADD_CAMERA,
+        DEL_CAMERA,
+        MOD_CAMERA,
+        GET_CONFIG,
+        SET_CONFIG
+    };
     App(ConfigManager *p);
     void start()
     {
@@ -206,7 +245,7 @@ private:
     void mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
     {
         if(1<=index&&index<=cms.size()){
-           //cms[index-1].modify_camera(pkt);
+            //cms[index-1].modify_camera(pkt);
         }
     }
     bool process_request(AppReq &req)
@@ -224,18 +263,37 @@ private:
             req.ret=private_data.config;
             break;
         case AppRequest::ADD_CAMERA:
-//            CameraData data=req.data();
-//            int index=req.index;
+            //            CameraData data=req.data();
+            //            int index=req.index;
             //add_camera(index,data);
             break;
         case AppRequest::MOD_CAMERA:
-//            JsonPacket data=req.data();
-//            int index=req.index;
-//            modi
+            //            JsonPacket data=req.data();
+            //            int index=req.index;
+            //            modi
             break;
         default:
             break;
         }
+    }
+    bool process_event(VdEvent &&e)
+    {
+        bool ret=false;
+        switch(e.op){
+        case App::OP::GET_CONFIG:
+        {
+            JsonPacket cfg=p_cm->get_config();
+            JsonPacket p=e.config;
+            p.add("return",cfg);
+            e=p;
+            ret=true;
+            break;
+        }
+        default:
+            prt(info,"unknow cmd");
+            break;
+        }
+        return ret;
     }
 
 private:
