@@ -34,7 +34,7 @@ public:
 
 
         QJsonObject obj;
-        obj["app_op"]="get config";
+        obj["op"]=App::OP::GET_CONFIG;
         QJsonDocument doc(obj);
 
         bool ret= send(doc.toJson());//talk to server
@@ -543,6 +543,19 @@ private:
 
     }
 
+    void recv_rst()
+    {
+       int fd= Socket::UdpCreateSocket(12349);
+       int ret;
+      static  char buf[1000];
+        while(true){
+          //   prt(info,"recving ..");
+          ret= Socket::RecvDataByUdp(fd,buf,100);
+        //  QString str(buf);
+        //  qDebug()<<str;
+           //  prt(info,"get %s",str.toUtf8().data());
+        }
+    }
 private slots:
     void ip_found(QString ip)
     {
@@ -553,8 +566,8 @@ private slots:
         ui->plainTextEdit_recive->setPlainText(msg);
         string str(msg.toUtf8());
         JsonPacket pkt(str);
-        if(pkt.get("app_op").to_string()=="get config"){
-            cfg=pkt.get("return");
+        if(pkt.get("op").to_int()==App::OP::GET_CONFIG){
+            cfg=pkt.get("ret");
             ui->lineEdit_getconfig->setText(cfg.data().data().data());
             start_config();
           //  prt(info,"%d",cfg.server_port);
@@ -580,6 +593,7 @@ private slots:
     void on_pushButton_start_clicked();
 
     void on_pushButton_stop_clicked();
+
 
 private:
     Ui::MainWindow *ui;

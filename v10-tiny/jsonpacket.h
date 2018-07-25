@@ -319,21 +319,38 @@ public:
     int op;
     int index;
     JsonPacket data;
+    JsonPacket ret;
 
     VdEvent(int op,int index , JsonPacket data):op(op),index(index),data(data)
     {
-
+        encode();
     }
     VdEvent(JsonPacket p):JsonData(p)
     {
         decode();
     }
-
+//    VdEvent(JsonPacket &&p):JsonData(p)
+//    {
+//        decode();
+//    }
+//    VdEvent(VdEvent &&e):JsonData(e.data)
+//    {
+//        decode();
+//    }
+//    VdEvent(VdEvent &e):JsonData(e.data)
+//    {
+//        decode();
+//    }
+//    void operator =(const VdEvent &e)
+//    {
+//          decode();
+//    }
     void encode()
     {
         ENCODE_INT_MEM(index);
         ENCODE_INT_MEM(op);
         config.set("data",data);
+        config.set("ret",ret);
 
     }
     void decode()
@@ -341,6 +358,7 @@ public:
         DECODE_INT_MEM(op);
         DECODE_INT_MEM(index);
         data=config.get("data");
+        ret=config.get("ret");
     }
 
 };

@@ -75,6 +75,7 @@ public:
 //};
 class DetectRegion : public VdData<DetectRegionData>
 {
+    int tmp;
 public:
     enum OP{
         CHANGE_RECT
@@ -90,9 +91,14 @@ public:
             prt(info,"(%d,%d) ",p.x,p.y);
         }
     }
-    void work(Mat frame)
+    JsonPacket work(Mat frame)
     {
-
+        JsonPacket d;
+        d.add("x",1+tmp++%200);
+        d.add("y",1+tmp++%200);
+        d.add("w",1+tmp++%200);
+        d.add("h",1+tmp++%200);
+           return d;
     }
     void change_detector(string name)
     {

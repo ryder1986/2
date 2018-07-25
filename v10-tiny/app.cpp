@@ -44,7 +44,9 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         prt(info,"process string   %s",valid_buf.data());
         prt(info,"left string   %s",str_stream.data());
         JsonPacket data(valid_buf);
-        process_event(data);
+        VdEvent e(data);
+        process_event(e);
+
 
 #if 0
 
@@ -75,7 +77,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
 //        if(op=="get config"){
 //            data.add("return",p_cm->get_config());
 //        }
-        string ret=data.data();
+        string ret=e.config.data();
         clt->send(ret.data(),ret.length());
 
 #endif
@@ -85,10 +87,11 @@ void App::process_client_cmd(Session *clt, char *data, int len)
 #endif
 }
 
-void App::process_camera_data(Camera *clt, const char *data, int len)
+void App::process_camera_data(Camera *clt, string data)
 {
     int fd=Socket::UdpCreateSocket(5000);
-    Socket::UdpSendData(fd,"192.168.1.216",12346,data,len);
+    //  prt(info,"length %d: %s ",data.length(),data.data());
+    Socket::UdpSendData(fd,"192.168.1.216",12349,data.data(),data.length());
     close(fd);
 }
 

@@ -241,8 +241,8 @@ public:
                     append(last_substr(last_substr(fn,'/'),'\\').data()).append(",").append(buf1).append(",").append(func_name).append("]===>").append(buf).append("\n");
             cout<<tmp_str;
             //    log_file1.write(tmp_str.data());
-          //  fflush(stdout);
-            fflush(NULL);
+           fflush(stdout);
+           //  fflush(NULL);
           }
     }
     inline static char* get_time_n()

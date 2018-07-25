@@ -45,9 +45,9 @@ public:
         MOD_REGION,
         CHANGE_SRC_URL
     };
-    function <void(Camera *,const char *,int)>callback_result;
+    function <void(Camera *,string)>callback_result;
 public:
-    Camera(JsonPacket cfg,function <void(Camera *,const char *,int)>fc):VdData(cfg),quit(false),callback_result(fc)
+    Camera(JsonPacket cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
 
         //    set_config(cfg);
@@ -61,7 +61,7 @@ public:
         src=new VideoSource(private_data.url);
         start();
     }
-    Camera(CameraData cfg,function <void(Camera *,const char *,int)>fc):VdData(cfg),quit(false),callback_result(fc)
+    Camera(CameraData cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
 
         //    set_config(cfg);
@@ -92,7 +92,8 @@ public:
             if(src->get_frame(frame)){
                 //  prt(info,"get a frame ");
                 for(DetectRegion *r:drs){
-                    r->work(frame);
+                    JsonPacket ret=r->work(frame);
+                    callback_result(this,ret.data());
                 }
             }
         }

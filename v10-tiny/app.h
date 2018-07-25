@@ -193,6 +193,7 @@ public:
         GET_CONFIG,
         SET_CONFIG
     };
+
     App(ConfigManager *p);
     void start()
     {
@@ -200,7 +201,7 @@ public:
 private:
     void process_client_cmd(Session *clt,char *data,int len);
     void client_data_request(Session *clt, char *data, int len);
-    void process_camera_data(Camera *clt,const char *data,int len);
+    void process_camera_data(Camera *clt,string);
     void restart_all()
     {
         stop_cams();
@@ -211,8 +212,7 @@ private:
         for(CameraData p:private_data.cameras){
             cms.push_back(new Camera(p,bind(&App::process_camera_data,
                                             this,placeholders::_1,
-                                            placeholders::_2,
-                                            placeholders::_3)));
+                                            placeholders::_2)));
         }
     }
     void stop_cams()
@@ -227,8 +227,7 @@ private:
         if(0<=index&&index<=cms.size()){
             Camera *c=new Camera(data,bind(&App::process_camera_data,
                                            this,placeholders::_1,
-                                           placeholders::_2,
-                                           placeholders::_3));
+                                           placeholders::_2));
             vector<Camera*>::iterator it=cms.begin();
             cms.insert(it+index,c);
             //  cms.insert(cms::iterator+index);
@@ -276,7 +275,7 @@ private:
             break;
         }
     }
-    bool process_event(VdEvent &&e)
+    bool process_event(VdEvent &e)
     {
         bool ret=false;
         switch(e.op){
@@ -285,7 +284,7 @@ private:
             prt(info,"get cmd %d",e.op);
             JsonPacket cfg=p_cm->get_config();
             JsonPacket p=e.config;
-            p.add("return",cfg);
+            p.add("ret",cfg);
             e=p;
             ret=true;
             break;

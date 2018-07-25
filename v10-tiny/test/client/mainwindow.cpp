@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "playerwidget.h"
+#include <thread>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -9,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget *w=new QWidget(this);
     connect(&searcher,SIGNAL(find_ip(QString)),this,SLOT(ip_found(QString)));
     connect(&clt,SIGNAL(server_msg(QString)),this,SLOT(server_msg(QString)));
+    std::thread td(bind(&MainWindow::recv_rst,this));
+    td.detach();
+
 }
 
 MainWindow::~MainWindow()
