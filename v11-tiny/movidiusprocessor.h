@@ -277,7 +277,7 @@ public:
 
     void process(Mat frame,vector <Rect> &rst)
     {
-        printf(" (%x)processing  request a frame \n",this);fflush(NULL);
+      //  printf(" (%x)processing  request a frame \n",this);fflush(NULL);
         frame_lock.lock();
 
         result.clear();
@@ -286,40 +286,41 @@ public:
         obj = p_cvt->toNDArray(frame);
 
         py_arg_t<PyObject*> test_arg(obj,"O");
-         printf("convert done "); ;fflush(NULL);
+       //  printf("convert done "); ;fflush(NULL);
         PyObject* rect_data;
         PyObject* ret_objs;
         py_arg_t<int> arg_w(frame.cols,"l");
         py_arg_t<int> arg_h(frame.rows,"l");
 
-        GILLock gil;
+     //   GILLock gil;
         rect_data= call_py("process1",pDict,test_arg,arg_w,arg_h);
-        printf("end call py\n"); ;fflush(NULL);
+      //  printf("end call py\n"); ;fflush(NULL);
         PyArg_Parse(rect_data, "O!", &PyList_Type, &ret_objs);
-        printf("---------parse done---------\n");;fflush(NULL);
-   GILLock gil1;
+      //  printf("---------parse done---------\n");;fflush(NULL);
+//   GILLock gil1;
    //PyEval_ReleaseLock();
         int size=PyList_Size(ret_objs);
-#if 0
+        prt(info,"sz %d",size);
+#if 1
         // GILLock gil1;
 
 
-        int size=PyList_Size(ret_objs);
+    //    int size=PyList_Size(ret_objs);
         //    int size=0;
         printf("-----------get object rects: %d-----------\n",size/4);;fflush(NULL);
-        printf("---------1---------\n");;fflush(NULL);
+  //      printf("---------1---------\n");;fflush(NULL);
 
         rst.clear();
         int i,j;
         for(i=0;i<size/4;i++){
             for(j=0;j<4;j++){
-                int t;
+          //      int t;
                 //PyArg_Parse(rect_data, "i", &PyList_Type, &ret_objs[i*4+j]);
                 //   PyArg_Parse(&ret_objs[i*4+j], "i", &t);
 
                 //   PyList_GetItem(ret_objs,i*4+j);
-                t=PyInt_AsLong(PyList_GetItem(ret_objs,i*4+j));
-                printf("%d,",t);
+            //    t=PyInt_AsLong(PyList_GetItem(ret_objs,i*4+j));
+             //   printf("%d,",t);
             }
 
             int x,y,w,h;
@@ -327,11 +328,11 @@ public:
             y=PyInt_AsLong(PyList_GetItem(ret_objs,i*4+1));
             w=PyInt_AsLong(PyList_GetItem(ret_objs,i*4+2));
             h=PyInt_AsLong(PyList_GetItem(ret_objs,i*4+3));
-            printf("-----\n");
+           // printf("-----\n");
             rst.push_back(Rect(x,y,w,h));
         }
-        printf("---------2---------\n");;fflush(NULL);
-        printf(" (%x)processing  3\n",this);fflush(NULL);
+     //   printf("---------2---------\n");;fflush(NULL);
+       // printf(" (%x)processing  3\n",this);fflush(NULL);
         /**************************以下加入需要调用的python脚本代码  End***********************/
 //            Py_UNBLOCK_THREADS;
 //            Py_END_ALLOW_THREADS;
@@ -356,6 +357,7 @@ public:
 private:
     MovidiusProcessor()
     {
+        printf("  mvnc processor \n");fflush(NULL);
 
            init();
 // init_thread_py();
@@ -432,12 +434,13 @@ private:
        // }
      //   init_thread_py();
         p_cvt=new NDArrayConverter();
-        printf("finding ...\n");
+        printf("finding1 ------------------->...\n");
 
         //          PyRun_SimpleString( "import sys");
         //          PyRun_SimpleString("sys.path.append('./')");
 
-        pName = PyString_FromString("movidius");
+        //pName = PyString_FromString("movidius");
+        pName = PyString_FromString("video_new_run");
 
 
         if(!pName){
@@ -460,7 +463,9 @@ private:
         }
         //  this_thread::sleep_for(chrono::microseconds(3000000));
         call_py("init",pDict);
-
+        printf("init done \n");fflush(NULL);
+//        while(1)
+//            ;
     }
 
     mutex frame_lock;

@@ -43,3 +43,9 @@ LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
 SOURCES += $$SRC_PATH/videosource.cpp
 
 LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video   -lpthread
+
+
+
+INCLUDEPATH+=/usr/include/python2.7
+LIBS+=  -lpython2.7
+QMAKE_CXXFLAGS+=-w

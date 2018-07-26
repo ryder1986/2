@@ -551,6 +551,16 @@ private:
         while(true){
           //   prt(info,"recving ..");
           ret= Socket::RecvDataByUdp(fd,buf,100);
+          string str(buf);
+          JsonPacket p(str);
+          int x=p.get("x").to_int();
+          int y=p.get("y").to_int();
+          int w=p.get("w").to_int();
+          int h=p.get("h").to_int();
+          QRect r(x,y,w,h);
+          for(PlayerWidget *p:players){
+              p->set_object_rect(r);
+          }
         //  QString str(buf);
         //  qDebug()<<str;
            //  prt(info,"get %s",str.toUtf8().data());

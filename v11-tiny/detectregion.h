@@ -3,7 +3,7 @@
 
 
 #include "jsonpacket.h"
-
+#include "pvdmvncprocessor.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -91,7 +91,8 @@ public:
     }
     DetectRegion(DetectRegionData pkt):VdData(pkt)
     {
-          p=new PvdC4Processor(pkt.data());
+        p=new PvdMvncProcessor();
+       //     p=new PvdC4Processor(pkt.data());
         for(VdPoint p:private_data.poly_vers)
         {
             prt(info,"(%d,%d) ",p.x,p.y);
@@ -101,15 +102,19 @@ public:
     {
         JsonPacket d;
         vector<Rect> rects1;
-        Rect detect_area1;
-        d.add("x",1+tmp++%200);
-        d.add("y",1+tmp++%200);
-        d.add("w",1+tmp++%200);
-        d.add("h",1+tmp++%200);
 
+        Rect detect_area1;
         p->process(frame,rects1,detect_area1);
         Rect r1=rects1[0];
-        prt(info,"%d",r1.x);
+        prt(info,"-----------> %d",r1.x);
+        d.add("x",r1.x);
+        d.add("y",r1.y);
+        d.add("w",r1.width);
+        d.add("h",r1.height);
+//        d.add("x",1+tmp++%200);
+//        d.add("y",1+tmp++%200);
+//        d.add("w",1+tmp++%200);
+//        d.add("h",1+tmp++%200);
         return d;
     }
     void change_detector(string name)

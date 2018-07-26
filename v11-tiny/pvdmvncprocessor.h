@@ -25,17 +25,19 @@ class PvdMvncProcessor : public VideoProcessor
     }arg_t;
     arg_t arg;
 public:
-    PvdMvncProcessor(DataPacket pkt):VideoProcessor(pkt)
+    PvdMvncProcessor()
     {
 
     }
 
     virtual bool process(Mat img_src,vector<Rect> &rects,Rect detect_area)
     {
-        prt(info,"processor %x .......",this);
+      //  prt(info,"processor %x .......",this);
         MovidiusProcessor &pro= MovidiusProcessor::get_instance();
-        cout<<img_src.cols<<endl;
+       // cout<<img_src.cols<<endl;
+        prt(info,"processing frame (%d %d)",img_src.cols,img_src.rows);
         pro.process(img_src,rects);
+        rects.push_back(Rect(555,222,333,444));
     }
 };
 

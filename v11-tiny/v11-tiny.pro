@@ -16,8 +16,8 @@ HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/i
 SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
 
 
-HEADERS +=  tool.h socket.h
-SOURCES +=  tool.cpp socket.cpp
+HEADERS +=  tool.h socket.h  conversion.h
+SOURCES +=  tool.cpp socket.cpp conversion.cpp
 #LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
 #LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
 #LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
@@ -35,3 +35,15 @@ INCLUDEPATH +=cppjson/include
 LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video     -lpthread
 
 HEADERS+=jsonpacket.h
+
+
+
+
+HEADERS+=pvdmvncprocessor.h
+SOURCES+=pvdmvncprocessor.cpp
+#INCLUDEPATH+=/usr/include/python3.5/
+#LIBS+=-L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5
+
+INCLUDEPATH+=/usr/include/python2.7
+LIBS+=  -lpython2.7
+QMAKE_CXXFLAGS+=-w

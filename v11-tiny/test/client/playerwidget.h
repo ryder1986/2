@@ -23,6 +23,7 @@ public:
 
     PlayerWidget(CameraData data)
     {
+        rects.clear();
         loop=0;
         ver_picked=false;
         cfg=data;
@@ -41,6 +42,12 @@ public:
     void set_show(bool flg)
     {
         show_info=flg;
+    }
+    void set_object_rect(QRect r)
+    {
+        lock.lock();
+        rects.append(r);
+        lock.unlock();
     }
 
     void  get_img()
@@ -92,7 +99,7 @@ protected:
     {
         lock.lock();
         QPainter painter(this);
-        QBrush blue_brush_trans(QColor(0,222,200,255));
+        QBrush blue_brush_trans(QColor(0,222,200,0));
         // blue_brush_trans.setStyle(Qt::BrushStyle);
         painter.setBrush(blue_brush_trans);
 
@@ -103,6 +110,12 @@ protected:
         QPainter img_painter(&img);
         QPoint p(100,100);
         img_painter.drawEllipse(p,10+loop++,10);
+
+        for(QRect r:rects){
+            img_painter.drawRect(r);
+        }
+        rects.clear();
+
         // cfg.detect_regions
         //img_painter.drawPolyline();
         cnt=0;
@@ -213,6 +226,7 @@ private:
     int selected_region_index;
     int selected_point_index;
     int cnt;
+    QList <QRect> rects;
 };
 
 #endif // PLAYERWIDGET_H
