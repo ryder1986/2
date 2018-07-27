@@ -13,14 +13,13 @@ INSTALLS+=install_files1
 #SOURCES += main.cpp  configmanager.cpp tool.cpp app.cpp server.cpp camera.cpp videosource.cpp \
 #    detectregion.cpp socket.cpp
 HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/include/json/value.h
-SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
-
-
 HEADERS +=  tool.h socket.h
-SOURCES +=  tool.cpp socket.cpp
-#LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
-#LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
-#LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
+
+#SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
+#SOURCES +=  tool.cpp socket.cpp
+LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
+LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
+LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
 
 HEADERS +=   c4common.h       c4processor.h videoprocessor.h
 SOURCES +=   c4common.cpp   c4processor.cpp videoprocessor.cpp
@@ -32,7 +31,7 @@ SOURCES += main.cpp  configmanager.cpp  app.cpp server.cpp camera.cpp videosourc
 INCLUDEPATH +=cppjson/include
 
 
-LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video -lopencv_videoio     -lpthread
+LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video      -lpthread
 
 HEADERS+=jsonpacket.h
 
