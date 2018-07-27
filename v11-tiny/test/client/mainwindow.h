@@ -44,6 +44,55 @@ public:
         }
         //    return rst.remove(0,Pvd::HEAD_LENGTH);//TODO:get the ret value;
     }
+    void set_config(QString data)
+    {
+         prt(info,"--before--->  %s",data.toStdString().data());
+        string str=data.toStdString().data();
+        prt(info,"--ater--->%s",str.data());
+
+        JsonPacket pkt;
+        pkt.add("op",App::OP::SET_CONFIG);
+     //   pkt.add("arg",str);
+        pkt.add("arg",str);
+
+
+
+//        QJsonObject obj;
+//        obj["op"]=App::OP::SET_CONFIG;
+////        string str=data.toStdString().data();
+////        JsonPacket pkt(str);
+////        AppData dt(pkt);
+//        obj["arg"]=QString(str.data()).toStdString();
+//                QJsonDocument doc(obj);
+
+
+//             QString data1=doc.toJson().toStdString().data();
+//               prt(info,"--before--->  %s",data1.toStdString().data());
+//           string str2=data1.toStdString().data();
+// prt(info,"--ater--->%s",str2.data());
+  //       prt(info,"real content %s",str2.data());
+        prt(info,"--sending--->%s",pkt.get("arg").to_string().data());
+
+            cout <<pkt.data().data()<< endl;
+
+        string s=pkt.data().data();
+        JsonPacket p(s);
+      //);
+     //   string s=pkt.value().asString();
+       //   string s1=pkt.data().data();
+        printf("--sending--->%s", p.data().data());
+
+         bool ret= send(pkt.data());//talk to server
+//        prt(info,"%s",doc.toJson().data());
+//        static char buf[2000];
+//        printf("%s",doc.toJson().data());
+//        sprintf(buf,"%s",doc.toJson().data());
+//         prt(info,"%s",buf);
+        if(!ret){
+            prt(info,"fail send");
+        }
+        //    return rst.remove(0,Pvd::HEAD_LENGTH);//TODO:get the ret value;
+    }
 #if 0
     void get_config()
     {
@@ -372,6 +421,27 @@ public:
         }
         return ret;
     }
+    bool send(const string ba)
+    {
+        emit send_done(QByteArray(ba.data()));
+        bool ret=false;
+        int write_bytes=0;
+        int len=ba.length();
+        write_bytes=tcp_socket->write(ba.data(),ba.length());
+        bool flush_ret=tcp_socket->flush();//TODO,not work for flush
+        if(flush_ret){
+            prt(info,"flush ok");
+        }else{
+            prt(info,"flush err");
+        }
+
+        if(write_bytes!=len){
+            prt(info,"send %d bytes in state %d , %d bytes left",write_bytes,tcp_socket->state(),len-write_bytes);
+        }else{
+            ret=true;
+        }
+        return ret;
+    }
     private:
     QString server_ip;
     QTcpSocket *tcp_socket;
@@ -604,6 +674,8 @@ private slots:
 
     void on_pushButton_stop_clicked();
 
+
+    void on_pushButton_setconfig_clicked();
 
 private:
     Ui::MainWindow *ui;

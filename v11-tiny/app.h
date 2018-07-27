@@ -260,6 +260,8 @@ private:
             break;
         case AppRequest::GET_CONFIG:
             req.ret=private_data.config;
+
+
             break;
         case AppRequest::ADD_CAMERA:
             //            CameraData data=req.data();
@@ -282,10 +284,22 @@ private:
         case App::OP::GET_CONFIG:
         {
             prt(info,"get cmd %d",e.op);
-            JsonPacket cfg=p_cm->get_config();
-            JsonPacket p=e.config;
-            p.add("ret",cfg);
-            e=p;
+            JsonPacket cfg=p_cm->get_config();//get config
+            VdEvent e1(e.op,e.index,e.arg,cfg);
+            prt(info,"####$$$$$$$$$$$$$$$$$$###sending----> %s",e1.ret.data().data());
+            e=e1;
+            ret=true;
+            break;
+        }
+        case App::OP::SET_CONFIG:
+        {
+            prt(info,"get cmd %d",e.op);
+            p_cm->set_config(e.arg.data());//get config
+            prt(info,"#######recving----> %s",e.arg.data().data());
+
+            AppData dt(p_cm->get_config());
+            this->private_data=AppData(dt);
+           // restart_all();
             ret=true;
             break;
         }

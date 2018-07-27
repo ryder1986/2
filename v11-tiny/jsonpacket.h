@@ -41,11 +41,20 @@ public:
     {
         val=v;
     }
+//    JsonPacket(const JsonPacket &v)
+//    {
+//        val=v.value();
+//    }
 public:
     string data()
     {
+#if 1
         FastWriter  w;
+           //     StyledWriter  w;
         return  w.write(val);
+#else
+        return val.asString();
+#endif
     }
 
     template <typename T>
@@ -318,10 +327,10 @@ class VdEvent:public JsonData
 public:
     int op;
     int index;
-    JsonPacket data;
+    JsonPacket arg;
     JsonPacket ret;
 
-    VdEvent(int op,int index , JsonPacket data):op(op),index(index),data(data)
+    VdEvent(int op,int index , JsonPacket data,JsonPacket rt=JsonPacket()):op(op),index(index),arg(data),ret(rt)
     {
         encode();
     }
@@ -349,15 +358,15 @@ public:
     {
         ENCODE_INT_MEM(index);
         ENCODE_INT_MEM(op);
-        config.set("data",data);
-        config.set("ret",ret);
+        config.add("arg",arg);
+        config.add("ret",ret);
 
     }
     void decode()
     {
         DECODE_INT_MEM(op);
         DECODE_INT_MEM(index);
-        data=config.get("data");
+        arg=config.get("arg");
         ret=config.get("ret");
     }
 

@@ -64,7 +64,11 @@ public:
 
 int main()
 {
-    cout << "Hello World!" << endl;
+       string json_str("\{\"str\"\:\"name\"\,\"point\"\:\{\"x\"\:5\,\"y\"\:6\}\}");
+
+
+    JsonPacket test_pkt(json_str);
+    cout <<test_pkt.data().data()<< endl;
     /*    string str("\{\"root\"\:1}");
     string ar("\[{\"a\"\:1}\,\{\"b\"\:2\}\]");
     JsonPacket array(ar);
