@@ -206,6 +206,32 @@ private:
     {
         stop_cams();
         start_cams();
+
+//        VideoSource *p1=new VideoSource("rtsp://192.168.1.216:8554/test1");
+//        this_thread::sleep_for(chrono::seconds(1));
+//           prt(info,"src deleteing..");
+//        delete p1;
+//               prt(info,"src deleted");
+
+//               VideoSource *p2=new VideoSource("rtsp://192.168.1.216:8554/test1");
+//               this_thread::sleep_for(chrono::seconds(1));
+//               delete p2;
+//                      prt(info,"src deleted");
+
+
+//                      VideoSource *p3=new VideoSource("rtsp://192.168.1.216:8554/test1");
+//                      this_thread::sleep_for(chrono::seconds(1));
+//                      delete p3;
+//                             prt(info,"src deleted");
+
+
+
+
+//        prt(info,"1");
+//        stop_cams();
+//         prt(info,"1");
+//      //  start_cams();
+//         prt(info,"1");
     }
     void start_cams()
     {

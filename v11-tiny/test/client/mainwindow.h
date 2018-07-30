@@ -620,16 +620,18 @@ private:
         for(PlayerWidget *w:players){
             ui->groupBox_video->layout()->removeWidget(w);
             w->hide();
+                delete w;
             //    delete w;
             //  w->hide();
 
         }
-        for(PlayerWidget *w:players){
-            delete w;
-            //    delete w;
-            //  w->hide();
+//        for(PlayerWidget *w:players){
+//            delete w;
+//            //    delete w;
+//            //  w->hide();
 
-        }
+//        }
+        players.clear();
 
     }
 
@@ -685,6 +687,7 @@ private slots:
         case App::OP::GET_CONFIG:
         {
             cfg=pkt.get("ret");
+            ui->lineEdit_getconfig->setText(cfg.data().data().data());
             prt(info,"stopping");
             stop_config();
             prt(info,"starting");

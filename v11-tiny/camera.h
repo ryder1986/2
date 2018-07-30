@@ -63,6 +63,10 @@ public:
     }
     Camera(CameraData cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
+//        quit=true;
+//        if(work_trd->joinable())
+//            work_trd->join();
+//        delete work_trd;
 
         //    set_config(cfg);
         for(DetectRegionData p:private_data.detect_regions){
@@ -79,9 +83,18 @@ public:
     }
     ~Camera()
     {
+
+        prt(info,"exiting %s",private_data.url.data());
+        quit=true;
+        if(work_trd->joinable())
+            work_trd->join();
+            prt(info,"exiting %s",private_data.url.data());
+        delete work_trd;
         for(DetectRegion *pro:drs)
             delete pro;
         drs.clear();
+            prt(info,"exited %s",private_data.url.data());
+        delete src;
     }
 
     void run_process()
@@ -103,14 +116,17 @@ public:
     {
         //   _start(bind(&TestProcess::run_process,this));
         //  _start(bind(&TestProcess::run_process,this,placeholders::_1),99);
-        _start_async(bind(&Camera::run_process,this));
+        //_start_async(bind(&Camera::run_process,this));
+
+        work_trd=new thread(bind(&Camera::run_process,this));
+
         prt(info,"start done ~~~~~~~~~~~~~~~");
     }
 
-    void stop()
-    {
-        quit=true;
-    }
+//    void stop()
+//    {
+//        quit=true;
+//    }
 
     void change_source(string url)
     {
@@ -129,6 +145,7 @@ private:
     vector<DetectRegion*> drs;
     VideoSource *src;
     bool quit;
+    thread *work_trd;
 };
 
 #endif // CAMERA_H

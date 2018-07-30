@@ -57,6 +57,7 @@ void MainWindow::on_pushButton_getconfig_clicked()
 
 void MainWindow::on_pushButton_start_clicked()
 {
+    stop_config();
     start_config();
 }
 

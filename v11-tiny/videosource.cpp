@@ -8,12 +8,22 @@ VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),f
     prt(info,"%s",path.data());
     url=path;
     quit_flg=false;
-    thread(bind(&VideoSource::run,this)).detach();
+  //  thread(bind(&VideoSource::run,this)).detach();
+    // _start_async(bind(&VideoSource::run,this));
+    src_trd=new thread(bind(&VideoSource::run,this));
 }
 VideoSource::~VideoSource()
 {
+       prt(info,"quiting video: %s", url.data());
+          quit_flg=true;
+    if(src_trd->joinable())
+        src_trd->join();
+       prt(info,"quiting video: %s", url.data());
+    delete src_trd;
     t1.stop();
-    quit_flg=true;
+        prt(info,"quiting video: %s", url.data());
+
+       //  this_thread::sleep_for(chrono::seconds(1));
     prt(info,"quit video: %s", url.data());
 }
 void VideoSource::run()

@@ -218,6 +218,7 @@ private:
     volatile bool quit_flg;
     Timer1 t1;
 
+   thread *src_trd;
 };
 
 #endif // VIDEOSOURCE_H
