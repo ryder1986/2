@@ -62,7 +62,7 @@ void MainWindow::on_pushButton_start_clicked()
 
 void MainWindow::on_pushButton_stop_clicked()
 {
-
+    stop_config();
 }
 
 void MainWindow::on_pushButton_setconfig_clicked()

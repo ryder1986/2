@@ -49,8 +49,9 @@ public:
     string data()
     {
 #if 1
+   //     FastWriter  w;
         FastWriter  w;
-           //     StyledWriter  w;
+             //     StyledWriter  w;
         return  w.write(val);
 #else
         return val.asString();

@@ -299,7 +299,7 @@ private:
 
             AppData dt(p_cm->get_config());
             this->private_data=AppData(dt);
-           // restart_all();
+            restart_all();
             ret=true;
             break;
         }

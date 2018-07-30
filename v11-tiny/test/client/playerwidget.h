@@ -18,7 +18,10 @@ public:
 
     ~PlayerWidget()
     {
-        delete src;
+        prt(info,"delete wgt");
+        tick_timer->stop();
+        delete tick_timer;
+     //   delete src;
     }
 
     PlayerWidget(CameraData data)
@@ -28,9 +31,9 @@ public:
         ver_picked=false;
         cfg=data;
         frame_rate=0;
-        QTimer *t=new QTimer();
-        connect(t,SIGNAL(timeout()),this,SLOT(timeout()));
-        t->start(100);
+        tick_timer=new QTimer();
+        connect(tick_timer,SIGNAL(timeout()),this,SLOT(timeout()));
+        tick_timer->start(100);
         src=new VideoSource(data.url);
     }
     void set_title(QString t)
@@ -227,6 +230,7 @@ private:
     int selected_point_index;
     int cnt;
     QList <QRect> rects;
+    QTimer *tick_timer;
 };
 
 #endif // PLAYERWIDGET_H

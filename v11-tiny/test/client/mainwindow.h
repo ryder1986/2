@@ -46,52 +46,54 @@ public:
     }
     void set_config(QString data)
     {
-         prt(info,"--before--->  %s",data.toStdString().data());
+        prt(info,"--before--->  %s",data.toStdString().data());
         string str=data.toStdString().data();
         prt(info,"--ater--->%s",str.data());
 
         JsonPacket pkt;
         pkt.add("op",App::OP::SET_CONFIG);
-     //   pkt.add("arg",str);
-        pkt.add("arg",str);
+        //  pkt.add("op","22222");
+        //   pkt.add("arg",str);
+        JsonPacket pkt_tmp(str);
+        pkt.add("arg",pkt_tmp.value());
 
 
 
-//        QJsonObject obj;
-//        obj["op"]=App::OP::SET_CONFIG;
-////        string str=data.toStdString().data();
-////        JsonPacket pkt(str);
-////        AppData dt(pkt);
-//        obj["arg"]=QString(str.data()).toStdString();
-//                QJsonDocument doc(obj);
+        //        QJsonObject obj;
+        //        obj["op"]=App::OP::SET_CONFIG;
+        ////        string str=data.toStdString().data();
+        ////        JsonPacket pkt(str);
+        ////        AppData dt(pkt);
+        //        obj["arg"]=QString(str.data()).toStdString();
+        //                QJsonDocument doc(obj);
 
 
-//             QString data1=doc.toJson().toStdString().data();
-//               prt(info,"--before--->  %s",data1.toStdString().data());
-//           string str2=data1.toStdString().data();
-// prt(info,"--ater--->%s",str2.data());
-  //       prt(info,"real content %s",str2.data());
-        prt(info,"--sending--->%s",pkt.get("arg").to_string().data());
+        //             QString data1=doc.toJson().toStdString().data();
+        //               prt(info,"--before--->  %s",data1.toStdString().data());
+        //           string str2=data1.toStdString().data();
+        // prt(info,"--ater--->%s",str2.data());
+        //       prt(info,"real content %s",str2.data());
+        //       prt(info,"--sending--->%s",pkt.get("arg").to_string().data());
 
-            cout <<pkt.data().data()<< endl;
+        cout <<pkt.data().data()<< endl;
 
-        string s=pkt.data().data();
-        JsonPacket p(s);
-      //);
-     //   string s=pkt.value().asString();
-       //   string s1=pkt.data().data();
-        printf("--sending--->%s", p.data().data());
-
-         bool ret= send(pkt.data());//talk to server
-//        prt(info,"%s",doc.toJson().data());
-//        static char buf[2000];
-//        printf("%s",doc.toJson().data());
-//        sprintf(buf,"%s",doc.toJson().data());
-//         prt(info,"%s",buf);
+        //      string s=pkt.data().data();
+        //     JsonPacket p(s);
+        //);
+        //   string s=pkt.value().asString();
+        //   string s1=pkt.data().data();
+        //   printf("--sending--->%s", p.data().data());
+        //
+        bool ret= send(pkt.data());//talk to server
+        //        prt(info,"%s",doc.toJson().data());
+        //        static char buf[2000];
+        //        printf("%s",doc.toJson().data());
+        //        sprintf(buf,"%s",doc.toJson().data());
+        //         prt(info,"%s",buf);
         if(!ret){
             prt(info,"fail send");
         }
-        //    return rst.remove(0,Pvd::HEAD_LENGTH);//TODO:get the ret value;
+        //       return rst.remove(0,Pvd::HEAD_LENGTH);//TODO:get the ret value;
     }
 #if 0
     void get_config()
@@ -442,7 +444,7 @@ public:
         }
         return ret;
     }
-    private:
+private:
     QString server_ip;
     QTcpSocket *tcp_socket;
     QDataStream in;
@@ -607,33 +609,51 @@ private:
             ui->groupBox_video->layout()->addWidget(*(players.end()-1));
 
 
-//                PlayerWidget *w=new PlayerWidget(cfg.cameras[0]);
-//                ui->groupBox_video->layout()->addWidget(w);
+            //                PlayerWidget *w=new PlayerWidget(cfg.cameras[0]);
+            //                ui->groupBox_video->layout()->addWidget(w);
+        }
+
+    }
+    void stop_config()
+    {
+        ui->comboBox_cameras->clear();
+        for(PlayerWidget *w:players){
+            ui->groupBox_video->layout()->removeWidget(w);
+            w->hide();
+            //    delete w;
+            //  w->hide();
+
+        }
+        for(PlayerWidget *w:players){
+            delete w;
+            //    delete w;
+            //  w->hide();
+
         }
 
     }
 
     void recv_rst()
     {
-       int fd= Socket::UdpCreateSocket(12349);
-       int ret;
-      static  char buf[1000];
+        int fd= Socket::UdpCreateSocket(12349);
+        int ret;
+        static  char buf[1000];
         while(true){
-          //   prt(info,"recving ..");
-          ret= Socket::RecvDataByUdp(fd,buf,100);
-          string str(buf);
-          JsonPacket p(str);
-          int x=p.get("x").to_int();
-          int y=p.get("y").to_int();
-          int w=p.get("w").to_int();
-          int h=p.get("h").to_int();
-          QRect r(x,y,w,h);
-          for(PlayerWidget *p:players){
-              p->set_object_rect(r);
-          }
-        //  QString str(buf);
-        //  qDebug()<<str;
-           //  prt(info,"get %s",str.toUtf8().data());
+            //   prt(info,"recving ..");
+            ret= Socket::RecvDataByUdp(fd,buf,100);
+            string str(buf);
+            JsonPacket p(str);
+            int x=p.get("x").to_int();
+            int y=p.get("y").to_int();
+            int w=p.get("w").to_int();
+            int h=p.get("h").to_int();
+            QRect r(x,y,w,h);
+            for(PlayerWidget *p:players){
+                p->set_object_rect(r);
+            }
+            //  QString str(buf);
+            //  qDebug()<<str;
+            //  prt(info,"get %s",str.toUtf8().data());
         }
     }
 private slots:
@@ -643,21 +663,50 @@ private slots:
     }
     void server_msg(QString msg)
     {
-        ui->plainTextEdit_recive->setPlainText(msg);
+        ui->plainTextEdit_recive->setPlainText(msg);//show what we got
+
+
+
+
         string str(msg.toUtf8());
         JsonPacket pkt(str);
-        if(pkt.get("op").to_int()==App::OP::GET_CONFIG){
-            cfg=pkt.get("ret");
-            ui->lineEdit_getconfig->setText(cfg.data().data().data());
-            start_config();
-          //  prt(info,"%d",cfg.server_port);
-        }
-        if(pkt.get("app_op").to_string()=="data"){
-            cfg=pkt.get("return");
 
+
+        //        if(pkt.get("op").to_int()==App::OP::GET_CONFIG){
+        //            cfg=pkt.get("ret");
+        //            ui->lineEdit_getconfig->setText(cfg.data().data().data());
+        //            start_config();
+        //            //  prt(info,"%d",cfg.server_port);
+        //        }
+
+        int op=pkt.get("op").to_int();
+
+        switch(op){
+        case App::OP::GET_CONFIG:
+        {
+            cfg=pkt.get("ret");
+            prt(info,"stopping");
+            stop_config();
+            prt(info,"starting");
             start_config();
-          //  prt(info,"%d",cfg.server_port);
+            prt(info,"start done");
+            break;
         }
+        default:break;
+
+        }
+
+
+
+
+
+
+        //        if(pkt.get("app_op").to_string()=="data"){
+        //            cfg=pkt.get("return");
+
+        //            start_config();
+        //            //  prt(info,"%d",cfg.server_port);
+        //        }
     }
     void on_pushButton_search_clicked();
 
