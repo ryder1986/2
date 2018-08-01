@@ -104,16 +104,19 @@ void App::process_camera_data(Camera *clt, string data)
     }
     int fd=Socket::UdpCreateSocket(5000);
 
+ //   app_pack_result(idx+1,data);
+
+
 
     prt(info,"%s",data.data());
     AppReslut rst(idx+1,JsonPacket(data));
 
-    JsonPacket p1;
-    JsonPacket p2(data);
-    p1.add("camera_data",p2.value());
-    p1.add("camera_index",idx+1);
-    //  prt(info,"length %d: %s ",data.length(),data.data());
-    Socket::UdpSendData(fd,"192.168.1.216",12349,p1.str().data(),p1.str().length());
+//    JsonPacket p1;
+//    JsonPacket p2(data);
+//    p1.add("camera_data",p2.value());
+//    p1.add("camera_index",idx+1);
+//    //  prt(info,"length %d: %s ",data.length(),data.data());
+//    Socket::UdpSendData(fd,"192.168.1.216",12349,p1.str().data(),p1.str().length());
     Socket::UdpSendData(fd,"192.168.1.216",12349,rst.data().str().data(),rst.data().str().length());
     close(fd);
 }

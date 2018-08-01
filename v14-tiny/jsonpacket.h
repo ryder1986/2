@@ -210,7 +210,7 @@ public:
         }
         return ar;
     }
-    JsonValue value()
+    JsonValue &value()
     {
 
 
