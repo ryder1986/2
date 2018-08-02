@@ -580,37 +580,61 @@ private:
         static  char buf[1000];
 
         while(true){
-            ret= Socket::RecvDataByUdp(fd,buf,100);
+            ret= Socket::RecvDataByUdp(fd,buf,1000);
             string str(buf);
             JsonPacket p(str);
             //prt(info,"recving %s",p.str().data());
             AppReslut rst(p);
             int cam_index=rst.camera_index;
             JsonPacket cam_data=rst.camera_data;
+            //            prt(info,"get %s(%s)",rst.config.str().data(),str.data());
+            //            prt(info,"geted %s",buf);
 
-            vector <JsonPacket> d_a=cam_data.to_array();
 
-            // prt(info,"index %d",cam_index);
-            if(cam_data.to_array().size()){
-                int x=d_a[0].get("x").to_int();
-                int y=d_a[0].get("y").to_int();
-                int w=d_a[0].get("w").to_int();
-                int h=d_a[0].get("h").to_int();
-                QRect r(x,y,w,h);
+            vector <JsonPacket>  regions=cam_data.to_array();
+            JsonPacket cam_data_region1=regions.front();
+            RegionRst rrst(cam_data_region1);
+            prt(info,"rst ok");
+            for(VdRect r:rrst.rects){
+                int x=r.x;
+                int y=r.y;
+                int w=r.w;
+                int h=r.h;
+                prt(info,"set %d",x);
+                QRect rc(x,y,w,h);
                 for(PlayerWidget *p:players){
-                    p->set_object_rect(r);
+                    p->set_object_rect(rc);
                 }
-
             }
+
+
+
+
+            //            vector <JsonPacket> d_a=cam_data.to_array();
+
+            //            // prt(info,"index %d",cam_index);
+            //            if(cam_data.to_array().size()){
+            //                int x=d_a[0].get("x").to_int();
+            //                int y=d_a[0].get("y").to_int();
+            //                int w=d_a[0].get("w").to_int();
+            //                int h=d_a[0].get("h").to_int();
+            //                QRect r(x,y,w,h);
+            //                for(PlayerWidget *p:players){
+            //                    p->set_object_rect(r);
+            //                }
+
+            //            }
         }
     }
 private slots:
     void generate_current_config(CameraData d,QWidget* w)
     {
-        int index= ui->gridLayout_video->layout()->indexOf(w);
+        //   int index= ui->gridLayout_video->indexOf(w);
+        int index= ui->groupBox_video->layout()->indexOf(w);
+        prt(info,"wgt index %d",index);
         cfg.replace_camera(d,index);
         //  ui->lineEdit_setconfig->setText(cfg.data().str().data());
-       // ui->lineEdit_setconfig->clear();
+        // ui->lineEdit_setconfig->clear();
         ui->lineEdit_setconfig->setText(cfg.data().str().data());
         //prt(info,"%d",d.detect_regions[0].poly_vers[0].x);
     }
@@ -625,7 +649,6 @@ private slots:
         string str(msg.toUtf8());
         JsonPacket pkt(str);
         int op=pkt.get("op").to_int();
-
         switch(op){
         case App::OP::GET_CONFIG:
         {
@@ -639,7 +662,6 @@ private slots:
             break;
         }
         default:break;
-
         }
     }
     void on_pushButton_search_clicked();
@@ -665,7 +687,6 @@ private:
     ServerInfoSearcher searcher;
     Client clt;
     AppData cfg;
-
     vector <PlayerWidget *> players;
 };
 

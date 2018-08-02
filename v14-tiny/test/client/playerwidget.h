@@ -78,8 +78,8 @@ public:
             pt.drawLine(p1,p2);
         }
 
-        QPoint p1(   QPoint(points.front().x,points.front().y));
-        QPoint p2( QPoint(points.back().x,points.back().y));
+        QPoint p1(QPoint(points.front().x,points.front().y));
+        QPoint p2(QPoint(points.back().x,points.back().y));
         pt.drawLine(p1,p2);
     }
     int match_point(const vector <VdPoint> points,QPoint p,int distance=20)
@@ -141,19 +141,24 @@ public slots:
     void mouseMoveEvent(QMouseEvent *e)
     {
         QPoint p1=map_point(e->pos());
-
+   prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
+       selected_region_index,selected_point_index,cfg.detect_regions.size());
         if(ver_picked){
-            prt(info,"drag (region %d,point %d )to (%d,%d)",selected_region_index,selected_point_index,e->pos().x(),e->pos().y());
-            if(selected_region_index>0&&selected_point_index>0){
+          //  prt(info,"drag (region %d,point %d )to (%d,%d)",selected_region_index,selected_point_index,e->pos().x(),e->pos().y());
+            if(selected_region_index>0&&selected_point_index>0&&\
+                    selected_region_index<=cfg.detect_regions.size()){
                 DetectRegionData r=cfg.detect_regions[selected_region_index-1];
                 VdPoint p(p1.x(),p1.y());
                 r.set_point(p,selected_point_index);
+
+                prt(info,"set %d",r.poly_vers[0].x);
+
                 cfg.set_region(r,selected_region_index);
                 //                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].x=p1.x();
                 //                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].y=p1.y();
 
             }
-            cfg.encode();
+           // cfg.encode();
         }
     }
     void mousePressEvent(QMouseEvent *e)

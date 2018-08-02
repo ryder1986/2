@@ -15,11 +15,11 @@ INSTALLS+=install_files1
 HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/include/json/value.h
 HEADERS +=  tool.h socket.h
 
-#SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
-#SOURCES +=  tool.cpp socket.cpp
-LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
-LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
-LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
+SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
+SOURCES +=  tool.cpp socket.cpp
+#LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
+#LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
+#LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
 
 HEADERS +=   c4common.h       c4processor.h videoprocessor.h
 SOURCES +=   c4common.cpp   c4processor.cpp videoprocessor.cpp
@@ -35,7 +35,8 @@ LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopen
 
 HEADERS+=jsonpacket.h
 
-
+QMAKE_LFLAGS+=-rdynamic
+QMAKE_CXXFLAGS +=-g
 
 
 #HEADERS+=pvdmvncprocessor.h

@@ -58,7 +58,11 @@ public:
         poly_vers[index-1]=p;
         encode();
     }
-
+    void operator =(DetectRegionData dt)
+    {
+        config=dt.config;
+        decode();
+    }
     void decode()
     {
         DECODE_INT_MEM(region_id);
@@ -70,6 +74,69 @@ public:
         ENCODE_INT_MEM(region_id);
         ENCODE_OBJ_ARRAY_MEM(poly_vers);
         ENCODE_STRING_MEM(detector_type);
+    }
+
+};
+class VdRect:public JsonData
+{
+
+public:
+    int x;
+    int y;
+    int w;
+    int h;
+    VdRect(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    VdRect(int x,int y,int w,int h):x(x),y(y),w(h),h(h)
+    {
+        encode();
+    }
+
+    void decode()
+    {
+        DECODE_INT_MEM(x);
+        DECODE_INT_MEM(y);
+        DECODE_INT_MEM(w);
+        DECODE_INT_MEM(h);
+
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(x);
+        ENCODE_INT_MEM(y);
+        ENCODE_INT_MEM(w);
+        ENCODE_INT_MEM(h);
+    }
+
+};
+class RegionRst:public JsonData
+{
+
+public:
+
+    vector <VdRect>rects;
+    RegionRst(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+
+    RegionRst(vector <VdRect>rcts )
+    {
+        for(VdRect v:rcts){
+            rects.push_back(v);
+        }
+        encode();
+    }
+    void decode()
+    {
+
+        DECODE_OBJ_ARRAY_MEM(rects);
+    }
+    void encode()
+    {
+        ENCODE_OBJ_ARRAY_MEM(rects);
     }
 
 };
@@ -103,20 +170,24 @@ public:
         Rect detect_area1;
         Mat tmp=frame(detect_rect);
         p->process(tmp,rects1,detect_area1);
+        vector <VdRect> rcs;
         for(Rect r:rects1){
+            rcs.push_back(VdRect(r.x,r.y,r.width,r.height));
 
         }
-        Rect r1=rects1[0];
-      //  prt(info,"-----------> %d",r1.x);
-        d.add("x",r1.x);
-        d.add("y",r1.y);
-        d.add("w",r1.width);
-        d.add("h",r1.height);
+        RegionRst rst(rcs);
+         prt(info,"get %s",rst.config.str().data());
+//        Rect r1=rects1[0];
+//        //  prt(info,"-----------> %d",r1.x);
+//        d.add("x",r1.x);
+//        d.add("y",r1.y);
+//        d.add("w",r1.width);
+//        d.add("h",r1.height);
         //        d.add("x",1+tmp++%200);
         //        d.add("y",1+tmp++%200);
         //        d.add("w",1+tmp++%200);
         //        d.add("h",1+tmp++%200);
-        return d;
+        return rst.config;
     }
     void change_detector(string name)
     {

@@ -12,7 +12,7 @@ class JsonPacket
 {
 
 public:
- typedef  Value JsonValue1;
+    typedef  Value JsonValue1;
     typedef  Value JsonValue;
     JsonPacket(string str)
     {
@@ -47,10 +47,10 @@ public:
     {
         val=v;
     }
-//    JsonPacket(const JsonPacket &v)
-//    {
-//        val=v.value();
-//    }
+    //    JsonPacket(const JsonPacket &v)
+    //    {
+    //        val=v.value();
+    //    }
 public:
     JsonValue obj()
     {
@@ -60,8 +60,8 @@ public:
     string str()
     {
 #if 1
-   //     FastWriter  w;
-          FastWriter  w;
+        //     FastWriter  w;
+        FastWriter  w;
         //   StyledWriter  w;
         return  w.write(val);
 #else
@@ -74,6 +74,7 @@ public:
     {
         if(!name_exist(name,"set")){
             prt(info,"setting key: %s fail",name.data());
+            //print_backstrace();
         }
         else
             val[name]=value;
@@ -85,6 +86,7 @@ public:
     {
         if(!name_exist(name,"set")){
             prt(info,"setting name: %s fail",name.data());
+            //print_backstrace();
         }
         else
             val[name]=p.val;
@@ -92,8 +94,11 @@ public:
 
     void set(string name,vector<JsonPacket> pkts)
     {
+        val[name].clear();
         if(!name_exist(name,"set")){
             prt(info,"setting name: %s fail",name.data());
+            //print_backstrace();
+
         }
         else
         {
@@ -103,12 +108,14 @@ public:
     }
     void add(string name,vector<JsonPacket> pkts)
     {
+        val[name].clear();
         if(!name_exist(name,"add")){
 
         }
         else
         {
-            prt(info,"setting name: %s fail",name.data());
+         //   prt(info,"adding exist name: %s ",name.data());
+            //print_backstrace();
         }
         for(JsonPacket p:pkts)
             val[name].append(p.value());
@@ -117,11 +124,11 @@ public:
     void add(string name,T value)
     {
         if(!name_exist(name,"add")){
-
+            val[name].clear();
         }
         else{
-
-            prt(info,"adding key: %s fail,already exist",name.data());
+         //   prt(info,"adding exist key: %s ,already exist",name.data());
+            //print_backstrace();
         }
         val[name]=value;
 
@@ -130,14 +137,14 @@ public:
         check_type(val[name]);
 #endif
     }
-//    void add(string name,JsonPacket p)
-//    {
-//        if(!name_exist(name,"add"))
-//            val[name]=p.val;
-//        else{
-//            prt(info,"adding key: %s fail,already exist",name.data());
-//        }
-//    }
+    //    void add(string name,JsonPacket p)
+    //    {
+    //        if(!name_exist(name,"add"))
+    //            val[name]=p.val;
+    //        else{
+    //            prt(info,"adding key: %s fail,already exist",name.data());
+    //        }
+    //    }
 
     JsonPacket get(string name)
     {
@@ -232,7 +239,7 @@ private:
         rst=v[name].isNull();
         if(rst&&(str=="get"||str=="set")){
             prt(info," key (%s) not exist",name.data());
-
+            print_backstrace();
         }
         return !rst;
     }
@@ -306,7 +313,7 @@ public:
 #define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
 //#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.str());}
 #define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.obj());}
-#define ENCODE_OBJ_ARRAY_MEM(mem) {mem.clear(); vector<JsonPacket> pkts;\
+#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
     config.add(#mem,pkts);}
 
@@ -354,22 +361,22 @@ public:
     {
         decode();
     }
-//    VdEvent(JsonPacket &&p):JsonData(p)
-//    {
-//        decode();
-//    }
-//    VdEvent(VdEvent &&e):JsonData(e.data)
-//    {
-//        decode();
-//    }
-//    VdEvent(VdEvent &e):JsonData(e.data)
-//    {
-//        decode();
-//    }
-//    void operator =(const VdEvent &e)
-//    {
-//          decode();
-//    }
+    //    VdEvent(JsonPacket &&p):JsonData(p)
+    //    {
+    //        decode();
+    //    }
+    //    VdEvent(VdEvent &&e):JsonData(e.data)
+    //    {
+    //        decode();
+    //    }
+    //    VdEvent(VdEvent &e):JsonData(e.data)
+    //    {
+    //        decode();
+    //    }
+    //    void operator =(const VdEvent &e)
+    //    {
+    //          decode();
+    //    }
     void encode()
     {
         ENCODE_INT_MEM(index);

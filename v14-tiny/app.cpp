@@ -96,6 +96,7 @@ void App::process_camera_data(Camera *clt, string data)
     }
     int fd=Socket::UdpCreateSocket(5000);
     AppReslut rst(idx+1,JsonPacket(data));
+      prt(info,"sending %s",rst.data().str().data());
     Socket::UdpSendData(fd,"192.168.1.216",12349,rst.data().str().data(),rst.data().str().length());
     close(fd);
 }

@@ -39,7 +39,7 @@ public:
             prt(info,"set new config on cam %d",index-1);
              prt(info," cams new size  %d", cameras.size());
         }else{
-            prt(info," cams size  %d,unchange", cameras.size());
+            prt(info," cams size  %d,unchange with index %d", cameras.size(),index);
         }
 
         encode();
