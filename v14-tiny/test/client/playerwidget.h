@@ -21,7 +21,7 @@ public:
         prt(info,"delete wgt");
         tick_timer->stop();
         delete tick_timer;
-     //   delete src;
+        //   delete src;
     }
 
     PlayerWidget(CameraData data)
@@ -106,8 +106,8 @@ protected:
         QPainter img_painter(&img);
         img_painter.setPen(blue_pen1());
 
-//        QPoint p(100,100);
-//        img_painter.drawEllipse(p,10+loop++,10);
+        //        QPoint p(100,100);
+        //        img_painter.drawEllipse(p,10+loop++,10);
 
         for(QRect r:rects){
             img_painter.drawRect(r);
@@ -145,9 +145,15 @@ public slots:
         if(ver_picked){
             prt(info,"drag (region %d,point %d )to (%d,%d)",selected_region_index,selected_point_index,e->pos().x(),e->pos().y());
             if(selected_region_index>0&&selected_point_index>0){
-                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].x=p1.x();
-                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].y=p1.y();
+                DetectRegionData r=cfg.detect_regions[selected_region_index-1];
+                VdPoint p(p1.x(),p1.y());
+                r.set_point(p,selected_point_index);
+                cfg.set_region(r,selected_region_index);
+                //                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].x=p1.x();
+                //                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].y=p1.y();
+
             }
+            cfg.encode();
         }
     }
     void mousePressEvent(QMouseEvent *e)
@@ -173,8 +179,12 @@ public slots:
     }
     void mouseReleaseEvent(QMouseEvent *e)
     {
+        if(ver_picked){
+            prt(info,"drag %d",cfg.detect_regions[0].poly_vers[0].x);
 
-        ver_picked=false;
+            emit cam_data_change(cfg,this);
+            ver_picked=false;
+        }
     }
 private:
     QPen blue_pen1()
@@ -210,6 +220,7 @@ private:
     //    }
 
 signals:
+    void cam_data_change(CameraData ,QWidget *w);
     void selected(PlayerWidget *w);
     void data_changed();
     void alg_changed(int index);

@@ -22,9 +22,27 @@ public:
     {
         decode();
     }
+    AppData(int port,vector<CameraData> d):server_port(port),cameras(d)
+    {
+        encode();
+    }
     AppData()
     {
 
+    }
+
+    void replace_camera(CameraData d,int index)
+    {
+        if(index>0&&index<=cameras.size()){
+             prt(info," cams  size  %d", cameras.size());
+            cameras[index-1]=d;
+            prt(info,"set new config on cam %d",index-1);
+             prt(info," cams new size  %d", cameras.size());
+        }else{
+            prt(info," cams size  %d,unchange", cameras.size());
+        }
+
+        encode();
     }
 
     void decode()

@@ -28,6 +28,10 @@ public:
     JsonPacket()
     {
     }
+    void clear()
+    {
+        val.clear();
+    }
 
     JsonPacket(vector<JsonPacket> ar)
     {
@@ -101,22 +105,25 @@ public:
     {
         if(!name_exist(name,"add")){
 
-            for(JsonPacket p:pkts)
-                val[name].append(p.value());
         }
         else
         {
             prt(info,"setting name: %s fail",name.data());
         }
+        for(JsonPacket p:pkts)
+            val[name].append(p.value());
     }
     template <typename T>
     void add(string name,T value)
     {
-        if(!name_exist(name,"add"))
-            val[name]=value;
+        if(!name_exist(name,"add")){
+
+        }
         else{
+
             prt(info,"adding key: %s fail,already exist",name.data());
         }
+        val[name]=value;
 
 
 #if 0
@@ -299,7 +306,7 @@ public:
 #define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
 //#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.str());}
 #define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.obj());}
-#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
+#define ENCODE_OBJ_ARRAY_MEM(mem) {mem.clear(); vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
     config.add(#mem,pkts);}
 

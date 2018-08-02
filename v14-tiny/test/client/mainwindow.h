@@ -524,20 +524,6 @@ public slots:
         // ip_list.append(ip);
         emit find_ip(ip);
     }
-
-    //    void get_reply()
-    //    {
-    //        //  while(udp_skt->hasPendingDatagrams())
-    //        if(udp_skt_find_server->hasPendingDatagrams())
-    //        {
-    //            datagram.resize((udp_skt_find_server->pendingDatagramSize()));
-    //            udp_skt_find_server->readDatagram(datagram.data(),datagram.size());
-    //            prt(info,"get server info : %s",datagram.data());
-    //            server_ip.append(datagram.split(',')[0]);
-    //            ip_list.append(server_ip);
-    //        }
-    //    }
-
 private :
     QUdpSocket *udp_skt_find_server;
 
@@ -562,17 +548,16 @@ public:
 private:
     void start_config()
     {
-
         for(CameraData d:cfg.cameras)
         {
             ui->comboBox_cameras->addItem(d.url.data());
-            players.push_back(new PlayerWidget(d));
+            PlayerWidget *player=new PlayerWidget(d);
 
-            ui->groupBox_video->layout()->addWidget(*(players.end()-1));
+            players.push_back(player);
 
-
-            //                PlayerWidget *w=new PlayerWidget(cfg.cameras[0]);
-            //                ui->groupBox_video->layout()->addWidget(w);
+            ui->groupBox_video->layout()->addWidget(player);
+            connect(player,SIGNAL(cam_data_change(CameraData,QWidget*)),\
+                    this,SLOT(generate_current_config(CameraData,QWidget*)));
         }
 
     }
@@ -583,16 +568,7 @@ private:
             ui->groupBox_video->layout()->removeWidget(w);
             w->hide();
             delete w;
-            //    delete w;
-            //  w->hide();
-
         }
-        //        for(PlayerWidget *w:players){
-        //            delete w;
-        //            //    delete w;
-        //            //  w->hide();
-
-        //        }
         players.clear();
 
     }
@@ -604,38 +580,41 @@ private:
         static  char buf[1000];
 
         while(true){
-
             ret= Socket::RecvDataByUdp(fd,buf,100);
             string str(buf);
             JsonPacket p(str);
+            //prt(info,"recving %s",p.str().data());
+            AppReslut rst(p);
+            int cam_index=rst.camera_index;
+            JsonPacket cam_data=rst.camera_data;
 
-//            prt(info,"recving ..");
-//            return;
-
-            prt(info,"recving %s",p.str().data());
-
-            int cam_index=p.get("camera_index").to_int();
-            JsonPacket cam_data=p.get("camera_data");
             vector <JsonPacket> d_a=cam_data.to_array();
 
-            prt(info,"index %d",cam_index);
+            // prt(info,"index %d",cam_index);
             if(cam_data.to_array().size()){
-            int x=d_a[0].get("x").to_int();
-            int y=d_a[0].get("y").to_int();
-            int w=d_a[0].get("w").to_int();
-            int h=d_a[0].get("h").to_int();
-            QRect r(x,y,w,h);
-            for(PlayerWidget *p:players){
-                p->set_object_rect(r);
-            }
+                int x=d_a[0].get("x").to_int();
+                int y=d_a[0].get("y").to_int();
+                int w=d_a[0].get("w").to_int();
+                int h=d_a[0].get("h").to_int();
+                QRect r(x,y,w,h);
+                for(PlayerWidget *p:players){
+                    p->set_object_rect(r);
+                }
 
             }
-            //  QString str(buf);
-            //  qDebug()<<str;
-            //  prt(info,"get %s",str.toUtf8().data());
         }
     }
 private slots:
+    void generate_current_config(CameraData d,QWidget* w)
+    {
+        int index= ui->gridLayout_video->layout()->indexOf(w);
+        cfg.replace_camera(d,index);
+        //  ui->lineEdit_setconfig->setText(cfg.data().str().data());
+       // ui->lineEdit_setconfig->clear();
+        ui->lineEdit_setconfig->setText(cfg.data().str().data());
+        //prt(info,"%d",d.detect_regions[0].poly_vers[0].x);
+    }
+
     void ip_found(QString ip)
     {
         ui->comboBox_search->addItem(ip);
@@ -643,21 +622,8 @@ private slots:
     void server_msg(QString msg)
     {
         ui->plainTextEdit_recive->setPlainText(msg);//show what we got
-
-
-
-
         string str(msg.toUtf8());
         JsonPacket pkt(str);
-
-
-        //        if(pkt.get("op").to_int()==App::OP::GET_CONFIG){
-        //            cfg=pkt.get("ret");
-        //            ui->lineEdit_getconfig->setText(cfg.data().data().data());
-        //            start_config();
-        //            //  prt(info,"%d",cfg.server_port);
-        //        }
-
         int op=pkt.get("op").to_int();
 
         switch(op){
@@ -675,18 +641,6 @@ private slots:
         default:break;
 
         }
-
-
-
-
-
-
-        //        if(pkt.get("app_op").to_string()=="data"){
-        //            cfg=pkt.get("return");
-
-        //            start_config();
-        //            //  prt(info,"%d",cfg.server_port);
-        //        }
     }
     void on_pushButton_search_clicked();
 

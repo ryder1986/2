@@ -53,7 +53,11 @@ public:
     {
         decode();
     }
-
+    void set_point(VdPoint p,int index)
+    {
+        poly_vers[index-1]=p;
+        encode();
+    }
 
     void decode()
     {
@@ -74,48 +78,44 @@ public:
 class DetectRegion : public VdData<DetectRegionData>
 {
     int tmp;
-   // PvdC4Processor
     VideoProcessor *p;
+    Rect detect_rect;
 public:
     enum OP{
         CHANGE_RECT
     };
-//    DetectRegion(JsonPacket pkt):VdData(pkt)
-//    {
 
-//       // p=new PvdC4Processor(pkt);
-//        p=new DummyProcessor();
-//    }
     DetectRegion(DetectRegionData pkt):VdData(pkt)
     {
-      //  p=new PvdMvncProcessor();
-         // p=new PvdC4Processor(pkt.data());
-             p=new DummyProcessor();
+        //  p=new PvdMvncProcessor();
+        // p=new PvdC4Processor(pkt.data());
+        p=new DummyProcessor();
         for(VdPoint p:private_data.poly_vers)
         {
             prt(info,"(%d,%d) ",p.x,p.y);
         }
+        detect_rect=reshape_2_rect(private_data.poly_vers);
     }
     JsonPacket work(Mat frame)
     {
         JsonPacket d;
         vector<Rect> rects1;
-
         Rect detect_area1;
-        p->process(frame,rects1,detect_area1);
+        Mat tmp=frame(detect_rect);
+        p->process(tmp,rects1,detect_area1);
         for(Rect r:rects1){
 
         }
         Rect r1=rects1[0];
-        prt(info,"-----------> %d",r1.x);
+      //  prt(info,"-----------> %d",r1.x);
         d.add("x",r1.x);
         d.add("y",r1.y);
         d.add("w",r1.width);
         d.add("h",r1.height);
-//        d.add("x",1+tmp++%200);
-//        d.add("y",1+tmp++%200);
-//        d.add("w",1+tmp++%200);
-//        d.add("h",1+tmp++%200);
+        //        d.add("x",1+tmp++%200);
+        //        d.add("y",1+tmp++%200);
+        //        d.add("w",1+tmp++%200);
+        //        d.add("h",1+tmp++%200);
         return d;
     }
     void change_detector(string name)
@@ -135,6 +135,28 @@ public:
     {
 
     }
+private:
+    Rect reshape_2_rect(vector <VdPoint> area)
+    {
+        int x_min=10000;
+        int y_min=10000;
+        int x_max=0;
+        int y_max=0;
+        for(VdPoint pkt: area) {
+            int x=pkt.x;
+            int y=pkt.y;
+            if(x<x_min)
+                x_min=x;
+            if(x>x_max)
+                x_max=x;
+            if(y<y_min)
+                y_min=y;
+            if(y>y_max)
+                y_max=y;
+        }
+        return Rect(x_min,y_min,x_max-x_min,y_max-y_min);
+    }
+
 };
 
 #endif // DETECTREGION_H

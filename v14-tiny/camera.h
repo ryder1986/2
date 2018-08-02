@@ -23,6 +23,16 @@ public:
     {
 
     }
+    void set_region(DetectRegionData data,int index)
+    {
+        detect_regions[index-1]=data;
+        encode();
+    }
+
+    void replace_point()
+    {
+
+    }
 
     void decode()
     {
@@ -31,6 +41,7 @@ public:
     }
     void encode()
     {
+        // detect_regions.clear();
         ENCODE_STRING_MEM(url);
         ENCODE_OBJ_ARRAY_MEM(detect_regions);
     }
@@ -63,37 +74,24 @@ public:
     }
     Camera(CameraData cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
-//        quit=true;
-//        if(work_trd->joinable())
-//            work_trd->join();
-//        delete work_trd;
-
-        //    set_config(cfg);
         for(DetectRegionData p:private_data.detect_regions){
             drs.push_back(new DetectRegion(p));
-            // if(GET_STRING_VALUE_FROM_PKT(selected_alg,p)=="pvd_c4")
-            //pros.push_back(new PvdC4Processor(p.get_pkt("pvd_c4")));
-            //  pros.push_back(new PvdC4Processor(p));
-            //        pros.push_back(new PvdMvncProcessor(p.get_pkt("pvd_c4")));
-            // pros.push_back(new PvdHogProcessor(p.get_pkt("pvd_c4")));
-
         }
         src=new VideoSource(private_data.url);
         start();
     }
     ~Camera()
     {
-
         prt(info,"exiting %s",private_data.url.data());
         quit=true;
         if(work_trd->joinable())
             work_trd->join();
-            prt(info,"exiting %s",private_data.url.data());
+        prt(info,"exiting %s",private_data.url.data());
         delete work_trd;
         for(DetectRegion *pro:drs)
             delete pro;
         drs.clear();
-            prt(info,"exited %s",private_data.url.data());
+        prt(info,"exited %s",private_data.url.data());
         delete src;
     }
 
@@ -115,7 +113,7 @@ public:
                 for(DetectRegion *r:drs){
                     JsonPacket ret=r->work(frame);
                     pkt.value().append(ret.value());
-                    prt(info,"get a rect ");
+                    //prt(info,"get a rect ");
                 }
                 callback_result(this,pkt.str());
             }
@@ -127,16 +125,9 @@ public:
         //   _start(bind(&TestProcess::run_process,this));
         //  _start(bind(&TestProcess::run_process,this,placeholders::_1),99);
         //_start_async(bind(&Camera::run_process,this));
-
         work_trd=new thread(bind(&Camera::run_process,this));
-
         prt(info,"start done ~~~~~~~~~~~~~~~");
     }
-
-//    void stop()
-//    {
-//        quit=true;
-//    }
 
     void change_source(string url)
     {
@@ -144,12 +135,11 @@ public:
             delete src;
         src=new VideoSource(url);
     }
+
     void modify_detect_region(JsonPacket pkt)
     {
         int index=pkt.get("index").to_int();
-     //   drs[index-1]->modify(pkt.get("data"));
     }
-
 
 private:
     vector<DetectRegion*> drs;

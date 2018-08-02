@@ -46,8 +46,6 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         JsonPacket data(valid_buf);
         VdEvent e(data);
         process_event(e);
-
-
 #if 0
 
         string cmd=data.get_string("cmd");
@@ -73,16 +71,10 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         }
 
 #else
-//        string op=data.get("app_op").to_string();
-//        if(op=="get config"){
-//            data.add("return",p_cm->get_config());
-//        }
         string ret=e.config.str();
         clt->send(ret.data(),ret.length());
 
 #endif
-
-
     }
 #endif
 }
@@ -97,26 +89,13 @@ void App::process_camera_data(Camera *clt, string data)
             break;
     }
     if(idx<cms.size()){
-        prt(info,"process camera %d",idx+1);
+        //prt(info,"process camera %d",idx+1);
     }else{
         prt(info,"process invalid camera index");
         return;
     }
     int fd=Socket::UdpCreateSocket(5000);
-
- //   app_pack_result(idx+1,data);
-
-
-
-    prt(info,"%s",data.data());
     AppReslut rst(idx+1,JsonPacket(data));
-
-//    JsonPacket p1;
-//    JsonPacket p2(data);
-//    p1.add("camera_data",p2.value());
-//    p1.add("camera_index",idx+1);
-//    //  prt(info,"length %d: %s ",data.length(),data.data());
-//    Socket::UdpSendData(fd,"192.168.1.216",12349,p1.str().data(),p1.str().length());
     Socket::UdpSendData(fd,"192.168.1.216",12349,rst.data().str().data(),rst.data().str().length());
     close(fd);
 }
