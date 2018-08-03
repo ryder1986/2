@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <execinfo.h>
 #include <iostream>
+#include <cxxabi.h>
+
 #define BT_BUF_SIZE 100
 void test1(void)
 {
@@ -54,6 +56,28 @@ string get_last_sub_string(string str,char t_start,char t_end)
     string dst= str.substr(str.size()-pos,pos-pos_end-1);
     return dst;
 }
+
+
+//#ifdef HAVE_CXA_DEMANGLE
+#if 1
+const char* demangle(const char* name)
+{
+    char buf[1024];
+    unsigned int size=1024;
+    int status;
+    char* res = abi::__cxa_demangle (name,
+                                     buf,
+                                     &size,
+                                     &status);
+    return res;
+}
+#else
+const char* demangle(const char* name)
+{
+    return name;
+}
+#endif
+#include <string.h>
 void print_backstrace(void)
 {
     int j, nptrs;
@@ -72,21 +96,56 @@ would produce similar output to the following: */
         exit(EXIT_FAILURE);
     }
     string str;
+    const   char   *realname;
     for (j = 0; j < nptrs; j++)
     {
-        //   printf("%s\n", strings[j]);
+
         str=string(strings[j]);
-    //    cout<<"\n";
-      cout<<str;
-        cout<<"\n";
-        //cout<<get_last_sub_string(str,'/');
-     //   cout<<get_last_sub_string(str,'(',')');
+        cout<<endl;
+        string sub=get_last_sub_string(str,'(',')');
+        realname=demangle(str.data());
+        if(realname)
+        {
+            string str(realname);
+         cout<<str.size()<<endl;
+        }
+        //if(strlen(realname)>3)
+          //  cout<<"realname:"<<realname<<endl;
     }
+    //    int     status;
+    // const   char   *realname;
+    //    for (j = 0; j < nptrs; j++)
+    //    {
+    //        //   printf("%s\n", strings[j]);
+    //        str=string(strings[j]);
+    //    //    cout<<"\n";
+    //      cout<<str;
+    //        cout<<"\n";
+    //        //cout<<get_last_sub_string(str,'/');
+    //       cout<<get_last_sub_string(str,'(',')');
+
+    //  const std::type_info  &ti = typeid(strings);
+    //  string s1=get_last_sub_string(str,'(','+');
+    //    cout<<"\n";
+    //   cout<<"s1:"<<s1;
+    //     cout<<"\n";
+    //  //   if(s1!="main"&&s1!="__libc_start_main"){
+    //         if(1){
+    //        //realname = abi::__cxa_demangle(s1.data(), 0, 0, &status);
+    //    realname=    demangle(s1.data());
+    //   cout<<"real:::";
+    //      // cout<<realname;
+    //        //   free(realname);
+    //               }
+    //       cout<<"\n";
+    //       fflush(NULL);
+    //    }
 
     free(strings);
 }
 int main()
 {
+
     //  test1();
     print_backstrace();
     //printf("11\n");
