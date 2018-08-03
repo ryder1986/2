@@ -422,7 +422,7 @@ public slots:
     void check_reply(    QUdpSocket *udp_skt_find_server) {
         QString str;
         str.clear();
-        int try_times=100;
+        int try_times=1000;
         while(try_times--){
             if(udp_skt_find_server->hasPendingDatagrams()){
                 datagram.resize((udp_skt_find_server->pendingDatagramSize()));
@@ -594,13 +594,13 @@ private:
             vector <JsonPacket>  regions=cam_data.to_array();
             JsonPacket cam_data_region1=regions.front();
             RegionRst rrst(cam_data_region1);
-            prt(info,"rst ok");
+           // prt(info,"rst ok");
             for(VdRect r:rrst.rects){
                 int x=r.x;
                 int y=r.y;
                 int w=r.w;
                 int h=r.h;
-                prt(info,"set %d",x);
+            //    prt(info,"set %d",x);
                 QRect rc(x,y,w,h);
                 for(PlayerWidget *p:players){
                     p->set_object_rect(rc);

@@ -1,20 +1,6 @@
 #include "app.h"
 #include "configmanager.h"
 #include "datapacket.h"
-//class AppOutput:public JsonData{
-//public:
-//    vector <CameraData> cameras;
-//    int server_port;
-//    AppData(DataPacket pkt):JsonData(pkt)
-//    {
-//        DECODE_INT_MEM(server_port);
-//        DECODE_OBJ_ARRAY_MEM(cameras);
-//    }
-//    AppData()
-//    {
-
-//    }
-//};
 App::App(ConfigManager *p_config_manager):str_stream(""),
     VdData(p_config_manager->get_config()),lservice(),p_cm(p_config_manager)
 {
@@ -34,8 +20,7 @@ App::App(ConfigManager *p_config_manager):str_stream(""),
 void App::process_client_cmd(Session *clt, char *data, int len)
 {
     str_stream.append(string(data,len));
-    prt(info,"string is %s",str_stream.data());
-    //get_config();
+    prt(debug,"string is %s",str_stream.data());
 #if 1
     string valid_buf;
     valid_buf.clear();
@@ -96,7 +81,7 @@ void App::process_camera_data(Camera *clt, string data)
     }
     int fd=Socket::UdpCreateSocket(5000);
     AppReslut rst(idx+1,JsonPacket(data));
-      prt(info,"sending %s",rst.data().str().data());
+   //   prt(info,"sending %s",rst.data().str().data());
     Socket::UdpSendData(fd,"192.168.1.216",12349,rst.data().str().data(),rst.data().str().length());
     close(fd);
 }

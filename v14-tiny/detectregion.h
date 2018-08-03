@@ -157,10 +157,10 @@ public:
         //  p=new PvdMvncProcessor();
         // p=new PvdC4Processor(pkt.data());
         p=new DummyProcessor();
-        for(VdPoint p:private_data.poly_vers)
-        {
-            prt(info,"(%d,%d) ",p.x,p.y);
-        }
+//        for(VdPoint p:private_data.poly_vers)
+//        {
+//            prt(info,"(%d,%d) ",p.x,p.y);
+//        }
         detect_rect=reshape_2_rect(private_data.poly_vers);
     }
     JsonPacket work(Mat frame)
@@ -172,11 +172,11 @@ public:
         p->process(tmp,rects1,detect_area1);
         vector <VdRect> rcs;
         for(Rect r:rects1){
-            rcs.push_back(VdRect(r.x,r.y,r.width,r.height));
+            rcs.push_back(VdRect(r.x+detect_rect.x,r.y+detect_rect.y,r.width,r.height));
 
         }
         RegionRst rst(rcs);
-         prt(info,"get %s",rst.config.str().data());
+     //    prt(info,"get %s",rst.config.str().data());
 //        Rect r1=rects1[0];
 //        //  prt(info,"-----------> %d",r1.x);
 //        d.add("x",r1.x);

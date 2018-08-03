@@ -29,9 +29,9 @@ public:
         loop+=3;
         if(loop>=img_src.cols)
             loop=0;
-        rects.push_back(Rect(loop,111,111,111));
-        rects.push_back(Rect(loop,222,111,111));
-        rects.push_back(Rect(loop,333,111,111));
+        rects.push_back(Rect(loop,11,33,33));
+        rects.push_back(Rect(loop,33,33,33));
+        rects.push_back(Rect(loop,55,33,33));
 
 
         ret=true;

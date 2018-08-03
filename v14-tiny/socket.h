@@ -91,7 +91,7 @@ public:
     {
         struct sockaddr user_addr;
         int leng=sizeof(struct sockaddr_in);// TODO:important
-        printf("geting broadcast ...");fflush(NULL);
+      // printf("geting broadcast ...");fflush(NULL);
         int rec_len= recvfrom(sock,buffer,len,0,(struct sockaddr *)&user_addr,(socklen_t *)&leng);
         if(rec_len>0){
             struct sockaddr_in *p=( struct sockaddr_in *)&user_addr;

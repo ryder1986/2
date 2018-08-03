@@ -50,13 +50,13 @@ void VideoSource::run()
             frame.release();
             bool rt= vcap.read(frame);
             if(!rt){
-                cout<<url.data()<<" get frame error!"<<endl;
+               // cout<<url.data()<<" get frame error!"<<endl;
                 prt(info,"get frame fail,restart video capture %s", url.data());
                 vcap.release();  vcap=   VideoCapture( url.data());
             }
             if(frame.cols==0){
                 vcap.release();
-                cout<<"get frame invalid"<<url.data();
+                //cout<<"get frame invalid"<<url.data();
                 prt(info,"%s get frame error,retrying ... ", url.data());
                 continue;
                 prt(info,"restarting %s      ", url.data());
