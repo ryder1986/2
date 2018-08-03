@@ -60,7 +60,7 @@ string get_last_sub_string(string str,char t_start,char t_end)
 
 //#ifdef HAVE_CXA_DEMANGLE
 #if 1
-const char* demangle(const char* name)
+char* demangle(const char* name)
 {
     char buf[1024];
     unsigned int size=1024;
@@ -78,6 +78,7 @@ const char* demangle(const char* name)
 }
 #endif
 #include <string.h>
+using namespace std;
 void print_backstrace(void)
 {
     int j, nptrs;
@@ -85,69 +86,65 @@ void print_backstrace(void)
     char **strings;
 
     nptrs = backtrace(buffer, BT_BUF_SIZE);
-    printf("backtrace() functions: %d\n", nptrs);
-
-    /* The call backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO)
-would produce similar output to the following: */
-
+    printf("@@@@@@@@@@@@@backtrace start(%d functions) \n", nptrs);
     strings = backtrace_symbols(buffer, nptrs);
     if (strings == NULL) {
         perror("backtrace_symbols");
         exit(EXIT_FAILURE);
     }
     string str;
-    const   char   *realname;
+    char   *realname;
     for (j = 0; j < nptrs; j++)
     {
-
         str=string(strings[j]);
-        cout<<endl;
-        string sub=get_last_sub_string(str,'(',')');
-        realname=demangle(str.data());
+        string sub=get_last_sub_string(str,'(','+');
+        realname=demangle(sub.data());
         if(realname)
-        {
-            string str(realname);
-         cout<<str.size()<<endl;
-        }
-        //if(strlen(realname)>3)
-          //  cout<<"realname:"<<realname<<endl;
+            cout<<realname<<endl;
     }
-    //    int     status;
-    // const   char   *realname;
-    //    for (j = 0; j < nptrs; j++)
-    //    {
-    //        //   printf("%s\n", strings[j]);
-    //        str=string(strings[j]);
-    //    //    cout<<"\n";
-    //      cout<<str;
-    //        cout<<"\n";
-    //        //cout<<get_last_sub_string(str,'/');
-    //       cout<<get_last_sub_string(str,'(',')');
 
-    //  const std::type_info  &ti = typeid(strings);
-    //  string s1=get_last_sub_string(str,'(','+');
-    //    cout<<"\n";
-    //   cout<<"s1:"<<s1;
-    //     cout<<"\n";
-    //  //   if(s1!="main"&&s1!="__libc_start_main"){
-    //         if(1){
-    //        //realname = abi::__cxa_demangle(s1.data(), 0, 0, &status);
-    //    realname=    demangle(s1.data());
-    //   cout<<"real:::";
-    //      // cout<<realname;
-    //        //   free(realname);
-    //               }
-    //       cout<<"\n";
-    //       fflush(NULL);
-    //    }
 
     free(strings);
+    cout<<"@@@@@@@@@@@@@backtrace end "<<endl;
 }
+
+
+void test11()
+{
+    print_backstrace();
+}
+void test2()
+{
+    test11();
+}
+void test3()
+{
+    test2();
+}
+void test4()
+{
+    test3();
+}
+class SSS{
+public:
+    SSS()
+    {
+
+    }
+    void fun()
+    {
+        test4();
+
+    }
+};
+
 int main()
 {
-
+  //  test4();
+SSS sss;
+sss.fun();
     //  test1();
-    print_backstrace();
+    //    print_backstrace();
     //printf("11\n");
     return 0;
 }

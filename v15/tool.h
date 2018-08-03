@@ -15,6 +15,7 @@
 
 //#include <ifaddrs.h>
 #include "tool.h"
+
 using namespace std;
 
 #ifdef IS_WIN
@@ -24,7 +25,8 @@ using namespace std;
 
 #include <execinfo.h>
 #define BT_BUF_SIZE 100
-
+#include <execinfo.h>
+#include <cxxabi.h>
 inline string get_last_sub_string(string str,char t)
 {
     unsigned int pos;
@@ -50,6 +52,29 @@ inline string get_last_sub_string(string str,char t_start,char t_end)
     string dst= str.substr(str.size()-pos,pos-pos_end-1);
     return dst;
 }
+
+
+//#ifdef HAVE_CXA_DEMANGLE
+#if 1
+inline char* demangle(const char* name)
+{
+    char buf[1024];
+    unsigned int size=1024;
+    int status;
+    char* res = abi::__cxa_demangle (name,
+                                     buf,
+                                     &size,
+                                     &status);
+    return res;
+}
+#else
+const char* demangle(const char* name)
+{
+    return name;
+}
+#endif
+#include <string.h>
+using namespace std;
 inline void print_backstrace(void)
 {
     int j, nptrs;
@@ -57,30 +82,84 @@ inline void print_backstrace(void)
     char **strings;
 
     nptrs = backtrace(buffer, BT_BUF_SIZE);
-    printf("backtrace() functions: %d\n", nptrs);
-
-    /* The call backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO)
-would produce similar output to the following: */
-
+    printf("@@@@@@@@@@@@@backtrace start(%d functions) \n", nptrs);
     strings = backtrace_symbols(buffer, nptrs);
     if (strings == NULL) {
         perror("backtrace_symbols");
         exit(EXIT_FAILURE);
     }
     string str;
+    char   *realname;
     for (j = 0; j < nptrs; j++)
     {
-        //   printf("%s\n", strings[j]);
         str=string(strings[j]);
-    //    cout<<"\n";
-      // cout<<str;
-        cout<<"\n";
-        //cout<<get_last_sub_string(str,'/');
-        cout<<get_last_sub_string(str,'(',')');
+        string sub=get_last_sub_string(str,'(','+');
+        realname=demangle(sub.data());
+        if(realname)
+            cout<<realname<<endl;
     }
 
+
     free(strings);
+    cout<<"@@@@@@@@@@@@@backtrace end "<<endl;
 }
+
+//inline string get_last_sub_string(string str,char t)
+//{
+//    unsigned int pos;
+//    for(pos=0;pos<str.size();pos++){
+//        if(str[str.size()-pos-1]==t)
+//            break;
+//    }
+//    string dst= str.substr(str.size()-pos,pos);
+//    return dst;
+//}
+//inline string get_last_sub_string(string str,char t_start,char t_end)
+//{
+//    unsigned int pos;
+//    for(pos=0;pos<str.size();pos++){
+//        if(str[str.size()-pos-1]==t_start)
+//            break;
+//    }
+//    unsigned int pos_end;
+//    for(pos_end=0;pos_end<str.size();pos_end++){
+//        if(str[str.size()-pos_end-1]==t_end)
+//            break;
+//    }
+//    string dst= str.substr(str.size()-pos,pos-pos_end-1);
+//    return dst;
+//}
+//inline void print_backstrace(void)
+//{
+//    int j, nptrs;
+//    void *buffer[BT_BUF_SIZE];
+//    char **strings;
+
+//    nptrs = backtrace(buffer, BT_BUF_SIZE);
+//    printf("backtrace() functions: %d\n", nptrs);
+
+//    /* The call backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO)
+//would produce similar output to the following: */
+
+//    strings = backtrace_symbols(buffer, nptrs);
+//    if (strings == NULL) {
+//        perror("backtrace_symbols");
+//        exit(EXIT_FAILURE);
+//    }
+//    string str;
+//    for (j = 0; j < nptrs; j++)
+//    {
+//        //   printf("%s\n", strings[j]);
+//        str=string(strings[j]);
+//    //    cout<<"\n";
+//      // cout<<str;
+//        cout<<"\n";
+//        //cout<<get_last_sub_string(str,'/');
+//        cout<<get_last_sub_string(str,'(',')');
+//    }
+
+//    free(strings);
+//}
 #endif
 using namespace std;
 
