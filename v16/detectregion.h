@@ -53,6 +53,11 @@ public:
     {
         decode();
     }
+    DetectRegionData(int id,string type,vector<VdPoint> vers):region_id(id),detector_type(type),poly_vers(vers)
+    {
+        encode();
+    }
+
     void set_point(VdPoint p,int index)
     {
         poly_vers[index-1]=p;

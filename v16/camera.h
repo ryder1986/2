@@ -23,6 +23,11 @@ public:
     {
 
     }
+    CameraData(vector <DetectRegionData> regions,string url):detect_regions(regions),url(url)
+    {
+        encode();
+    }
+
     void set_region(DetectRegionData data,int index)
     {
         detect_regions[index-1]=data;

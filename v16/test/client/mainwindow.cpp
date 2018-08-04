@@ -73,5 +73,5 @@ void MainWindow::on_pushButton_setconfig_clicked()
 
 void MainWindow::on_pushButton_addcam_clicked()
 {
-
+    clt.add_camera("");
 }

@@ -31,26 +31,42 @@ public:
     }
     void get_config()
     {
-        QJsonObject obj;
-        obj["op"]=App::OP::GET_CONFIG;
-        QJsonDocument doc(obj);
-
-        bool ret= send(doc.toJson());//talk to server
-        prt(info,"%s",doc.toJson().data());
+        VdEvent e(App::OP::GET_CONFIG,0,JsonPacket());
+        bool ret= send(e.data().str());//talk to server
         if(!ret){
             prt(info,"fail send");
         }
-        //    return rst.remove(0,Pvd::HEAD_LENGTH);//TODO:get the ret value;
     }
     void set_config(QString data)
     {
         string str=data.toStdString().data();
-        JsonPacket pkt;
-        pkt.add("op",App::OP::SET_CONFIG);
         JsonPacket pkt_tmp(str);
-        pkt.add("arg",pkt_tmp.value());
-        cout <<pkt.str().data()<< endl;
-        bool ret= send(pkt.str());//talk to server
+        VdEvent e(App::OP::SET_CONFIG,0,pkt_tmp);
+        bool ret= send(e.data().str());//talk to server
+        if(!ret){
+            prt(info,"fail send");
+        }
+    }
+    void add_camera(QString data)
+    {
+        string url=data.toStdString().data();
+        VdPoint p1(100,100);
+        VdPoint p2(200,100);
+        VdPoint p3(200,200);
+        VdPoint p4(100,200);
+        vector <VdPoint>ps;
+        ps.push_back(p1);
+        ps.push_back(p2);
+        ps.push_back(p3);
+        ps.push_back(p4);
+
+        DetectRegionData d(3,"dummy",ps);
+        vector<DetectRegionData> v;
+        v.push_back(d);
+        CameraData cd(v,"rtsp://192.168.1.216:8554/test1");
+
+        VdEvent e(App::OP::ADD_CAMERA,1,cd.data().str());
+        bool ret= send(e.data().str());//talk to server
         if(!ret){
             prt(info,"fail send");
         }

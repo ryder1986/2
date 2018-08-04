@@ -44,7 +44,19 @@ public:
 
         encode();
     }
+    void insert_camera(CameraData d,int index)
+    {
+        if(index>0&&index<=cameras.size()){
+             prt(info," cams  size  %d", cameras.size());
+             vector <CameraData>::iterator it=cameras.begin();
+             cameras.insert(it+index,d);
+             prt(info," cams new size  %d", cameras.size());
+        }else{
+            prt(info," cams size  %d,unchange with index %d", cameras.size(),index);
+        }
 
+        encode();
+    }
     void decode()
     {
         DECODE_INT_MEM(server_port);
@@ -299,7 +311,7 @@ private:
                                            placeholders::_2));
             vector<Camera*>::iterator it=cms.begin();
             cms.insert(it+index,c);
-            //  cms.insert(cms::iterator+index);
+            private_data.insert_camera(CameraData(data),index);
         }
     }
     void del_camera(int index)//delete who ? 1~size
@@ -316,43 +328,44 @@ private:
             //cms[index-1].modify_camera(pkt);
         }
     }
-    bool process_request(AppReq &req)
-    {
-        switch (req.request) {
-        case AppRequest::SET_CONFIG:
-        {
-            AppData data=req.data();
-            p_cm->set_config(data.data().str());
-            private_data=data;
-            restart_all();
-        }
-            break;
-        case AppRequest::GET_CONFIG:
-            req.ret=private_data.config;
+//    bool process_request(AppReq &req)
+//    {
+//        switch (req.request) {
+//        case AppRequest::SET_CONFIG:
+//        {
+//            AppData data=req.data();
+//            p_cm->set_config(data.data().str());
+//            private_data=data;
+//            restart_all();
+//        }
+//            break;
+//        case AppRequest::GET_CONFIG:
+//            req.ret=private_data.config;
 
 
-            break;
-        case AppRequest::ADD_CAMERA:
-            //            CameraData data=req.data();
-            //            int index=req.index;
-            //add_camera(index,data);
-            break;
-        case AppRequest::MOD_CAMERA:
-            //            JsonPacket data=req.data();
-            //            int index=req.index;
-            //            modi
-            break;
-        default:
-            break;
-        }
-    }
+//            break;
+//        case AppRequest::ADD_CAMERA:
+//            //            CameraData data=req.data();
+//            //            int index=req.index;
+//            //add_camera(index,data);
+//            break;
+//        case AppRequest::MOD_CAMERA:
+//            //            JsonPacket data=req.data();
+//            //            int index=req.index;
+//            //            modi
+//            break;
+//        default:
+//            break;
+//        }
+//    }
     bool process_event(VdEvent &e)
     {
         bool ret=false;
+        prt(info,"get cmd %d",e.op);
         switch(e.op){
         case App::OP::GET_CONFIG:
         {
-            prt(info,"get cmd %d",e.op);
+
             JsonPacket cfg=p_cm->get_config();//get config
             VdEvent e1(e.op,e.index,e.arg,cfg);
             prt(info,"####$$$$$$$$$$$$$$$$$$###sending----> %s",e1.ret.str().data());
@@ -362,13 +375,23 @@ private:
         }
         case App::OP::SET_CONFIG:
         {
-            prt(info,"get cmd %d",e.op);
+
             p_cm->set_config(e.arg.str());//get config
             prt(info,"#######recving----> %s",e.arg.str().data());
 
             AppData dt(p_cm->get_config());
             this->private_data=AppData(dt);
             restart_all();
+            ret=true;
+            break;
+        }
+        case App::OP::ADD_CAMERA:
+        {
+
+            add_camera(e.index,e.arg);
+            //vector<Camera*>::iterator it;
+           // this->private_data.cameras.insert(it+index,e.data());
+            p_cm->set_config(private_data.data().str());//get config
             ret=true;
             break;
         }
