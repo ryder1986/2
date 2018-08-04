@@ -70,3 +70,8 @@ void MainWindow::on_pushButton_setconfig_clicked()
 {
     clt.set_config(ui->lineEdit_setconfig->text());
 }
+
+void MainWindow::on_pushButton_addcam_clicked()
+{
+
+}

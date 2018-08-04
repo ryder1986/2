@@ -44,9 +44,7 @@ public:
     }
     void set_config(QString data)
     {
-        prt(info,"--before--->  %s",data.toStdString().data());
         string str=data.toStdString().data();
-        prt(info,"--ater--->%s",str.data());
         JsonPacket pkt;
         pkt.add("op",App::OP::SET_CONFIG);
         JsonPacket pkt_tmp(str);
@@ -681,6 +679,8 @@ private slots:
 
 
     void on_pushButton_setconfig_clicked();
+
+    void on_pushButton_addcam_clicked();
 
 private:
     Ui::MainWindow *ui;
