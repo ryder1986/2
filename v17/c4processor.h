@@ -106,9 +106,9 @@ public:
             ret=true;
         }else
             ret=false;
-        rects.clear();
+      //  rects.clear();
         rects=r.rects;
-        rects.push_back(Rect(111,222,333,444));
+      //  rects.push_back(Rect(111,222,333,444));
         return  ret;
     }
 private:
