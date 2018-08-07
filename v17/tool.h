@@ -1,5 +1,5 @@
-#ifndef TOOL1_H
-#define TOOL1_H
+#ifndef TOOL_H
+#define TOOL_H
 
 #include <iostream>
 #include <cstdio>
@@ -14,7 +14,7 @@
 #include <iterator>
 
 //#include <ifaddrs.h>
-#include "tool.h"
+//#include "tool.h"
 
 using namespace std;
 

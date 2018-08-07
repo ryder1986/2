@@ -164,6 +164,124 @@ private:
     m_codec_common codec_info;
 };
 #endif
+class PdVideoCapture{
+public:
+    PdVideoCapture(string url):url(url)
+    {
+        init_input();
+        init_decoder();
+    }
+    ~PdVideoCapture()
+    {
+
+    }
+    bool read(Mat &frame)
+    {
+        Mat YUVImage, BGRImage;
+        int size=640*480;
+        av_init_packet(&av_pkt);
+        if ((av_read_frame(fmt, &av_pkt) < 0)) {
+            prt(info,"read frm fail");
+            return false;
+        }
+        if(decode()){
+            prt(info,"decode a frame");
+            YUVImage.create(640 * 3 / 2, 480, CV_8UC1);
+            memcpy(YUVImage.data, buf_y, size);
+            memcpy(YUVImage.data + size/4, buf_u, size /4);
+            memcpy(YUVImage.data + size/4 + size /4, buf_v, size / 4);
+            cvtColor(YUVImage, BGRImage, CV_YUV2BGR_I420);
+            imshow("123",BGRImage);
+            waitKey(10);
+        }else{
+            prt(info,"decode a fail");
+        }
+    }
+    bool isOpened()
+    {
+        return false;
+    }
+    void release()
+    {
+        release_input();
+        release_decoder();
+    }
+
+private:
+    bool init_input()
+    {
+        bool ret=true;
+        av_register_all();
+        fmt = avformat_alloc_context();
+        if(avformat_open_input(&fmt, url.data(), NULL, 0) != 0) {
+            ret=false;
+        } else if (avformat_find_stream_info(fmt, NULL) < 0) {
+            ret=false;
+        }
+        return ret;
+    }
+    bool init_decoder()
+    {
+        bool ret=false;
+        codec = avcodec_find_decoder(CODEC_ID_H264);
+        codec_ctx = avcodec_alloc_context3(codec);
+        if (avcodec_open2(codec_ctx, codec, NULL) >= 0){
+            avframe= avcodec_alloc_frame();
+            ret=true;
+        }
+        else {
+            prt(info,"fail to open decoder");
+        }
+        return ret;
+    }
+    void release_decoder()
+    {
+        av_free(avframe);
+        avcodec_close(codec_ctx);
+    }
+    void release_input()
+    {
+        avformat_close_input(&fmt);
+    }
+
+    bool decode()
+    {
+        int got_picture = 0;
+        int len = 0;
+
+        while (av_pkt.size > 0) {
+            len = avcodec_decode_video2(codec_ctx, avframe, &got_picture, &av_pkt);
+            if (len < 0) {
+                return false;
+            }
+            if (got_picture)
+            {
+                buf_y = (unsigned char *) avframe->data[0];
+                buf_u = (unsigned char *) avframe->data[1];
+                buf_v = (unsigned char *) avframe->data[2];
+
+                prt(info,"%d  (%d )",av_pkt.size,avframe->width);
+
+                return true;
+
+            }
+            av_pkt.size -= len;
+            av_pkt.data += len;
+        }
+        return false;
+    }
+public:
+    AVCodec *codec;
+    AVCodecContext *codec_ctx;
+    AVFrame *avframe;
+    AVFormatContext *fmt;
+    AVPacket av_pkt;
+    bool opened;
+    string url;
+    unsigned char *buf_y;
+    unsigned char *buf_u;
+    unsigned char *buf_v;
+};
 class VideoSource
 {
 public:
@@ -204,10 +322,8 @@ private:
     {
         if(vcap.isOpened()){
             double w= vcap.get(CV_CAP_PROP_POS_FRAMES);
-      //      prt(info,"%s src frames %lf",url.data(),w);
         }
     }
-
 private:
     VideoCapture vcap;
     list <Mat> frame_list;
@@ -218,7 +334,7 @@ private:
     volatile bool quit_flg;
     Timer1 t1;
 
-   thread *src_trd;
+    thread *src_trd;
 };
 
 #endif // VIDEOSOURCE_H
