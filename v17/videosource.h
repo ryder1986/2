@@ -178,7 +178,9 @@ public:
     bool read(Mat &frame)
     {
         Mat YUVImage, BGRImage;
-        int size=640*480;
+        int w=640;
+        int h=480;
+        int size=w*h;
         av_init_packet(&av_pkt);
         if ((av_read_frame(fmt, &av_pkt) < 0)) {
             prt(info,"read frm fail");
@@ -186,12 +188,12 @@ public:
         }
         if(decode()){
             prt(info,"decode a frame");
-            YUVImage.create(640 * 3 / 2, 480, CV_8UC1);
+            YUVImage.create(w *3/2, h, CV_8UC1);
             memcpy(YUVImage.data, buf_y, size);
-            memcpy(YUVImage.data + size/4, buf_u, size /4);
-            memcpy(YUVImage.data + size/4 + size /4, buf_v, size / 4);
+            memcpy(YUVImage.data + size, buf_u, size /4);
+            memcpy(YUVImage.data + size + size /4, buf_v, size / 4);
             cvtColor(YUVImage, BGRImage, CV_YUV2BGR_I420);
-            imshow("123",BGRImage);
+            imshow("123",YUVImage);
             waitKey(10);
         }else{
             prt(info,"decode a fail");
