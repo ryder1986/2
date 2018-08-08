@@ -168,6 +168,8 @@ class PdVideoCapture{
 public:
     PdVideoCapture(string url):url(url)
     {
+        width=0;
+        height=0;
         init_input();
         init_decoder();
     }
@@ -175,25 +177,24 @@ public:
     {
 
     }
-    bool read(Mat &frame)
+    bool read(Mat &BGRImage)
     {
-        Mat YUVImage, BGRImage;
-        int w=640;
-        int h=480;
-        int size=w*h;
+        Mat YUVImage;
+        int size;
+        size=width*height;
         av_init_packet(&av_pkt);
         if ((av_read_frame(fmt, &av_pkt) < 0)) {
             prt(info,"read frm fail");
             return false;
         }
         if(decode()){
-            prt(info,"decode a frame");
-            YUVImage.create(w *3/2, h, CV_8UC1);
+           // prt(info,"decode a frame");
+            YUVImage.create(width*3/2, height, CV_8UC1);
             memcpy(YUVImage.data, buf_y, size);
             memcpy(YUVImage.data + size, buf_u, size /4);
             memcpy(YUVImage.data + size + size /4, buf_v, size / 4);
             cvtColor(YUVImage, BGRImage, CV_YUV2BGR_I420);
-            imshow("123",YUVImage);
+            imshow("123",BGRImage);
             waitKey(10);
         }else{
             prt(info,"decode a fail");
@@ -261,8 +262,10 @@ private:
                 buf_y = (unsigned char *) avframe->data[0];
                 buf_u = (unsigned char *) avframe->data[1];
                 buf_v = (unsigned char *) avframe->data[2];
+                //prt(info,"%d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
+                width=avframe->height;
+                height=avframe->width;
 
-                prt(info,"%d  (%d )",av_pkt.size,avframe->width);
 
                 return true;
 
@@ -283,6 +286,8 @@ public:
     unsigned char *buf_y;
     unsigned char *buf_u;
     unsigned char *buf_v;
+    int width;
+    int height;
 };
 class VideoSource
 {
