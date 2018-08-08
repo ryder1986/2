@@ -47,3 +47,5 @@ QMAKE_CXXFLAGS +=-g
 INCLUDEPATH+=/usr/include/python2.7
 LIBS+=  -lpython2.7
 QMAKE_CXXFLAGS+=-w
+
+LIBS+=-lavcodec -lavformat -lavutil -lswresample

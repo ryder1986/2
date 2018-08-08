@@ -168,10 +168,13 @@ class PdVideoCapture{
 public:
     PdVideoCapture(string url):url(url)
     {
+        opened=false;
         width=0;
         height=0;
         init_input();
         init_decoder();
+        opened=true;
+       //  int t= cvNamedWindow("123");
     }
     ~PdVideoCapture()
     {
@@ -179,6 +182,7 @@ public:
     }
     bool read(Mat &BGRImage)
     {
+       // int t= cvNamedWindow("123");
         Mat YUVImage;
         int size;
         size=width*height;
@@ -194,27 +198,42 @@ public:
             memcpy(YUVImage.data + size, buf_u, size /4);
             memcpy(YUVImage.data + size + size /4, buf_v, size / 4);
             cvtColor(YUVImage, BGRImage, CV_YUV2BGR_I420);
-            imshow("123",BGRImage);
-            waitKey(10);
+        //    imshow("123",BGRImage);
+
+          //  waitKey(10);
+            return true;
         }else{
             prt(info,"decode a fail");
+                 return false;
         }
     }
     bool isOpened()
     {
-        return false;
+        return opened;
     }
     void release()
     {
         release_input();
         release_decoder();
+        opened=false;
     }
+    int get(int cmd)
+    {
+        int ret;
+        switch(cmd){
+        case CV_CAP_PROP_FRAME_WIDTH:ret=width;break;
+        case CV_CAP_PROP_FRAME_HEIGHT:ret=height;break;
+        default:break;
 
+        }
+        return ret;
+    }
 private:
     bool init_input()
     {
         bool ret=true;
         av_register_all();
+        avformat_network_init();
         fmt = avformat_alloc_context();
         if(avformat_open_input(&fmt, url.data(), NULL, 0) != 0) {
             ret=false;
@@ -262,7 +281,7 @@ private:
                 buf_y = (unsigned char *) avframe->data[0];
                 buf_u = (unsigned char *) avframe->data[1];
                 buf_v = (unsigned char *) avframe->data[2];
-                //prt(info,"%d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
+               //  prt(info,"%d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
                 width=avframe->height;
                 height=avframe->width;
 
@@ -275,6 +294,8 @@ private:
         }
         return false;
     }
+
+
 public:
     AVCodec *codec;
     AVCodecContext *codec_ctx;
@@ -332,6 +353,7 @@ private:
         }
     }
 private:
+    //PdVideoCapture vcap;
     VideoCapture vcap;
     list <Mat> frame_list;
     int frame_wait_time;
