@@ -3,8 +3,9 @@
 #include "videosource.h"
 int main(void)
 {
-    prt(info,"Hello World!\n");
-        PdVideoCapture cap("rtsp://192.168.1.95:554/av0_1");
+  //  prt(info,"Hello World!\n");
+   PdVideoCapture cap("rtsp://192.168.1.95:554/av0_1");
+ //    PdVideoCapture cap("rtsp://192.168.1.216:8554/test1");
 
         Mat frm;
         while(1){

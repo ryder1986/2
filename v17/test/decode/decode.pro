@@ -16,4 +16,4 @@ LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopen
 
 INCLUDEPATH+= $$SRC_PATH
 
-LIBS+=-lavcodec -lavformat -lavutil -lswresample
+LIBS+=-L/root/source/ffmpeg-2.8.14/__install/lib -lavcodec -lavformat -lavutil -lswresample
