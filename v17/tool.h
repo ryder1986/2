@@ -63,7 +63,7 @@ inline char* demangle(const char* name)
     int status;
     char* res = abi::__cxa_demangle (name,
                                      buf,
-                                     &size,
+                                     ( size_t* )&size,
                                      &status);
     return res;
 }

@@ -551,7 +551,6 @@ private :
 namespace Ui {
 class MainWindow;
 }
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -566,9 +565,7 @@ private:
         {
             ui->comboBox_cameras->addItem(d.url.data());
             PlayerWidget *player=new PlayerWidget(d);
-
             players.push_back(player);
-
             ui->groupBox_video->layout()->addWidget(player);
             connect(player,SIGNAL(cam_data_change(CameraData,QWidget*)),\
                     this,SLOT(generate_current_config(CameraData,QWidget*)));

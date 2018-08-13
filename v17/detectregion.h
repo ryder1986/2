@@ -94,7 +94,7 @@ public:
     {
         decode();
     }
-    VdRect(int x,int y,int w,int h):x(x),y(y),w(h),h(h)
+    VdRect(int x1,int y1,int w1,int h1):x(x1),y(y1),w(w1),h(h1)
     {
         encode();
     }

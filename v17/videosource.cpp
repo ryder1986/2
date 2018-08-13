@@ -1,6 +1,7 @@
 #include "videosource.h"
 #include <thread>
 #include <functional>
+
 VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),frame_rate(0),vcap(path)
 {
     //  Timer1 t1(bind(&VideoSource::check_point,this));
@@ -28,8 +29,11 @@ VideoSource::~VideoSource()
 }
 void VideoSource::run()
 {
+   #ifdef USE_CVCAP
     vcap=VideoCapture(url);
-    //vcap=PdVideoCapture(url);
+   #else
+    vcap=PdVideoCapture(url);
+#endif
      //  this_thread::sleep_for(chrono::milliseconds(1000));
     if(!vcap.isOpened()){
         prt(info,"fail to open %s", url.data());
@@ -54,7 +58,12 @@ void VideoSource::run()
                 // cout<<url.data()<<" get frame error!"<<endl;
                 prt(info,"get frame fail,restart video capture %s", url.data());
                 vcap.release();
-                vcap=VideoCapture( url.data());
+#ifdef USE_CVCAP
+ vcap=VideoCapture(url);
+#else
+ vcap=PdVideoCapture(url);
+#endif
+             //   vcap=VideoCapture( url.data());
                 //vcap=PdVideoCapture( url.data());
             }
             if(frame.cols==0){
@@ -77,7 +86,12 @@ void VideoSource::run()
             }else{
                 this_thread::sleep_for(chrono::seconds(1));
             }
-            vcap=VideoCapture( url.data());
+#ifdef USE_CVCAP
+ vcap=VideoCapture(url);
+#else
+ vcap=PdVideoCapture(url);
+#endif
+          //  vcap=VideoCapture( url.data());
             //vcap=PdVideoCapture( url.data());
             cout<<"open url err:"<<url.data()<<endl;
         }
