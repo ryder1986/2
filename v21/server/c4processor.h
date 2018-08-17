@@ -106,32 +106,32 @@ public:
             ret=true;
         }else
             ret=false;
-      //  rects.clear();
+        //  rects.clear();
         rects=r.rects;
-      //  rects.push_back(Rect(111,222,333,444));
+        //  rects.push_back(Rect(111,222,333,444));
         return  ret;
     }
 
-    virtual bool process(Mat img_src,JsonPacket rst)
+    virtual bool process(Mat img_src,JsonPacket &rst)
     {
         vector<Rect> rects;
         bool ret=false;
-//        m_result r;
-//        r.width=img_src.cols;
-//        r.height=img_src.rows;
-//        Mat img=img_src;
-//        if(real_process(img,r)){
-//            ret=true;
-//        }else
-//            ret=false;
-//        rects=r.rects;
-//        vector<VdRect> vdrects;
-//        for(Rect r:rects){
-//          vdrects.push_back(VdRect(r.x,r.y,r.width,r.height));
-//        //     rcts_rst.push_back( VdRect(r.x,r.y,r.width,r.height).config);
-//        }
+        m_result r;
+        if(real_process(img_src,r)){
+            ret=true;
+        }else
+            ret=false;
+        rects=r.rects;
+        vector<JsonPacket> pkt;
+        for(Rect rc:rects){
+            VdRect v(rc.x,rc.y,rc.width,rc.height);
+            pkt.push_back(v.config);
+        }
+        prt(info,"---)))))))))))))))sz %d",rects.size());
 
-       // vector <VdRect> vdrects
+        rst.add("rect_result",pkt);
+        prt(info,"%s",rst.str().data());
+
         return  ret;
     }
 

@@ -120,31 +120,35 @@ class RegionRst:public JsonData
 
 public:
 
-    vector <VdRect>rects;
+    //vector <VdRect>rects;
+
+    JsonPacket reslut_rect;
+
     JsonPacket detect_rect;
     RegionRst(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
 
-    RegionRst(vector <VdRect>rcts ,JsonPacket rct)
+    RegionRst(JsonPacket rst_rect ,JsonPacket rct):reslut_rect(rst_rect)
     {
-        for(VdRect v:rcts){
-            rects.push_back(v);
-        }
+//        for(VdRect v:rcts){
+//            rects.push_back(v);
+//        }
+      //  reslut_rect=rst_rect;
         detect_rect=rct;
         encode();
     }
 
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(rects);
+        DECODE_OBJ_MEM(reslut_rect);
         DECODE_OBJ_MEM(detect_rect);
     }
 
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM(rects);
+        ENCODE_OBJ_MEM(reslut_rect);
         ENCODE_OBJ_MEM(detect_rect);
     }
 
@@ -171,21 +175,25 @@ public:
 
     JsonPacket work(Mat frame)
     {
-        JsonPacket d;
+        JsonPacket rst_r;
         vector<Rect> rects1;
-        Rect detect_area1;
+       // Rect detect_area1;
         Mat tmp=frame(detect_rect);
-        p->process(tmp,rects1,detect_area1);
-        //JsonPacket ;
+
+      //p->process(tmp,rects1,detect_area1);
+        p->process(tmp,rst_r);
+           //JsonPacket ;
       //  p->process(tmp,rst);
-        vector <VdRect> rcs;
-        for(Rect r:rects1){
-            //   rcs.push_back(VdRect(r.x+detect_rect.x,r.y+detect_rect.y,r.width,r.height));
-            rcs.push_back(VdRect(r.x,r.y,r.width,r.height));
-        }
+//        vector <VdRect> rcs;
+//        for(Rect r:rects1){
+//            //   rcs.push_back(VdRect(r.x+detect_rect.x,r.y+detect_rect.y,r.width,r.height));
+//            rcs.push_back(VdRect(r.x,r.y,r.width,r.height));
+//        }
         VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
         JsonPacket dct_rct=r.data();
-        RegionRst rst(rcs,dct_rct);
+          prt(info,"==1=> %s",rst_r.str().data());
+        RegionRst rst(rst_r,dct_rct);
+        prt(info,"===> %s",rst.config.str().data());
         return rst.config;
     }
 

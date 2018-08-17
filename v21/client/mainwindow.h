@@ -594,7 +594,7 @@ private:
             ret= Socket::RecvDataByUdp(fd,buf,1000);
             string str(buf);
             JsonPacket p(str);
-            //prt(info,"recving %s",p.str().data());
+            prt(info,"recving %s",p.str().data());
             AppReslut rst(p);
             int cam_index=rst.camera_index;
             JsonPacket cam_data=rst.camera_data;
@@ -605,19 +605,30 @@ private:
             vector <JsonPacket>  regions=cam_data.to_array();
             JsonPacket cam_data_region1=regions.front();
             RegionRst rrst(cam_data_region1);
-           // prt(info,"rst ok");
+            // prt(info,"rst ok");
             VdRect dr(rrst.detect_rect);
-            for(VdRect r:rrst.rects){
-                int x=r.x+dr.x;
-                int y=r.y+dr.y;
-                int w=r.w;
-                int h=r.h;
-            //    prt(info,"set %d",x);
-                QRect rc(x,y,w,h);
+            JsonPacket jp=   rrst.reslut_rect.get("rect_result");
+             // prt(info,"######### %s , %s",jp.str().data(),rrst.config.str().data());
+            for(JsonPacket pk:jp.to_array()){
+             //   prt(info,"get rect");
+                VdRect tmp(pk);
+                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
                 for(PlayerWidget *p:players){
                     p->set_object_rect(rc);
                 }
             }
+
+            //            for(VdRect r:rrst.){
+            //                int x=r.x+dr.x;
+            //                int y=r.y+dr.y;
+            //                int w=r.w;
+            //                int h=r.h;
+            //            //    prt(info,"set %d",x);
+            //                QRect rc(x,y,w,h);
+            //                for(PlayerWidget *p:players){
+            //                    p->set_object_rect(rc);
+            //                }
+            //            }
 
 
 
@@ -660,7 +671,7 @@ private slots:
         string str(msg.toUtf8());
         //JsonPacket pkt(str);
         VdEvent event(str);
-      //  int op=pkt.get("op").to_int();
+        //  int op=pkt.get("op").to_int();
         switch(event.op){
         case App::OP::GET_CONFIG:
         {

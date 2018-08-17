@@ -78,7 +78,10 @@ public:
     {
 
     }
+    virtual bool process(Mat img_src,JsonPacket &pkt)
+    {
 
+    }
     virtual bool process(Mat img_src,vector<Rect> &rects,Rect detect_area)
     {
 
