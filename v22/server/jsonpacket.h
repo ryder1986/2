@@ -317,6 +317,7 @@ public:
 #define DECODE_BOOL_MEM(mem) {this->mem=config.get(#mem).to_bool();}
 #define DECODE_OBJ_MEM(mem) {this->mem=config.get(#mem);}
 #define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
+#define DECODE_OBJ_ARRAY_MEM_PRI(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
 
 #define ENCODE_MEM(mem) {config.add(#mem,this->mem);}
 #define ENCODE_INT_MEM(mem) {ENCODE_MEM(mem);}
@@ -328,7 +329,9 @@ public:
 #define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
     config.add(#mem,pkts);}
-
+#define ENCODE_OBJ_ARRAY_MEM_PRI(mem) { vector<JsonPacket> pkts;\
+    for(auto tmp1:this->mem){pkts.push_back(tmp1);}\
+    config.add(#mem,pkts);}
 template <typename T>
 class RequestData:public JsonData
 {

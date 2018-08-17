@@ -116,7 +116,7 @@ protected:
         img_painter.setPen(red_pen1());
         cnt=0;
         for(DetectRegionData p:cfg.detect_regions){
-            draw_points(p.poly_vers,img_painter);
+            draw_points(vector<VdPoint>(p.poly_vers.begin(),p.poly_vers.end()),img_painter);
         }
 
         if(!img.isNull()){
@@ -151,7 +151,7 @@ public slots:
                 VdPoint p(p1.x(),p1.y());
                 r.set_point(p,selected_point_index);
 
-                prt(info,"set %d",r.poly_vers[0].x);
+        //        prt(info,"set %d",r.poly_vers[0].x);
 
                 cfg.set_region(r,selected_region_index);
                 //                cfg.detect_regions[selected_region_index-1].poly_vers[selected_point_index-1].x=p1.x();
@@ -167,7 +167,7 @@ public slots:
 
         vector <DetectRegionData >detect_regions=cfg.detect_regions;
         for(int i=0;i<detect_regions.size();i++){
-            vector <VdPoint> pnts= detect_regions[i].poly_vers;
+            vector <VdPoint> pnts(detect_regions[i].poly_vers.begin(),detect_regions[i].poly_vers.end());
             int point_index=match_point(pnts,map_point(e->pos()));
             if(point_index>0){
                 ver_picked=true;
@@ -185,7 +185,7 @@ public slots:
     void mouseReleaseEvent(QMouseEvent *e)
     {
         if(ver_picked){
-            prt(info,"drag %d",cfg.detect_regions[0].poly_vers[0].x);
+          //  prt(info,"drag %d",cfg.detect_regions[0].poly_vers[0].x);
 
             emit cam_data_change(cfg,this);
             ver_picked=false;
