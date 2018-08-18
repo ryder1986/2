@@ -594,7 +594,7 @@ private:
             ret= Socket::RecvDataByUdp(fd,buf,1000);
             string str(buf);
             JsonPacket p(str);
-            prt(info,"recving %s",p.str().data());
+            //prt(info,"recving %s",p.str().data());
             AppReslut rst(p);
             int cam_index=rst.camera_index;
             JsonPacket cam_data=rst.camera_data;

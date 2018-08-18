@@ -127,10 +127,10 @@ public:
             VdRect v(rc.x,rc.y,rc.width,rc.height);
             pkt.push_back(v.config);
         }
-        prt(info,"---)))))))))))))))sz %d",rects.size());
+     //   prt(info,"---)))))))))))))))sz %d",rects.size());
 
         rst.add("rect_result",pkt);
-        prt(info,"%s",rst.str().data());
+      //  prt(info,"%s",rst.str().data());
 
         return  ret;
     }

@@ -14,34 +14,7 @@
 using namespace std;
 using namespace cv;
 
-class VdPoint:public JsonData
-{
-public:
-    int x;
-    int y;
-    VdPoint(JsonPacket pkt):JsonData(pkt)
-    {
-        decode();
-    }
-    VdPoint(int x,int y):x(x),y(y)
-    {
-        encode();
-    }
-    VdPoint()
-    {
 
-    }
-    void decode()
-    {
-        DECODE_INT_MEM(x);
-        DECODE_INT_MEM(y);
-    }
-    void encode()
-    {
-        ENCODE_INT_MEM(x);
-        ENCODE_INT_MEM(y);
-    }
-};
 class DetectRegionData:public JsonData
 {
 
@@ -191,9 +164,9 @@ public:
 //        }
         VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
         JsonPacket dct_rct=r.data();
-          prt(info,"==1=> %s",rst_r.str().data());
+       //   prt(info,"==1=> %s",rst_r.str().data());
         RegionRst rst(rst_r,dct_rct);
-        prt(info,"===> %s",rst.config.str().data());
+        //prt(info,"===> %s",rst.config.str().data());
         return rst.config;
     }
 

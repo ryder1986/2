@@ -21,7 +21,7 @@ SOURCES +=  tool.cpp socket.cpp
 #LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
 #LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
 
-HEADERS +=   c4common.h       c4processor.h videoprocessor.h
+HEADERS +=   c4common.h       c4processor.h videoprocessor.h rtsp.h
 SOURCES +=   c4common.cpp   c4processor.cpp videoprocessor.cpp
 SOURCES +=track/Ctracker.cpp track/HungarianAlg.cpp  track/Kalman.cpp
 HEADERS += track/defines.h track/HungarianAlg.h track/Kalman.h track/Ctracker.h
@@ -31,7 +31,8 @@ SOURCES += main.cpp  configmanager.cpp  app.cpp server.cpp camera.cpp videosourc
 INCLUDEPATH +=cppjson/include
 
 
-LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video      -lpthread
+LIBS+= -L/root/opencv249/build/__install/lib -lopencv_core -lopencv_highgui -lopencv_objdetect \
+-lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video      -lpthread
 
 HEADERS+=jsonpacket.h
 
@@ -48,4 +49,5 @@ INCLUDEPATH+=/usr/include/python2.7
 LIBS+=  -lpython2.7
 QMAKE_CXXFLAGS+=-w
 
-LIBS+=-lavcodec -lavformat -lavutil -lswresample
+LIBS+=-lavcodec  -lavutil -lswresample
+LIBS+=-L/root/source/ffmpeg-2.8.14/__install/lib/ -lavformat

@@ -29,12 +29,12 @@ VideoSource::~VideoSource()
 }
 void VideoSource::run()
 {
-   #ifdef USE_CVCAP
+#ifdef USE_CVCAP
     vcap=VideoCapture(url);
-   #else
+#else
     vcap=PdVideoCapture(url);
 #endif
-     //  this_thread::sleep_for(chrono::milliseconds(1000));
+    //  this_thread::sleep_for(chrono::milliseconds(1000));
     if(!vcap.isOpened()){
         prt(info,"fail to open %s", url.data());
     }else{
@@ -59,11 +59,11 @@ void VideoSource::run()
                 prt(info,"get frame fail,restart video capture %s", url.data());
                 vcap.release();
 #ifdef USE_CVCAP
- vcap=VideoCapture(url);
+                vcap=VideoCapture(url);
 #else
- vcap=PdVideoCapture(url);
+                vcap=PdVideoCapture(url);
 #endif
-             //   vcap=VideoCapture( url.data());
+                //   vcap=VideoCapture( url.data());
                 //vcap=PdVideoCapture( url.data());
             }
             if(frame.cols==0){
@@ -71,6 +71,14 @@ void VideoSource::run()
                 prt(info,"%s get frame error,retrying ... ", url.data());
                 continue;
             }else{
+               // int ts=vcap.get(CV_CAP_PROP_POS_MSEC);
+            //     int ts=vcap.get(CV_CAP_PROP_POS_FRAMES);;
+              //    int ts=vcap.get(CV_CAP_PROP_FRAME_COUNT);
+
+              int ts=vcap.get(CV_CAP_PROP_POS_AVI_RATIO);
+
+
+                prt(info,"timestamp  %dms", ts/100);
                 frame_rate++;
                 lock.lock();
                 if(frame_list.size()<3&&frame.rows>0&&frame.cols>0){
@@ -87,11 +95,11 @@ void VideoSource::run()
                 this_thread::sleep_for(chrono::seconds(1));
             }
 #ifdef USE_CVCAP
- vcap=VideoCapture(url);
+            vcap=VideoCapture(url);
 #else
- vcap=PdVideoCapture(url);
+            vcap=PdVideoCapture(url);
 #endif
-          //  vcap=VideoCapture( url.data());
+            //  vcap=VideoCapture( url.data());
             //vcap=PdVideoCapture( url.data());
             cout<<"open url err:"<<url.data()<<endl;
         }

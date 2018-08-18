@@ -26,6 +26,7 @@ extern "C" {
 }
 #endif
 #if 1
+
 class PdVideoCapture{
 public:
     PdVideoCapture(string url):url(url)
@@ -68,7 +69,7 @@ public:
         //        demux->timestamp
 
 
-
+       //RTSPState *state=(RTSPState) fmt->priv_data;
 
 
 
@@ -87,9 +88,9 @@ public:
             memcpy(YUVImage.data + size, buf_u, size /4);
             memcpy(YUVImage.data + size + size /4, buf_v, size / 4);
             cvtColor(YUVImage, BGRImage, CV_YUV2BGR_I420);
-            imshow("123",BGRImage);
+           // imshow("123",BGRImage);
 
-            waitKey(10);
+         //   waitKey(10);
             return true;
         }else{
             prt(info,"decode a fail");
@@ -163,7 +164,7 @@ private:
         int len = 0;
 
         while (av_pkt.size > 0) {
-            prt(info,"decoing size: %d",av_pkt.size);
+           // prt(info,"decoing size: %d",av_pkt.size);
             len = avcodec_decode_video2(codec_ctx, avframe, &got_picture, &av_pkt);
             if (len < 0) {
                 return false;
@@ -173,7 +174,7 @@ private:
                 buf_y = (unsigned char *) avframe->data[0];
                 buf_u = (unsigned char *) avframe->data[1];
                 buf_v = (unsigned char *) avframe->data[2];
-                prt(info,"decode size %d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
+         //      prt(info,"decode size %d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
                 //                prt(info,"%d",av_pkt.pts);
                 width=avframe->height;
                 height=avframe->width;
@@ -204,7 +205,7 @@ public:
     int height;
 };
 #define USE_CVCAP 1
-//#else
+
 class VideoSource
 {
 public:

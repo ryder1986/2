@@ -490,6 +490,33 @@ public:
     }
 
 };
+class VdPoint:public JsonData
+{
+public:
+    int x;
+    int y;
+    VdPoint(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    VdPoint(int x,int y):x(x),y(y)
+    {
+        encode();
+    }
+    VdPoint()
+    {
 
+    }
+    void decode()
+    {
+        DECODE_INT_MEM(x);
+        DECODE_INT_MEM(y);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(x);
+        ENCODE_INT_MEM(y);
+    }
+};
 
 #endif // JSONPACKET_H
