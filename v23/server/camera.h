@@ -103,10 +103,12 @@ public:
     void run_process()
     {
         Mat frame;
+        int ts;
         while(!quit){
             this_thread::sleep_for(chrono::milliseconds(10));
-            if(src->get_frame(frame)){
-                //  prt(info,"get a frame ");
+          //  if(src->get_frame(frame)){
+                if(src->get_frame(frame,ts)){
+                 //  prt(info,"get a frame ");
 
 #if 0
                 for(DetectRegion *r:drs){
@@ -120,6 +122,7 @@ public:
                     pkt.value().append(ret.value());
                     //prt(info,"get a rect ");
                 }
+                timestamp=ts;
                 callback_result(this,pkt.str());
             }
         }
@@ -145,12 +148,17 @@ public:
     {
         int index=pkt.get("index").to_int();
     }
+    int get_frame_ts()
+    {
+        return timestamp;
+    }
 
 private:
     vector<DetectRegion*> drs;
     VideoSource *src;
     bool quit;
     thread *work_trd;
+    int timestamp;
 };
 
 #endif // CAMERA_H

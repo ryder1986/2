@@ -64,6 +64,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
 
 void App::process_camera_data(Camera *camera, string data)
 {
+    int ts=camera->get_frame_ts();
     vector<Camera *>::iterator itr;
     int idx=0;
     itr=cms.begin();
@@ -78,13 +79,14 @@ void App::process_camera_data(Camera *camera, string data)
         return;
     }
     int fd=Socket::UdpCreateSocket(5000);
-    AppReslut rst(idx+1,JsonPacket(data));
+    AppReslut rst(idx+1,ts,JsonPacket(data));
     //   prt(info,"sending %s",rst.data().str().data());
     if(stream_cmd)
-    for(Session *ss:*stream_cmd)
-    {
-         Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
-    }
+        for(Session *ss:*stream_cmd)
+        {
+     //       prt(info,"send %s",rst.data().str().data());
+            Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
+        }
     close(fd);
 }
 

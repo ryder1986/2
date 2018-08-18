@@ -240,6 +240,22 @@ public:
         lock.unlock();
         return ret;
     }
+    bool get_frame(Mat &frame, int &timestamp)
+    {
+        int ret=false;
+        lock.lock();
+        if(frame_list.size()>0){
+            frame_list.front().copyTo(frame);
+            frame_list.pop_front();
+            timestamp=cur_ms_list.front();
+            cur_ms_list.pop_front();
+            ret=true;
+        }else{
+            ret=false;
+        }
+        lock.unlock();
+        return ret;
+    }
 private:
     void run();
     void check_point()
@@ -257,6 +273,8 @@ private:
     //  PdVideoCapture vcap;
     //  VideoCapture vcap;
     list <Mat> frame_list;
+    list <int> cur_ms_list;
+
     int frame_wait_time;
     mutex lock;
     int frame_rate;

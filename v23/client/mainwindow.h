@@ -597,7 +597,8 @@ private:
             //prt(info,"recving %s",p.str().data());
             AppReslut rst(p);
             int cam_index=rst.camera_index;
-            JsonPacket cam_data=rst.camera_data;
+            int ts=rst.timestamp;
+                JsonPacket cam_data=rst.camera_data;
             //            prt(info,"get %s(%s)",rst.config.str().data(),str.data());
             //            prt(info,"geted %s",buf);
 
@@ -605,18 +606,36 @@ private:
             vector <JsonPacket>  regions=cam_data.to_array();
             JsonPacket cam_data_region1=regions.front();
             RegionRst rrst(cam_data_region1);
-            // prt(info,"rst ok");
+
             VdRect dr(rrst.detect_rect);
             JsonPacket jp=   rrst.reslut_rect.get("rect_result");
-             // prt(info,"######### %s , %s",jp.str().data(),rrst.config.str().data());
+                 //     prt(info,"%s",rrst.data().str().data());
+
+
+//             // prt(info,"######### %s , %s",jp.str().data(),rrst.config.str().data());
+//            for(JsonPacket pk:jp.to_array()){
+//             //   prt(info,"get rect");
+//                VdRect tmp(pk);
+//                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
+//                for(PlayerWidget *p:players){
+//                    p->set_object_rect(rc);
+//                }
+//            }
+
+            vector<QRect> result_rects;
+
             for(JsonPacket pk:jp.to_array()){
-             //   prt(info,"get rect");
                 VdRect tmp(pk);
                 QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
-                for(PlayerWidget *p:players){
-                    p->set_object_rect(rc);
+                result_rects.push_back(rc);
+            }
+            for(int i=0;i<players.size();i++){
+                if(cam_index==i+1){
+                    PlayerWidget *p=players[i];
+                    p->set_overlay(result_rects,ts);
                 }
             }
+
 
             //            for(VdRect r:rrst.){
             //                int x=r.x+dr.x;

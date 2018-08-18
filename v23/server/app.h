@@ -37,7 +37,7 @@ public:
     void replace_camera(CameraData d,int index)
     {
         if(index>0&&index<=cameras.size()){
-             prt(info," cams  size  %d", cameras.size());
+            prt(info," cams  size  %d", cameras.size());
             cameras[index-1]=d;
             prt(info,"set new config on cam %d",index-1);
              prt(info," cams new size  %d", cameras.size());
@@ -167,12 +167,13 @@ class AppReslut:public JsonData{
 public:
     int camera_index;
     JsonPacket camera_data;
+    int timestamp;
 
     AppReslut(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-    AppReslut(int index,JsonPacket data):camera_index(index),camera_data(data)
+    AppReslut(int index,int ts,JsonPacket data):camera_index(index),timestamp(ts),camera_data(data)
     {
         encode();
     }
@@ -180,11 +181,13 @@ public:
     void decode()
     {
         DECODE_INT_MEM(camera_index);
+        DECODE_INT_MEM(timestamp);
         DECODE_OBJ_MEM(camera_data);
     }
     void encode()
     {
         ENCODE_INT_MEM(camera_index);
+        ENCODE_INT_MEM(timestamp);
         ENCODE_OBJ_MEM(camera_data);
     }
 };

@@ -219,7 +219,7 @@ public:
     {
         vector<JsonPacket>  ar;
         if(val.empty()){
-            prt(info,"to array :empty");
+            //prt(info,"to array :empty");
 
             return ar;
         }
@@ -250,10 +250,11 @@ private:
         JsonValue v=val;
         rst=v[name].isNull();
         if(rst&&(str=="get"||str=="set")){
-            prt(info," key (%s) not exist",name.data());
-            print_backstrace();
+            //prt(info," (%s) not exist or no data",name.data());
+            //print_backstrace();
+            return false;
         }
-        return !rst;
+        return true;
     }
     void check_type(JsonValue v)
     {

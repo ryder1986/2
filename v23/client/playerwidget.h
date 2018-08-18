@@ -46,10 +46,17 @@ public:
     {
         show_info=flg;
     }
-    void set_object_rect(QRect r)
+//    void set_object_rect(QRect r)
+//    {
+//        lock.lock();
+//        rects.push_back(r);
+//        lock.unlock();
+//    }
+    void set_overlay(vector<QRect> rs,int ts)
     {
         lock.lock();
-        rects.append(r);
+        rects.assign(rs.begin(),rs.end());
+        timestamp=ts;
         lock.unlock();
     }
 
@@ -251,8 +258,9 @@ private:
     int selected_region_index;
     int selected_point_index;
     int cnt;
-    QList <QRect> rects;
+    vector <QRect> rects;
     QTimer *tick_timer;
+    int timestamp;
 };
 
 #endif // PLAYERWIDGET_H
