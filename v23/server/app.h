@@ -73,63 +73,63 @@ public:
         ENCODE_OBJ_ARRAY_MEM(cameras);
     }
 };
-template <typename T>
-class AppEvent:public RequestData<T>
-{
-public:
-    AppEvent(int op,int index,T d):RequestData<T>(op,index,d)
-    {
+//template <typename T>
+//class AppEvent:public RequestData<T>
+//{
+//public:
+//    AppEvent(int op,int index,T d):RequestData<T>(op,index,d)
+//    {
 
-    }
-    AppEvent()
-    {
+//    }
+//    AppEvent()
+//    {
 
-    }
-};
-class AppEventSetConfig:public AppEvent<AppData>{
-public:
-    AppEventSetConfig(int op,int index,AppData d):AppEvent(op,index,d)
-    {
+//    }
+//};
+//class AppEventSetConfig:public AppEvent<AppData>{
+//public:
+//    AppEventSetConfig(int op,int index,AppData d):AppEvent(op,index,d)
+//    {
 
-    }
-};
-class AppEventSetDevName:public AppEvent<string>{
-public:
-    AppEventSetDevName(int op,int index,string name):AppEvent(op,index,name)
-    {
+//    }
+//};
+//class AppEventSetDevName:public AppEvent<string>{
+//public:
+//    AppEventSetDevName(int op,int index,string name):AppEvent(op,index,name)
+//    {
 
-    }
-};
-class AppEventModifyCamera:public AppEvent<JsonPacket>{
-public:
-    AppEventModifyCamera(int op,int index,JsonPacket pkt):AppEvent(op,index,pkt)
-    {
+//    }
+//};
+//class AppEventModifyCamera:public AppEvent<JsonPacket>{
+//public:
+//    AppEventModifyCamera(int op,int index,JsonPacket pkt):AppEvent(op,index,pkt)
+//    {
 
-    }
-    AppEventModifyCamera()
-    {
+//    }
+//    AppEventModifyCamera()
+//    {
 
-    }
-};
-class CameraSetUrl:public RequestData<string>{
-public:
-    AppEventModifyCamera app_req;
-    CameraSetUrl(AppEventModifyCamera a,int camera_op,int camera_index, string url):RequestData(camera_op,camera_index,url)
-    {
-        //     app_req=AppEventModifyCamera(app_op,app_index,config);
-    }
-};
-class CameraEvent:public AppEvent<JsonPacket>{
-public:
-    CameraEvent(int camera_op,int camera_index,int op,int index,JsonPacket pkt):AppEvent(op,index,pkt)
-    {
+//    }
+//};
+//class CameraSetUrl:public RequestData<string>{
+//public:
+//    AppEventModifyCamera app_req;
+//    CameraSetUrl(AppEventModifyCamera a,int camera_op,int camera_index, string url):RequestData(camera_op,camera_index,url)
+//    {
+//        //     app_req=AppEventModifyCamera(app_op,app_index,config);
+//    }
+//};
+//class CameraEvent:public AppEvent<JsonPacket>{
+//public:
+//    CameraEvent(int camera_op,int camera_index,int op,int index,JsonPacket pkt):AppEvent(op,index,pkt)
+//    {
 
-    }
-    CameraEvent()
-    {
+//    }
+//    CameraEvent()
+//    {
 
-    }
-};
+//    }
+//};
 
 class AppReq:public JsonData{
 public:
