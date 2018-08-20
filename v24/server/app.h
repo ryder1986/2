@@ -16,151 +16,47 @@ enum AppRequest{
 
 class AppData:public JsonData{
 public:
-    vector <CameraData> cameras;
-    int server_port;
+    vector <PerCameraData> CameraData;
+    string DeviceName;
 
     AppData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-
-    AppData(int port,vector<CameraData> d):server_port(port),cameras(d)
+    void replace_camera(PerCameraData d,int index)
     {
-        encode();
-    }
-
-    AppData()
-    {
-
-    }
-
-    void replace_camera(CameraData d,int index)
-    {
-        if(index>0&&index<=cameras.size()){
-            prt(info," cams  size  %d", cameras.size());
-            cameras[index-1]=d;
-            prt(info,"set new config on cam %d",index-1);
-             prt(info," cams new size  %d", cameras.size());
+        if(index>0&&index<=CameraData.size()){
+            prt(info," cams  size  %d", CameraData.size());
+            CameraData[index-1]=d;
         }else{
-            prt(info," cams size  %d,unchange with index %d", cameras.size(),index);
+            prt(info," cams size  %d,unchange with index %d", CameraData.size(),index);
         }
         encode();
     }
 
-    void insert_camera(CameraData d,int index)
+    void insert_camera(PerCameraData d,int index)
     {
-        if(index>0&&index<=cameras.size()){
-             prt(info," cams  size  %d", cameras.size());
-             vector <CameraData>::iterator it=cameras.begin();
-             cameras.insert(it+index,d);
-             prt(info," cams new size  %d", cameras.size());
+        if(index>0&&index<=CameraData.size()){
+             prt(info," cams  size  %d", CameraData.size());
+             vector <PerCameraData>::iterator it=CameraData.begin();
+             CameraData.insert(it+index,d);
+             prt(info," cams new size  %d", CameraData.size());
         }else{
-            prt(info," cams size  %d,unchange with index %d", cameras.size(),index);
+            prt(info," cams size  %d,unchange with index %d", CameraData.size(),index);
         }
-
         encode();
     }
 
     void decode()
     {
-        DECODE_INT_MEM(server_port);
-        DECODE_OBJ_ARRAY_MEM(cameras);
+        DECODE_STRING_MEM(DeviceName);
+        DECODE_OBJ_ARRAY_MEM(CameraData);
     }
 
     void encode()
     {
-        ENCODE_INT_MEM(server_port);
-        ENCODE_OBJ_ARRAY_MEM(cameras);
-    }
-};
-//template <typename T>
-//class AppEvent:public RequestData<T>
-//{
-//public:
-//    AppEvent(int op,int index,T d):RequestData<T>(op,index,d)
-//    {
-
-//    }
-//    AppEvent()
-//    {
-
-//    }
-//};
-//class AppEventSetConfig:public AppEvent<AppData>{
-//public:
-//    AppEventSetConfig(int op,int index,AppData d):AppEvent(op,index,d)
-//    {
-
-//    }
-//};
-//class AppEventSetDevName:public AppEvent<string>{
-//public:
-//    AppEventSetDevName(int op,int index,string name):AppEvent(op,index,name)
-//    {
-
-//    }
-//};
-//class AppEventModifyCamera:public AppEvent<JsonPacket>{
-//public:
-//    AppEventModifyCamera(int op,int index,JsonPacket pkt):AppEvent(op,index,pkt)
-//    {
-
-//    }
-//    AppEventModifyCamera()
-//    {
-
-//    }
-//};
-//class CameraSetUrl:public RequestData<string>{
-//public:
-//    AppEventModifyCamera app_req;
-//    CameraSetUrl(AppEventModifyCamera a,int camera_op,int camera_index, string url):RequestData(camera_op,camera_index,url)
-//    {
-//        //     app_req=AppEventModifyCamera(app_op,app_index,config);
-//    }
-//};
-//class CameraEvent:public AppEvent<JsonPacket>{
-//public:
-//    CameraEvent(int camera_op,int camera_index,int op,int index,JsonPacket pkt):AppEvent(op,index,pkt)
-//    {
-
-//    }
-//    CameraEvent()
-//    {
-
-//    }
-//};
-
-class AppReq:public JsonData{
-public:
-
-    int request;
-    int index;
-    JsonPacket pri;
-    JsonPacket ret;
-    AppReq(JsonPacket pkt):JsonData(pkt)
-    {
-        decode();
-    }
-
-    AppReq()
-    {
-
-    }
-
-    void decode()
-    {
-        DECODE_INT_MEM(request);
-        DECODE_INT_MEM(index);
-        DECODE_OBJ_MEM(pri);
-        DECODE_OBJ_MEM(ret);
-    }
-    void encode()
-    {
-        ENCODE_INT_MEM(request);
-        ENCODE_INT_MEM(index);
-        ENCODE_OBJ_MEM(pri);
-        ENCODE_OBJ_MEM(ret);
+        ENCODE_STRING_MEM(DeviceName);
+        ENCODE_OBJ_ARRAY_MEM(CameraData);
     }
 };
 class AppReslut:public JsonData{
@@ -194,14 +90,25 @@ public:
 class App:public VdData<AppData>
 {
 public:
-    enum OP{
-        ADD_CAMERA,
+//    enum OP{
+//        ADD_CAMERA,
+//        DEL_CAMERA,
+//        MOD_CAMERA,
+//        GET_CONFIG,
+//        SET_CONFIG
+//    };
+    enum Operation{
+        GET_CONFIG=1,
+        SET_CONFIG,
+        INSERT_CAMERA,
+        MODIFY_CAMERA,
+        DELETE_CAMERA,
+        OPEN_CAMERA_DATA,
+        CLOSE_CAMERA_DATA,
+        HEART_PKT,
         DEL_CAMERA,
-        MOD_CAMERA,
-        GET_CONFIG,
-        SET_CONFIG
+        REBOOT
     };
-
     App(ConfigManager *p);
     void start()
     {
@@ -218,7 +125,7 @@ private:
 
     void start_cams()
     {
-        for(CameraData p:private_data.cameras){
+        for(PerCameraData p:private_data.CameraData){
             cms.push_back(new Camera(p,bind(&App::process_camera_data,
                                             this,placeholders::_1,
                                             placeholders::_2)));
@@ -241,7 +148,7 @@ private:
                                            placeholders::_2));
             vector<Camera*>::iterator it=cms.begin();
             cms.insert(it+index,c);
-            private_data.insert_camera(CameraData(data),index);
+            private_data.insert_camera(PerCameraData(data),index);
         }
     }
 
@@ -261,39 +168,39 @@ private:
         }
     }
 
-    bool process_event(VdEvent &e)
+    bool process_event(RequestPkt e,ReplyPkt &r)
     {
         bool ret=false;
-        prt(info,"get cmd %d",e.op);
-        switch(e.op){
-        case App::OP::GET_CONFIG:
+        prt(info,"get cmd %d",e.Operation);
+        switch(e.Operation){
+        case App::Operation::GET_CONFIG:
         {
             JsonPacket cfg=p_cm->get_config();//get config
-            VdEvent e1(e.op,e.index,e.arg,cfg);
-            prt(info,"####$$$$$$$$$$$$$$$$$$###sending----> %s",e1.ret.str().data());
-            e=e1;
+            ReplyPkt rp(cfg);
+            r=rp;
+            prt(info,"reply %s",r.config.str().data());
             ret=true;
             break;
         }
-        case App::OP::SET_CONFIG:
+        case App::Operation::SET_CONFIG:
         {
-            p_cm->set_config(e.arg.str());//get config
-            prt(info,"#######recving----> %s",e.arg.str().data());
+            p_cm->set_config(e.Argument.str());//get config
+            prt(info,"set config with string:\n %s",e.Argument.str().data());
             AppData dt(p_cm->get_config());
-            this->private_data=AppData(dt);
+            private_data=AppData(dt);
             restart_all();
             ret=true;
             break;
         }
-        case App::OP::ADD_CAMERA:
+        case App::Operation::INSERT_CAMERA:
         {
-            add_camera(e.index,e.arg);
+            add_camera(e.Index,e.Argument);
             p_cm->set_config(private_data.data().str());//get config
             ret=true;
             break;
         }
         default:
-            prt(info,"unknow cmd %d",e.op);
+            prt(info,"unknow cmd %d",e.Operation);
             break;
         }
         return ret;

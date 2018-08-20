@@ -361,19 +361,18 @@ public:
 
 };
 
-class VdEvent:public JsonData
+class RequestPkt:public JsonData
 {
 public:
-    int op;
-    int index;
-    JsonPacket arg;
-    JsonPacket ret;
+    int Operation;
+    int Index;
+    JsonPacket Argument;
 
-    VdEvent(int op,int index , JsonPacket data,JsonPacket rt=JsonPacket()):op(op),index(index),arg(data),ret(rt)
+    RequestPkt(int op,int index , JsonPacket data,JsonPacket rt=JsonPacket()):Operation(op),Index(index),Argument(data)
     {
         encode();
     }
-    VdEvent(JsonPacket p):JsonData(p)
+    RequestPkt(JsonPacket p):JsonData(p)
     {
         decode();
     }
@@ -396,67 +395,42 @@ public:
     //    }
     void encode()
     {
-        ENCODE_INT_MEM(index);
-        ENCODE_INT_MEM(op);
-        config.add("arg",arg.value());
-        config.add("ret",ret.value());
-
+        ENCODE_INT_MEM(Index);
+        ENCODE_INT_MEM(Operation);
+   //     config.add("Argument",Argument.value());
+        ENCODE_OBJ_MEM(Argument);
     }
     void decode()
     {
-        DECODE_INT_MEM(op);
-        DECODE_INT_MEM(index);
-        arg=config.get("arg");
-        ret=config.get("ret");
+        DECODE_INT_MEM(Operation);
+        DECODE_INT_MEM(Index);
+      //  Argument=config.get("Argument");
+        DECODE_OBJ_MEM(Argument);
     }
 
 };
+class ReplyPkt:public JsonData
+{
+public:
+    JsonPacket Ret;
 
-//template <typename T>
-//class RequestData:public JsonData
-//{
-//public:
-//    int op;
-//    int index;
-//    T data;
+    ReplyPkt(JsonPacket ret):Ret(ret)
+    {
+        decode();
+    }
+    ReplyPkt()
+    {
+    }
+    void encode()
+    {
+        ENCODE_OBJ_MEM(Ret);
+    }
+    void decode()
+    {
+        DECODE_OBJ_MEM(Ret);
+    }
 
-//    RequestData()
-//    {
-
-//    }
-
-//    RequestData(JsonPacket pkt)
-//    {
-//        decode();
-//    }
-//    RequestData(int o,int i,int d):op(o),index(i),data(d)
-//    {
-//        encode();
-//    }
-//private:
-//    void decode()
-//    {
-//        DECODE_STRING_MEM(op);
-//        DECODE_STRING_MEM(index);
-//        DECODE_OBJ_MEM(data);
-//    }
-//    void encode()
-//    {
-//        ENCODE_STRING_MEM(op);
-//        ENCODE_STRING_MEM(index);
-//        ENCODE_OBJ_MEM(data);
-//    }
-//};
-//class VdEvent{
-//public:
-//    RequestData e;
-//    virtual void process_event(JsonPacket data)
-//    {
-//         e=data;
-//    }
-
-
-//};
+};
 
 class VdRect:public JsonData
 {

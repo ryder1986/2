@@ -375,14 +375,19 @@ public:
         char buf1[100];
         memset(buf1,0,100);
         sprintf(buf1,"%d",line_no);
+#define WITHOUT_TIME_LABEL
+#ifdef WITHOUT_TIME_LABEL
+        time="";
+        label="";
+#endif
         if(flg){
             tmp_str.append("[").append(time).append("][").append(label).append("][").\
                     append(last_substr(last_substr(fn,'/'),'\\').data()).append(",").append(buf1).append(",").append(func_name).append("]===>").append(buf).append("\n");
             cout<<tmp_str;
-            //    log_file1.write(tmp_str.data());
-           fflush(stdout);
-           //  fflush(NULL);
-          }
+            //log_file1.write(tmp_str.data());
+            fflush(stdout);
+            //  fflush(NULL);
+        }
     }
     inline static char* get_time_n()
     {

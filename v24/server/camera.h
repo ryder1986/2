@@ -9,21 +9,21 @@ class CameraReq:public JsonData
 public:
     CameraReq(){}
 };
-class CameraData:public JsonData
+class PerCameraData:public JsonData
 {
 public:
 
     string url;
     vector <DetectRegionData >detect_regions;
-    CameraData(JsonPacket pkt):JsonData(pkt)
+    PerCameraData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-    CameraData()
+    PerCameraData()
     {
 
     }
-    CameraData(vector <DetectRegionData> regions,string url):detect_regions(regions),url(url)
+    PerCameraData(vector <DetectRegionData> regions,string url):detect_regions(regions),url(url)
     {
         encode();
     }
@@ -52,32 +52,26 @@ public:
     }
 };
 
-class Camera:public VdData<CameraData>
+class Camera:public VdData<PerCameraData>
 {
 public:
     enum OP{
-        ADD_REGION,
-        DEL_REGION,
-        MOD_REGION,
-        CHANGE_SRC_URL
+        CHANGE_URL,
+        INSERT_REGION,
+        DELETE_REGION,
+        MODIFY_REGION
     };
     function <void(Camera *,string)>callback_result;
 public:
     Camera(JsonPacket cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
-
-        //    set_config(cfg);
         for(DetectRegionData p:private_data.detect_regions){
-
             drs.push_back(new DetectRegion(p));
-            //  pros.push_back(new PvdC4Processor(p));
-            //        pros.push_back(new PvdMvncProcessor(p.get_pkt("pvd_c4")));
-            // pros.push_back(new PvdHogProcessor(p.get_pkt("pvd_c4")));
         }
         src=new VideoSource(private_data.url);
         start();
     }
-    Camera(CameraData cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
+    Camera(PerCameraData cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
         for(DetectRegionData p:private_data.detect_regions){
             drs.push_back(new DetectRegion(p));
@@ -106,10 +100,7 @@ public:
         int ts;
         while(!quit){
             this_thread::sleep_for(chrono::milliseconds(10));
-          //  if(src->get_frame(frame)){
-                if(src->get_frame(frame,ts)){
-                 //  prt(info,"get a frame ");
-
+            if(src->get_frame(frame,ts)){
 #if 0
                 for(DetectRegion *r:drs){
                     JsonPacket ret=r->work(frame);

@@ -103,7 +103,7 @@ void VideoSource::run()
 #endif
             //  vcap=VideoCapture( url.data());
             //vcap=PdVideoCapture( url.data());
-            cout<<"open url err:"<<url.data()<<endl;
+            prt(info,"open url err:%s",url.data());
         }
     }
     prt(info,"thread is ending");

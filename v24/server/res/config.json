@@ -1,22 +1,43 @@
 {
-    "cameras":
-        [
+    "DeviceName":"test pvd",
+    "CameraData":
+     [
         {
-            "detect_regions":
+            "DetectRegion":
             [
                 {
-                    "region_id":1,
-                    "poly_vers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
-                    "pvd_c4":{"ratio":"0.8","scan_step":2},
-                    "detector_type":"pvd_c4"
+                    "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
+                    "c4":{"ratio":"0.8","scan_step":2},
+                    "SelectedProcessor":"c4",
+                    "comment":"c4/dummy/pvd/fvd"
+                },
+                {
+                    "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
+                    "dummy":{"ratio":"0.8","scan_step":2},
+                    "SelectedProcessor":"dummy",
+                    "comment":"c4/dummy/pvd/fvd"
                 }
             ],
-            "url2":"rtsp://192.168.1.216:8554/test1",
-            "url":"rtsp://192.168.1.211:8554/live/test1",
-            "url3":"rtsp://192.168.1.95:554/av0_1",
-                "url1":"rtsp://192.168.1.216:8554/test1333"
+            "url":"rtsp://192.168.1.211:8554/live/test1@@@@@@@@"
+        },
+        {
+            "DetectRegion":
+            [
+                {
+                    "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
+                    "c4":{"ratio":"0.8","scan_step":2},
+                    "SelectedProcessor":"c4",
+                    "comment":"c4/dummy/pvd/fvd"
+                },
+                {
+                    "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
+                    "dummy":{"ratio":"0.8","scan_step":2},
+                    "SelectedProcessor":"dummy",
+                    "comment":"c4/dummy/pvd/fvd"
+                }
+            ],
+            "url":"rtsp://192.168.1.18/1/h264minor"
         }
-    ],
-    "device_name":"test pvd",
-    "server_port":12345
+    ]
+
 }

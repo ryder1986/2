@@ -7,7 +7,7 @@ App::App(ConfigManager *p_config_manager):str_stream(""),
     stream_cmd=NULL;
     restart_all();
     static Tcpserver server_cmd(stream_cmd,
-                                private_data.server_port,
+                                12345,
                                 bind(&App::process_client_cmd,
                                      this,placeholders::_1,
                                      placeholders::_2,
@@ -27,8 +27,9 @@ void App::process_client_cmd(Session *clt, char *data, int len)
 
     while(JsonStr::get_valid_buf(str_stream,valid_buf)) {//Get valid json object, TODO:we only check {} matches, we should check json grammar
         prt(info,"process string %s\n left string %s",valid_buf.data(),str_stream.data());
-        VdEvent event(valid_buf);
-        process_event(event);
+        RequestPkt event(valid_buf);
+        ReplyPkt ret_pkt;
+        process_event(event,ret_pkt);
 #if 0
 
         string cmd=data.get_string("cmd");
@@ -54,7 +55,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         }
 
 #else
-        string ret=event.config.str();
+        string ret=ret_pkt.config.str();
         clt->send(ret.data(),ret.length());
 
 #endif
