@@ -768,11 +768,18 @@ double CvCapture_FFMPEG::getProperty( int property_id )
        //   RTPDemuxContext *demux = stream->transport_priv;
         return (double)frame_number;
     case CV_FFMPEG_CAP_PROP_POS_AVI_RATIO:
-    //      printf("##################get frame CV_FFMPEG_CAP_PROP_POS_AVI_RATIO  %d \n",ic->output_ts_offset);fflush(stdout);
+{    //      printf("##################get frame CV_FFMPEG_CAP_PROP_POS_AVI_RATIO  %d \n",ic->output_ts_offset);fflush(stdout);
 
-                 //  printf("## %d##",ic->streams[video_stream]->nb_frames);
-      return ic->streams[video_stream]->nb_frames;
-      // return r2d(ic->streams[video_stream]->time_base);
+                  // printf("##[%d] %d##",video_stream,ic->streams[video_stream]->nb_frames);
+     // return ic->streams[video_stream]->nb_frames;
+     int tm=ic->streams[video_stream]->pts.val;
+   //   return 54321;
+
+    // printf("%d[%x]\n",ic->streams[video_stream]->cur_dts,ic->streams[video_stream]);
+//printf("[st addr :%x ]\n",ic->streams[video_stream]);
+     return tm;
+    // return ic->streams[video_stream]->cur_dts;
+ }     // return r2d(ic->streams[video_stream]->time_base);
      case CV_FFMPEG_CAP_PROP_FRAME_COUNT:
         return (double)get_total_frames();
     case CV_FFMPEG_CAP_PROP_FRAME_WIDTH:
