@@ -3,34 +3,27 @@
 #include "tool.h"
 #include "videosource.h"
 #include "detectregion.h"
-
-class CameraReq:public JsonData
-{
-public:
-    CameraReq(){}
-};
 class PerCameraData:public JsonData
 {
 public:
-
-    string url;
-    vector <DetectRegionData >detect_regions;
+    string Url;
+    vector <DetectRegionData >DetectRegion;
     PerCameraData(JsonPacket pkt):JsonData(pkt)
     {
+     //   prt(info,"->%s",pkt.str().data());
         decode();
     }
     PerCameraData()
     {
-
     }
-    PerCameraData(vector <DetectRegionData> regions,string url):detect_regions(regions),url(url)
+    PerCameraData(vector <DetectRegionData> regions,string url):DetectRegion(regions),Url(url)
     {
         encode();
     }
 
     void set_region(DetectRegionData data,int index)
     {
-        detect_regions[index-1]=data;
+        DetectRegion[index-1]=data;
         encode();
     }
 
@@ -38,17 +31,16 @@ public:
     {
 
     }
-
     void decode()
     {
-        DECODE_STRING_MEM(url);
-        DECODE_OBJ_ARRAY_MEM(detect_regions);
+        DECODE_STRING_MEM(Url);
+        DECODE_OBJ_ARRAY_MEM(DetectRegion);
     }
     void encode()
     {
         // detect_regions.clear();
-        ENCODE_STRING_MEM(url);
-        ENCODE_OBJ_ARRAY_MEM(detect_regions);
+        ENCODE_STRING_MEM(Url);
+        ENCODE_OBJ_ARRAY_MEM(DetectRegion);
     }
 };
 
@@ -65,32 +57,32 @@ public:
 public:
     Camera(JsonPacket cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
-        for(DetectRegionData p:private_data.detect_regions){
+        for(DetectRegionData p:private_data.DetectRegion){
             drs.push_back(new DetectRegion(p));
         }
-        src=new VideoSource(private_data.url);
+        src=new VideoSource(private_data.Url);
         start();
     }
     Camera(PerCameraData cfg,function <void(Camera *,string)>fc):VdData(cfg),quit(false),callback_result(fc)
     {
-        for(DetectRegionData p:private_data.detect_regions){
+        for(DetectRegionData p:private_data.DetectRegion){
             drs.push_back(new DetectRegion(p));
         }
-        src=new VideoSource(private_data.url);
+        src=new VideoSource(private_data.Url);
         start();
     }
     ~Camera()
     {
-        prt(info,"exiting %s",private_data.url.data());
+        prt(info,"exiting %s",private_data.Url.data());
         quit=true;
         if(work_trd->joinable())
             work_trd->join();
-        prt(info,"exiting %s",private_data.url.data());
+        prt(info,"exiting %s",private_data.Url.data());
         delete work_trd;
         for(DetectRegion *pro:drs)
             delete pro;
         drs.clear();
-        prt(info,"exited %s",private_data.url.data());
+        prt(info,"exited %s",private_data.Url.data());
         delete src;
     }
 

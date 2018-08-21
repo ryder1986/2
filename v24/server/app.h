@@ -37,10 +37,10 @@ public:
     void insert_camera(PerCameraData d,int index)
     {
         if(index>0&&index<=CameraData.size()){
-             prt(info," cams  size  %d", CameraData.size());
-             vector <PerCameraData>::iterator it=CameraData.begin();
-             CameraData.insert(it+index,d);
-             prt(info," cams new size  %d", CameraData.size());
+            prt(info," cams  size  %d", CameraData.size());
+            vector <PerCameraData>::iterator it=CameraData.begin();
+            CameraData.insert(it+index,d);
+            prt(info," cams new size  %d", CameraData.size());
         }else{
             prt(info," cams size  %d,unchange with index %d", CameraData.size(),index);
         }
@@ -61,42 +61,36 @@ public:
 };
 class AppReslut:public JsonData{
 public:
-    int camera_index;
-    JsonPacket camera_data;
-    int timestamp;
+    int CameraIndex;
+    JsonPacket DetectionResult;
+    int Timestamp;
 
     AppReslut(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-    AppReslut(int index,int ts,JsonPacket data):camera_index(index),timestamp(ts),camera_data(data)
+
+    AppReslut(int index,int ts,JsonPacket data):CameraIndex(index),Timestamp(ts),DetectionResult(data)
     {
         encode();
     }
 
     void decode()
     {
-        DECODE_INT_MEM(camera_index);
-        DECODE_INT_MEM(timestamp);
-        DECODE_OBJ_MEM(camera_data);
+        DECODE_INT_MEM(CameraIndex);
+        DECODE_INT_MEM(Timestamp);
+        DECODE_OBJ_MEM(DetectionResult);
     }
     void encode()
     {
-        ENCODE_INT_MEM(camera_index);
-        ENCODE_INT_MEM(timestamp);
-        ENCODE_OBJ_MEM(camera_data);
+        ENCODE_INT_MEM(CameraIndex);
+        ENCODE_INT_MEM(Timestamp);
+        DECODE_OBJ_MEM(DetectionResult);
     }
 };
 class App:public VdData<AppData>
 {
 public:
-//    enum OP{
-//        ADD_CAMERA,
-//        DEL_CAMERA,
-//        MOD_CAMERA,
-//        GET_CONFIG,
-//        SET_CONFIG
-//    };
     enum Operation{
         GET_CONFIG=1,
         SET_CONFIG,

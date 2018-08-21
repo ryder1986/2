@@ -30,35 +30,8 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         RequestPkt event(valid_buf);
         ReplyPkt ret_pkt;
         process_event(event,ret_pkt);
-#if 0
-
-        string cmd=data.get_string("cmd");
-        if(cmd=="set config"){
-            p_cm->set_config(data.get_string("data"));
-            restart_all();
-        }
-        if(cmd=="get config"){
-            DataPacket cfg=  p_cm->get_config();
-            DataPacket cfg_root;
-            cfg_root.set_pkt("config",cfg);
-            cfg_root.set_string("cmd",cmd);
-            clt->send(cfg_root.data().data(),cfg_root.data().length());
-        }
-        if(cmd=="delete camera"){
-            int index=data.get_int("index");
-            del_camera(index);
-        }
-        if(cmd=="add camera"){
-            int index=data.get_int("index");
-            DataPacket cam_data=data.get_pkt("data");
-            add_camera(index,cam_data);
-        }
-
-#else
         string ret=ret_pkt.config.str();
         clt->send(ret.data(),ret.length());
-
-#endif
     }
 #endif
 }
@@ -81,11 +54,10 @@ void App::process_camera_data(Camera *camera, string data)
     }
     int fd=Socket::UdpCreateSocket(5000);
     AppReslut rst(idx+1,ts,JsonPacket(data));
-    //   prt(info,"sending %s",rst.data().str().data());
     if(stream_cmd)
         for(Session *ss:*stream_cmd)
         {
-     //       prt(info,"send %s",rst.data().str().data());
+            //       prt(info,"send %s",rst.data().str().data());
             Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
     close(fd);
