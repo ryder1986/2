@@ -37,6 +37,28 @@ public:
         ret=true;
         return  ret;
     }
+    virtual bool process(Mat img_src,JsonPacket &pkt)
+    {
+
+        bool ret=false;
+        loop+=3;
+        if(loop>=img_src.cols)
+            loop=0;
+//        rects.push_back(Rect(loop,11,33,33));
+//        rects.push_back(Rect(loop,33,33,33));
+//        rects.push_back(Rect(loop,55,33,33));
+
+        vector<JsonPacket> objs;
+        ObjectRect r1(loop,11,33,33,"111",99);
+        objs.push_back(r1.data());
+
+
+        ObjectRect r2(loop,33,33,33,"111",99);
+        objs.push_back(r2.data());
+        pkt.set(objs);
+        ret=true;
+        return  ret;
+    }
 };
 
 
@@ -127,10 +149,10 @@ public:
             VdRect v(rc.x,rc.y,rc.width,rc.height);
             pkt.push_back(v.config);
         }
-     //   prt(info,"---)))))))))))))))sz %d",rects.size());
+        //   prt(info,"---)))))))))))))))sz %d",rects.size());
 
         rst.add("rect_result",pkt);
-      //  prt(info,"%s",rst.str().data());
+        //  prt(info,"%s",rst.str().data());
 
         return  ret;
     }

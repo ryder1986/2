@@ -68,6 +68,7 @@ void MainWindow::on_pushButton_stop_clicked()
 
 void MainWindow::on_pushButton_setconfig_clicked()
 {
+    cmd=App::Operation::GET_CONFIG;
     clt.set_config(ui->lineEdit_setconfig->text());
 }
 

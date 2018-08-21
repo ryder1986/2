@@ -23,6 +23,10 @@ public:
     {
         decode();
     }
+    AppData()
+    {
+
+    }
     void replace_camera(PerCameraData d,int index)
     {
         if(index>0&&index<=CameraData.size()){
@@ -170,6 +174,7 @@ private:
         case App::Operation::GET_CONFIG:
         {
             JsonPacket cfg=p_cm->get_config();//get config
+
             ReplyPkt rp(cfg);
             r=rp;
             prt(info,"reply %s",r.config.str().data());

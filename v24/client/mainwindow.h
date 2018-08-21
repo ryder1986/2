@@ -31,7 +31,7 @@ public:
     }
     void get_config()
     {
-        VdEvent e(App::OP::GET_CONFIG,0,JsonPacket());
+        RequestPkt e(App::Operation::GET_CONFIG,0,JsonPacket());
         bool ret= send(e.data().str());//talk to server
         if(!ret){
             prt(info,"fail send");
@@ -41,7 +41,7 @@ public:
     {
         string str=data.toStdString().data();
         JsonPacket pkt_tmp(str);
-        VdEvent e(App::OP::SET_CONFIG,0,pkt_tmp);
+        RequestPkt e(App::Operation::SET_CONFIG,0,pkt_tmp);
         bool ret= send(e.data().str());//talk to server
         if(!ret){
             prt(info,"fail send");
@@ -49,27 +49,27 @@ public:
     }
     void add_camera(QString data)
     {
-        string url=data.toStdString().data();
-        VdPoint p1(100,100);
-        VdPoint p2(200,100);
-        VdPoint p3(200,200);
-        VdPoint p4(100,200);
-        vector <VdPoint>ps;
-        ps.push_back(p1);
-        ps.push_back(p2);
-        ps.push_back(p3);
-        ps.push_back(p4);
+//        string url=data.toStdString().data();
+//        VdPoint p1(100,100);
+//        VdPoint p2(200,100);
+//        VdPoint p3(200,200);
+//        VdPoint p4(100,200);
+//        vector <VdPoint>ps;
+//        ps.push_back(p1);
+//        ps.push_back(p2);
+//        ps.push_back(p3);
+//        ps.push_back(p4);
 
-        DetectRegionData d(3,"dummy",ps);
-        vector<DetectRegionData> v;
-        v.push_back(d);
-        CameraData cd(v,"rtsp://192.168.1.216:8554/test1");
+//        DetectRegionData d(3,"dummy",ps);
+//        vector<DetectRegionData> v;
+//        v.push_back(d);
+//        CameraData cd(v,"rtsp://192.168.1.216:8554/test1");
 
-        VdEvent e(App::OP::ADD_CAMERA,1,cd.data().str());
-        bool ret= send(e.data().str());//talk to server
-        if(!ret){
-            prt(info,"fail send");
-        }
+//        VdEvent e(App::OP::ADD_CAMERA,1,cd.data().str());
+//        bool ret= send(e.data().str());//talk to server
+//        if(!ret){
+//            prt(info,"fail send");
+//        }
     }
 #if 0
     void get_config()
@@ -561,15 +561,17 @@ public:
 private:
     void start_config()
     {
-        for(CameraData d:cfg.cameras)
+        for(PerCameraData d:cfg.CameraData)
         {
-            ui->comboBox_cameras->addItem(d.url.data());
+            ui->comboBox_cameras->addItem(d.Url.data());
             PlayerWidget *player=new PlayerWidget(d);
             players.push_back(player);
             ui->groupBox_video->layout()->addWidget(player);
-            connect(player,SIGNAL(cam_data_change(CameraData,QWidget*)),\
-                    this,SLOT(generate_current_config(CameraData,QWidget*)));
+            connect(player,SIGNAL(cam_data_change(PerCameraData,QWidget*)),\
+                    this,SLOT(generate_current_config(PerCameraData,QWidget*)));
+          prt(info,"1");
         }
+             prt(info,"%s",cfg.config.str().data());
 
     }
     void stop_config()
@@ -596,19 +598,19 @@ private:
             JsonPacket p(str);
             //prt(info,"recving %s",p.str().data());
             AppReslut rst(p);
-            int cam_index=rst.camera_index;
-            int ts=rst.timestamp;
-                JsonPacket cam_data=rst.camera_data;
+            int cam_index=rst.CameraIndex;
+            int ts=rst.Timestamp;
+                JsonPacket cam_data=rst.DetectionResult;
             //            prt(info,"get %s(%s)",rst.config.str().data(),str.data());
             //            prt(info,"geted %s",buf);
 
 
-            vector <JsonPacket>  regions=cam_data.to_array();
-            JsonPacket cam_data_region1=regions.front();
-            RegionRst rrst(cam_data_region1);
+//            vector <JsonPacket>  regions=cam_data.to_array();
+//            JsonPacket cam_data_region1=regions.front();
+//            RegionRst rrst(cam_data_region1);
 
-            VdRect dr(rrst.detect_rect);
-            JsonPacket jp=   rrst.reslut_rect.get("rect_result");
+//            VdRect dr(rrst.DetectionRect);
+//            JsonPacket jp=   rrst.reslut_rect.get("rect_result");
                  //     prt(info,"%s",rrst.data().str().data());
 
 
@@ -622,19 +624,19 @@ private:
 //                }
 //            }
 
-            vector<QRect> result_rects;
+//            vector<QRect> result_rects;
 
-            for(JsonPacket pk:jp.to_array()){
-                VdRect tmp(pk);
-                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
-                result_rects.push_back(rc);
-            }
-            for(int i=0;i<players.size();i++){
-                if(cam_index==i+1){
-                    PlayerWidget *p=players[i];
-                    p->set_overlay(result_rects,ts);
-                }
-            }
+//            for(JsonPacket pk:jp.to_array()){
+//                VdRect tmp(pk);
+//                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
+//                result_rects.push_back(rc);
+//            }
+//            for(int i=0;i<players.size();i++){
+//                if(cam_index==i+1){
+//                    PlayerWidget *p=players[i];
+//                    p->set_overlay(result_rects,ts);
+//                }
+//            }
 
 
             //            for(VdRect r:rrst.){
@@ -668,7 +670,7 @@ private:
         }
     }
 private slots:
-    void generate_current_config(CameraData d,QWidget* w)
+    void generate_current_config(PerCameraData d,QWidget* w)
     {
         //   int index= ui->gridLayout_video->indexOf(w);
         int index= ui->groupBox_video->layout()->indexOf(w);
@@ -689,13 +691,13 @@ private slots:
         ui->plainTextEdit_recive->setPlainText(msg);//show what we got
         string str(msg.toUtf8());
         //JsonPacket pkt(str);
-        VdEvent event(str);
+        ReplyPkt event(str);
         //  int op=pkt.get("op").to_int();
-        switch(event.op){
-        case App::OP::GET_CONFIG:
+        switch(cmd){
+        case App::Operation::GET_CONFIG:
         {
             //cfg=pkt.get("ret");
-            cfg=event.ret;
+            cfg=event.Ret;
             ui->lineEdit_getconfig->setText(cfg.data().str().data());
             prt(info,"stopping");
             stop_config();
@@ -733,6 +735,7 @@ private:
     Client clt;
     AppData cfg;
     vector <PlayerWidget *> players;
+    int cmd;
 };
 
 #endif // MAINWINDOW_H

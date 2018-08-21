@@ -1,20 +1,13 @@
 #ifndef DETECTREGION_H
 #define DETECTREGION_H
-
-
 #include "jsonpacket.h"
-//#include "pvdmvncprocessor.h"
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-
 using namespace std;
 using namespace cv;
-
-
 class DetectRegionData:public JsonData
 {
 
@@ -51,7 +44,7 @@ public:
     {
         ENCODE_OBJ_ARRAY_MEM(ExpectedAreaVers);
         ENCODE_STRING_MEM(SelectedProcessor);
-        ENCODE_OBJ_MEM(ProcessorData);
+        //   ENCODE_OBJ_MEM(ProcessorData);
     }
 
 };
@@ -60,29 +53,31 @@ class RegionRst:public JsonData
 {
 
 public:
-    JsonPacket reslut_rect;
-    JsonPacket detect_rect;
+   // VdRect DetectionRect;
+    JsonPacket DetectionRect;
+     JsonPacket Result;
     RegionRst(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
 
-    RegionRst(JsonPacket rst_rect ,JsonPacket rct):reslut_rect(rst_rect)
+    RegionRst(JsonPacket rst ,JsonPacket rct)
     {
-        detect_rect=rct;
+        DetectionRect=rct;
+        Result=rst;
         encode();
     }
 
     void decode()
     {
-        DECODE_OBJ_MEM(reslut_rect);
-        DECODE_OBJ_MEM(detect_rect);
+        DECODE_OBJ_MEM(DetectionRect);
+        DECODE_OBJ_MEM(Result);
     }
 
     void encode()
     {
-        ENCODE_OBJ_MEM(reslut_rect);
-        ENCODE_OBJ_MEM(detect_rect);
+        ENCODE_OBJ_MEM(DetectionRect);
+        ENCODE_OBJ_MEM(Result);
     }
 
 };
@@ -101,8 +96,10 @@ public:
     DetectRegion(DetectRegionData pkt):VdData(pkt)
     {
         //  p=new PvdMvncProcessor();
-        p=new PvdC4Processor(pkt.data());
-        //p=new DummyProcessor();
+        if(private_data.SelectedProcessor=="c4")
+            p=new PvdC4Processor(pkt.data());
+        if(private_data.SelectedProcessor=="dummy")
+            p=new DummyProcessor();
         detect_rect=reshape_2_rect(private_data.ExpectedAreaVers);
     }
 
@@ -156,7 +153,6 @@ private:
         }
         return Rect(x_min,y_min,x_max-x_min,y_max-y_min);
     }
-
 };
 
 #endif // DETECTREGION_H

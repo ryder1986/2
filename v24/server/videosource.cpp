@@ -78,7 +78,7 @@ void VideoSource::run()
                 int ts=vcap.get(CV_CAP_PROP_POS_AVI_RATIO);
 
 
-                prt(info,"timestamp  %dms", ts);
+                //prt(info,"timestamp  %dms", ts);
                 frame_rate++;
                 lock.lock();
 

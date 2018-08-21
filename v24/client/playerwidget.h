@@ -24,7 +24,7 @@ public:
         //   delete src;
     }
 
-    PlayerWidget(CameraData data)
+    PlayerWidget(PerCameraData data)
     {
         rects.clear();
         loop=0;
@@ -34,7 +34,7 @@ public:
         tick_timer=new QTimer();
         connect(tick_timer,SIGNAL(timeout()),this,SLOT(timeout()));
         tick_timer->start(100);
-        src=new VideoSource(data.url);
+        src=new VideoSource(data.Url);
     }
     void set_title(QString t)
     {
@@ -122,8 +122,8 @@ protected:
         rects.clear();
         img_painter.setPen(red_pen1());
         cnt=0;
-        for(DetectRegionData p:cfg.detect_regions){
-            draw_points(vector<VdPoint>(p.poly_vers.begin(),p.poly_vers.end()),img_painter);
+        for(DetectRegionData p:cfg.DetectRegion){
+            draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
 
         if(!img.isNull()){
@@ -149,12 +149,12 @@ public slots:
     {
         QPoint p1=map_point(e->pos());
    prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
-       selected_region_index,selected_point_index,cfg.detect_regions.size());
+       selected_region_index,selected_point_index,cfg.DetectRegion.size());
         if(ver_picked){
           //  prt(info,"drag (region %d,point %d )to (%d,%d)",selected_region_index,selected_point_index,e->pos().x(),e->pos().y());
             if(selected_region_index>0&&selected_point_index>0&&\
-                    selected_region_index<=cfg.detect_regions.size()){
-                DetectRegionData r=cfg.detect_regions[selected_region_index-1];
+                    selected_region_index<=cfg.DetectRegion.size()){
+                DetectRegionData r=cfg.DetectRegion[selected_region_index-1];
                 VdPoint p(p1.x(),p1.y());
                 r.set_point(p,selected_point_index);
 
@@ -172,9 +172,9 @@ public slots:
     {
 
 
-        vector <DetectRegionData >detect_regions=cfg.detect_regions;
+        vector <DetectRegionData >detect_regions=cfg.DetectRegion;
         for(int i=0;i<detect_regions.size();i++){
-            vector <VdPoint> pnts(detect_regions[i].poly_vers.begin(),detect_regions[i].poly_vers.end());
+            vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
             int point_index=match_point(pnts,map_point(e->pos()));
             if(point_index>0){
                 ver_picked=true;
@@ -232,7 +232,7 @@ private:
     //    }
 
 signals:
-    void cam_data_change(CameraData ,QWidget *w);
+    void cam_data_change(PerCameraData ,QWidget *w);
     void selected(PlayerWidget *w);
     void data_changed();
     void alg_changed(int index);
@@ -248,7 +248,7 @@ private:
     bool show_info;
     int channel_num;
     int poly_num;
-    CameraData cfg;
+    PerCameraData cfg;
     int loop;
     VideoSource *src;
     bool ver_picked;

@@ -24,7 +24,25 @@ public:
         }else
             val=v;
     }
-
+    void set(string str)
+    {
+        JsonValue v;
+        Reader r;
+        bool rst=r.parse(str,v);
+        if(!rst){
+            prt(info,"parse err");
+        }else
+            val=v;
+    }
+    void set(vector<JsonPacket> ar)
+    {
+        JsonValue v;
+        int sz=ar.size();
+        for(int i=0;i<sz;i++){
+            v[i]=ar[i].val;
+        }
+        val=v;
+    }
     JsonPacket()
     {
     }
@@ -287,6 +305,7 @@ public:
     JsonData(JsonPacket pkt)
     {
         config=pkt;
+       // prt(info,"json string: %s",config.str().data());
     }
     JsonData()
     {
@@ -325,14 +344,17 @@ public:
 #define ENCODE_STRING_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_DOUBLE_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
-//#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.str());}
+
 #define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.obj());}
 #define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
     config.add(#mem,pkts);}
-#define ENCODE_OBJ_ARRAY_MEM_PRI(mem) { vector<JsonPacket> pkts;\
-    for(auto tmp1:this->mem){pkts.push_back(tmp1);}\
-    config.add(#mem,pkts);}
+
+//#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.str());}
+//#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.config.obj());}
+//#define ENCODE_OBJ_ARRAY_MEM_PRI(mem) { vector<JsonPacket> pkts;\
+//    for(auto tmp1:this->mem){pkts.push_back(tmp1);}\
+//    config.add(#mem,pkts);}
 template <typename T>
 class RequestData:public JsonData
 {
@@ -397,14 +419,12 @@ public:
     {
         ENCODE_INT_MEM(Index);
         ENCODE_INT_MEM(Operation);
-   //     config.add("Argument",Argument.value());
         ENCODE_OBJ_MEM(Argument);
     }
     void decode()
     {
         DECODE_INT_MEM(Operation);
         DECODE_INT_MEM(Index);
-      //  Argument=config.get("Argument");
         DECODE_OBJ_MEM(Argument);
     }
 
@@ -413,13 +433,17 @@ class ReplyPkt:public JsonData
 {
 public:
     JsonPacket Ret;
-
-    ReplyPkt(JsonPacket ret):Ret(ret)
+    ReplyPkt(JsonPacket p):Ret(p)
     {
-        decode();
+        encode();
     }
     ReplyPkt()
     {
+
+    }
+    ReplyPkt(string ret):JsonData(ret)
+    {
+        decode();
     }
     void encode()
     {
@@ -462,6 +486,44 @@ public:
         ENCODE_INT_MEM(y);
         ENCODE_INT_MEM(w);
         ENCODE_INT_MEM(h);
+    }
+
+};
+class ObjectRect:public JsonData
+{
+public:
+    int x;
+    int y;
+    int w;
+    int h;
+    string label;
+    int confidence_rate;
+    ObjectRect(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    ObjectRect(int x1,int y1,int w1,int h1,string l,int c):x(x1),y(y1),w(w1),h(h1),label(l),confidence_rate(c)
+    {
+        encode();
+    }
+    ObjectRect(){}
+    void decode()
+    {
+        DECODE_INT_MEM(x);
+        DECODE_INT_MEM(y);
+        DECODE_INT_MEM(w);
+        DECODE_INT_MEM(h);
+        DECODE_STRING_MEM(label);
+        DECODE_INT_MEM(confidence_rate);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(x);
+        ENCODE_INT_MEM(y);
+        ENCODE_INT_MEM(w);
+        ENCODE_INT_MEM(h);
+        ENCODE_STRING_MEM(label);
+        ENCODE_INT_MEM(confidence_rate);
     }
 
 };
