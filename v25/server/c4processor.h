@@ -15,7 +15,7 @@
 
 
 class DummyProcessorOutputData:public JsonData{
-    vector <ObjectRect> DummyObject;
+    vector <ObjectRect> DetectedObjects;
 public:
     DummyProcessorOutputData()
     {
@@ -24,18 +24,17 @@ public:
     {
         decode();
     }
-    DummyProcessorOutputData(vector <ObjectRect> o):DummyObject(o)
+    DummyProcessorOutputData(vector <ObjectRect> o):DetectedObjects(o)
     {
         encode();
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(DummyObject);
+        DECODE_OBJ_ARRAY_MEM(DetectedObjects);
     }
     void encode()
     {
-      //  ENCODE_OBJ_ARRAY_MEM(obj_2_pkt_array(DummyObject));
-        ENCODE_OBJ_ARRAY_MEM_G(DummyObject);
+        ENCODE_OBJ_ARRAY_MEM_G(DetectedObjects);
     }
 };
 class DummyProcessor:public VideoProcessor
@@ -68,7 +67,29 @@ public:
 };
 
 
-
+class C4ProcessorOutputData:public JsonData{
+    vector <VdRect> Rects;
+public:
+    C4ProcessorOutputData()
+    {
+    }
+    C4ProcessorOutputData(JsonPacket str):JsonData(str)
+    {
+        decode();
+    }
+    C4ProcessorOutputData(vector <VdRect> o):Rects(o)
+    {
+        encode();
+    }
+    void decode()
+    {
+        DECODE_OBJ_ARRAY_MEM(Rects);
+    }
+    void encode()
+    {
+        ENCODE_OBJ_ARRAY_MEM_G(Rects);
+    }
+};
 class PvdC4Processor : public VideoProcessor
 {
     typedef struct process_result{
@@ -85,6 +106,30 @@ class PvdC4Processor : public VideoProcessor
     }m_result;
 
 public:
+
+    virtual bool process(Mat img_src,JsonPacket &rst)
+    {
+        vector<Rect> rects;
+        bool ret=false;
+        m_result r;
+        if(real_process(img_src,r)){
+            ret=true;
+        }else
+            ret=false;
+        rects=r.rects;
+        vector<VdRect> pkt;
+        for(Rect rc:rects){
+            VdRect v(rc.x,rc.y,rc.width,rc.height);
+            pkt.push_back(v.data());
+        }
+        VdRect v(111,111,111,111);
+        pkt.push_back(v.data());
+        C4ProcessorOutputData out(pkt);
+
+        rst=out.data();
+        //  rst.add("rect_result",pkt);
+        return  ret;
+    }
     float string2f(string str)
     {
         return atof(str.data());
@@ -140,28 +185,6 @@ public:
         return  ret;
     }
 
-    virtual bool process(Mat img_src,JsonPacket &rst)
-    {
-        vector<Rect> rects;
-        bool ret=false;
-        m_result r;
-        if(real_process(img_src,r)){
-            ret=true;
-        }else
-            ret=false;
-        rects=r.rects;
-        vector<JsonPacket> pkt;
-        for(Rect rc:rects){
-            VdRect v(rc.x,rc.y,rc.width,rc.height);
-            pkt.push_back(v.data());
-        }
-        //   prt(info,"---)))))))))))))))sz %d",rects.size());
-
-        rst.add("rect_result",pkt);
-        //  prt(info,"%s",rst.str().data());
-
-        return  ret;
-    }
 
 private:
 

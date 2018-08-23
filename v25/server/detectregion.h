@@ -37,18 +37,7 @@ public:
     }
     void decode()
     {
-        if(ExpectedAreaVers.size()==4){
-            prt(info,"before decode %d",ExpectedAreaVers[2].x);
-        }
         DECODE_OBJ_ARRAY_MEM(ExpectedAreaVers);
-
-        if(ExpectedAreaVers.size()==4){
-                 prt(info,"cfg now %s ",config.str().data());
-            vector <JsonPacket> jp=config.get("ExpectedAreaVers").to_array();
-            JsonPacket pp=jp[2];
-            VdPoint vp(pp);
-            prt(info,"ater decode %d,actually %d ",ExpectedAreaVers[2].x,vp.x);
-        }
         DECODE_OBJ_MEM(ProcessorData);
         DECODE_STRING_MEM(SelectedProcessor);
     }
@@ -88,7 +77,7 @@ public:
 
     void encode()
     {
-        ENCODE_OBJ_MEM(DetectionRect.data());
+        ENCODE_OBJ_MEM_G(DetectionRect);
         ENCODE_OBJ_MEM(Result);
     }
 

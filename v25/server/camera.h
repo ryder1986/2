@@ -42,7 +42,44 @@ public:
         ENCODE_OBJ_ARRAY_MEM(DetectRegion);
     }
 };
+class CameraOutputData:public JsonData
+{
+public:
+    vector<JsonPacket> DetectionResult;
+    int Timestamp;
+    CameraOutputData(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    CameraOutputData()
+    {
+    }
+    CameraOutputData(vector <JsonPacket> regions,int ts):DetectionResult(regions),Timestamp(ts)
+    {
+        encode();
+    }
 
+//    void set_region(JsonPacket data,int index)
+//    {
+//        DetectRegion[index-1]=data;
+//        encode();
+//    }
+
+//    void replace_point()
+//    {
+
+//    }
+    void decode()
+    {
+        DECODE_INT_MEM(Timestamp);
+        DECODE_OBJ_ARRAY_MEM(DetectionResult);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(Timestamp);
+        ENCODE_OBJ_ARRAY_MEM(DetectionResult);
+    }
+};
 class Camera:public VdData<CameraInputData>
 {
 public:
@@ -90,14 +127,16 @@ public:
                     callback_result(this,ret.str());
                 }
 #endif
-                JsonPacket pkt;
+             vector<   JsonPacket >pkt;
                 for(DetectRegion *r:drs){
                     JsonPacket ret=r->work(frame);
-                    pkt.value().append(ret.value());
+                    pkt.push_back(ret);
                     //prt(info,"get a rect ");
                 }
+
+                CameraOutputData cod(pkt,ts);
                 timestamp=ts;
-                callback_result(this,pkt.str());
+                callback_result(this,cod.data().str());
             }
         }
     }

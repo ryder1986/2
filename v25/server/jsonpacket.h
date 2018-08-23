@@ -346,6 +346,7 @@ public:
 #define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
 //#define ENCODE_OBJ_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.obj());}
+#define ENCODE_OBJ_MEM_G(mem) {config.add(#mem,this->mem.data().obj());}
 #define ENCODE_OBJ_ARRAY_MEM(mem) {config.add(#mem,mem);}
 #define ENCODE_OBJ_ARRAY_MEM_G(mem) { vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\

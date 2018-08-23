@@ -55,7 +55,20 @@ public:
         timestamp=ts;
         lock.unlock();
     }
+    void set_overlay(JsonPacket cam_out)
+    {
+        lock.lock();
+        CameraOutputData  out=cam_out;
+        for(int i;i<out.DetectionResult.size();i++){
 
+
+        }
+
+
+//        rects.assign(rs.begin(),rs.end());
+//        timestamp=ts;
+        lock.unlock();
+    }
     bool  get_img()
     {
         Mat rgb_frame;
@@ -121,10 +134,6 @@ protected:
        // prt(info,"start draw-> %s",cfg.data().str().data());
         for(DetectRegionInputData p:cfg.DetectRegion){
               // prt(info,"p-> %s",p.data().str().data());
-            for(VdPoint pnt:p.ExpectedAreaVers){
-              // prt(info,"point-> %d %d",pnt.x,pnt.y);
-                // prt(info,"point-> %s");
-            }
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
 
@@ -235,6 +244,7 @@ private:
     int channel_num;
     int poly_num;
     CameraInputData cfg;
+   // CameraInputData
     int loop;
     VideoSource *src;
     bool ver_picked;

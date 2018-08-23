@@ -600,25 +600,32 @@ private:
             JsonPacket p(str);
             //prt(info,"recving %s",p.str().data());
             AppOutputData rst(p);
+            //prt(info,"recving %s",rst.data().str().data());
             int cam_index=rst.CameraIndex;
-            int ts=rst.Timestamp;
-            JsonPacket cam_data=rst.DetectionResult;
-            //prt(info,"cfg %s",cfg.data().str().data());
-            //prt(info,"index %d, num %d",cam_index, cfg.CameraData.size());
-            CameraInputData perdata=  cfg.CameraData[cam_index-1];
+        //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
             PlayerWidget *w= players[cam_index-1];
-            vector<JsonPacket> cd=cam_data.to_array();
-            for(int i=0;i<perdata.DetectRegion.size();i++){
-               DetectRegionInputData rd= perdata.DetectRegion[i];
-               if(rd.SelectedProcessor.data()=="dummy"){
-                  prt(info,"dummy");
-                  DummyProcessorOutputData dod(cam_data);
-               }
-               if(rd.SelectedProcessor.data()=="c4"){
-                  prt(info,"c4");
+            w->set_overlay(rst.CameraOutput);
 
-               }
-            }
+//            int cam_index=rst.CameraIndex;
+//            int ts=rst.Timestamp;
+//            JsonPacket cam_data=rst.DetectionResult;
+//            //prt(info,"cfg %s",cfg.data().str().data());
+//            //prt(info,"index %d, num %d",cam_index, cfg.CameraData.size());
+//            CameraInputData perdata=  cfg.CameraData[cam_index-1];
+//            PlayerWidget *w= players[cam_index-1];
+
+//            vector<JsonPacket> cd=cam_data.to_array();
+//            for(int i=0;i<perdata.DetectRegion.size();i++){
+//               DetectRegionInputData rd= perdata.DetectRegion[i];
+//               if(rd.SelectedProcessor.data()=="dummy"){
+//                  prt(info,"dummy");
+//                  DummyProcessorOutputData dod(cam_data);
+//               }
+//               if(rd.SelectedProcessor.data()=="c4"){
+//                  prt(info,"c4");
+
+//               }
+//            }
 //            for(DetectRegionData data:perdata.DetectRegion){
 //                data.ProcessorData
 //            }
