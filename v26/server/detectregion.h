@@ -57,7 +57,7 @@ class DetectRegionOutputData:public JsonData
 public:
     VdRect DetectionRect;
     JsonPacket Result;
-    DetectRegionOutputData(string pkt):JsonData(pkt)
+    DetectRegionOutputData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }

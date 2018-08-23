@@ -58,15 +58,46 @@ public:
     void set_overlay(JsonPacket cam_out)
     {
         lock.lock();
+    //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
         CameraOutputData  out=cam_out;
-        for(int i;i<out.DetectionResult.size();i++){
+
+          prt(info,"sz %d",out.DetectionResult.size());
+        for(int i=0;i<out.DetectionResult.size();i++){
+            DetectRegionInputData d=  cfg.DetectRegion[i];
+            DetectRegionOutputData  o= out.DetectionResult[i];
+            prt(info,"processor %s",d.SelectedProcessor.data());
+            if(d.SelectedProcessor=="c4"){
+                C4ProcessorOutputData c4o=o.Result;
+                //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
+             //   rects.clear();
+                for(VdRect v:c4o.Rects){
+                    QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
+                    rects.push_back(r);
+                }
+                QRect rrr=rects.at(rects.size()-1);
+                   prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
+
+            }
+            if(d.SelectedProcessor=="dummy"){
+
+                DummyProcessorOutputData dummyo=o.Result;
+                //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
+              //  rects.clear();
+                for(ObjectRect objectrect:dummyo.DetectedObjects){
+                    QRect rct(objectrect.x+o.DetectionRect.x,objectrect.y+o.DetectionRect.y,objectrect.w,objectrect.h);
+                    rects.push_back(rct);
+                }
+               // prt(info,"get %d dummy rect ",rects.size())
+                    prt(info,"process dummy %d results ",dummyo.DetectedObjects.size());
+
+            }
+            if(d.SelectedProcessor=="pvd"){}
+            if(d.SelectedProcessor=="fvd"){}
 
 
         }
-
-
-//        rects.assign(rs.begin(),rs.end());
-//        timestamp=ts;
+        //      rects.assign(rs.begin(),rs.end());
+        //      timestamp=ts;
         lock.unlock();
     }
     bool  get_img()
@@ -80,7 +111,6 @@ public:
                        rgb_frame.cols,rgb_frame.rows,
                        QImage::Format_RGB888);
             img.bits();
-
         }
         return ret;
     }
@@ -131,9 +161,9 @@ protected:
         rects.clear();
         img_painter.setPen(red_pen1());
         cnt=0;
-       // prt(info,"start draw-> %s",cfg.data().str().data());
+        // prt(info,"start draw-> %s",cfg.data().str().data());
         for(DetectRegionInputData p:cfg.DetectRegion){
-              // prt(info,"p-> %s",p.data().str().data());
+            // prt(info,"p-> %s",p.data().str().data());
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
 
@@ -158,8 +188,8 @@ public slots:
         QPoint p1=map_point(e->pos());
 
         if(ver_picked){
-       //     prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
-                selected_region_index,selected_point_index,cfg.DetectRegion.size());
+            //     prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
+            selected_region_index,selected_point_index,cfg.DetectRegion.size());
             //  prt(info,"drag (region %d,point %d )to (%d,%d)",\
             selected_region_index,selected_point_index,e->pos().x(),e->pos().y());
             if(selected_region_index>0&&selected_point_index>0&&\
@@ -167,9 +197,9 @@ public slots:
                 DetectRegionInputData r=cfg.DetectRegion[selected_region_index-1];
                 VdPoint p(p1.x(),p1.y());
                 r.set_point(p,selected_point_index);
-            //    prt(info,"before:%s",cfg.data().str().data());
+                //    prt(info,"before:%s",cfg.data().str().data());
                 cfg.set_region(r.data(),selected_region_index);
-              //               prt(info,"after:%s",cfg.data().str().data());
+                //               prt(info,"after:%s",cfg.data().str().data());
             }
             // cfg.encode();
         }
@@ -244,7 +274,7 @@ private:
     int channel_num;
     int poly_num;
     CameraInputData cfg;
-   // CameraInputData
+    // CameraInputData
     int loop;
     VideoSource *src;
     bool ver_picked;

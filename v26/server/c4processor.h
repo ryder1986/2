@@ -15,8 +15,9 @@
 
 
 class DummyProcessorOutputData:public JsonData{
-    vector <ObjectRect> DetectedObjects;
+
 public:
+    vector <ObjectRect> DetectedObjects;
     DummyProcessorOutputData()
     {
     }
@@ -68,8 +69,9 @@ public:
 
 
 class C4ProcessorOutputData:public JsonData{
-    vector <VdRect> Rects;
+
 public:
+    vector <VdRect> Rects;
     C4ProcessorOutputData()
     {
     }
