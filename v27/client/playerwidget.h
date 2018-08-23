@@ -61,11 +61,11 @@ public:
     //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
         CameraOutputData  out=cam_out;
 
-          prt(info,"sz %d",out.DetectionResult.size());
+   //       prt(info,"sz %d",out.DetectionResult.size());
         for(int i=0;i<out.DetectionResult.size();i++){
             DetectRegionInputData d=  cfg.DetectRegion[i];
             DetectRegionOutputData  o= out.DetectionResult[i];
-            prt(info,"processor %s",d.SelectedProcessor.data());
+   //         prt(info,"processor %s",d.SelectedProcessor.data());
             if(d.SelectedProcessor=="c4"){
                 C4ProcessorOutputData c4o=o.Result;
                 //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
@@ -75,7 +75,7 @@ public:
                     rects.push_back(r);
                 }
                 QRect rrr=rects.at(rects.size()-1);
-                   prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
+         //          prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
             }
             if(d.SelectedProcessor=="dummy"){
@@ -88,7 +88,7 @@ public:
                     rects.push_back(rct);
                 }
                // prt(info,"get %d dummy rect ",rects.size())
-                    prt(info,"process dummy %d results ",dummyo.DetectedObjects.size());
+            //        prt(info,"process dummy %d results ",dummyo.DetectedObjects.size());
 
             }
             if(d.SelectedProcessor=="pvd"){}
