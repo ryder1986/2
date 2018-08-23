@@ -58,9 +58,6 @@ class AppOutputData:public JsonData{
 public:
     int CameraIndex;
     JsonPacket CameraOutput;
-//    vector<JsonPacket> DetectionResult;
-//    int Timestamp;
-
     AppOutputData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
@@ -75,15 +72,11 @@ public:
     {
         DECODE_INT_MEM(CameraIndex);
         DECODE_OBJ_MEM(CameraOutput);
-      //       DECODE_INT_MEM(Timestamp);
-   //     DECODE_OBJ_ARRAY_MEM(DetectionResult);
     }
     void encode()
     {
         ENCODE_INT_MEM(CameraIndex);
-           ENCODE_OBJ_MEM(CameraOutput);
-//        ENCODE_INT_MEM(Timestamp);
-//        ENCODE_OBJ_ARRAY_MEM(DetectionResult);
+        ENCODE_OBJ_MEM(CameraOutput);
     }
 };
 class App:public VdData<AppInputData>
