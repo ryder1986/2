@@ -347,7 +347,9 @@ public:
 //#define ENCODE_OBJ_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.obj());}
 #define ENCODE_OBJ_ARRAY_MEM(mem) {config.add(#mem,mem);}
-
+#define ENCODE_OBJ_ARRAY_MEM_G(mem) { vector<JsonPacket> pkts;\
+    for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
+    config.add(#mem,pkts);}
 //#define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();\
 this->mem.assign(tmp.begin(),tmp.end());}
 //#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
@@ -355,7 +357,7 @@ this->mem.assign(tmp.begin(),tmp.end());}
 //    config.add(#mem,pkts);}
 //#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.str());}
 //#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.config.obj());}
-//#define ENCODE_OBJ_ARRAY_MEM_PRI(mem) { vector<JsonPacket> pkts;\
+//#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
 //    for(auto tmp1:this->mem){pkts.push_back(tmp1);}\
 //    config.add(#mem,pkts);}
 template <typename T>

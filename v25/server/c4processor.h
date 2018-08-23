@@ -34,7 +34,8 @@ public:
     }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM(obj_2_pkt_array(DummyObject));
+      //  ENCODE_OBJ_ARRAY_MEM(obj_2_pkt_array(DummyObject));
+        ENCODE_OBJ_ARRAY_MEM_G(DummyObject);
     }
 };
 class DummyProcessor:public VideoProcessor

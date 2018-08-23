@@ -42,16 +42,12 @@ public:
         title=t;
         lock.unlock();
     }
+
     void set_show(bool flg)
     {
         show_info=flg;
     }
-    //    void set_object_rect(QRect r)
-    //    {
-    //        lock.lock();
-    //        rects.push_back(r);
-    //        lock.unlock();
-    //    }
+
     void set_overlay(vector<QRect> rs,int ts)
     {
         lock.lock();
@@ -60,7 +56,7 @@ public:
         lock.unlock();
     }
 
-    void  get_img()
+    bool  get_img()
     {
         Mat rgb_frame;
         Mat bgr_frame;
@@ -73,6 +69,7 @@ public:
             img.bits();
 
         }
+        return ret;
     }
     void draw_points(const vector <VdPoint> points,QPainter &pt)
     {
@@ -109,20 +106,25 @@ protected:
     {
         lock.lock();
         QPainter this_painter(this);
-        get_img();
+        if(!get_img()){
+            lock.unlock();
+            return;
+        }
         QPainter img_painter(&img);
         img_painter.setPen(blue_pen1());
-
-        //        QPoint p(100,100);
-        //        img_painter.drawEllipse(p,10+loop++,10);
-
         for(QRect r:rects){
             img_painter.drawRect(r);
         }
         rects.clear();
         img_painter.setPen(red_pen1());
         cnt=0;
+       // prt(info,"start draw-> %s",cfg.data().str().data());
         for(DetectRegionInputData p:cfg.DetectRegion){
+              // prt(info,"p-> %s",p.data().str().data());
+            for(VdPoint pnt:p.ExpectedAreaVers){
+              // prt(info,"point-> %d %d",pnt.x,pnt.y);
+                // prt(info,"point-> %s");
+            }
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
 
@@ -141,16 +143,13 @@ public slots:
     void timeout()
     {
         this->update();
-        //frame_rate++;
-        //     prt(info,"frame rate :%d ",frame_rate);
-        //frame_rate=0;
     }
     void mouseMoveEvent(QMouseEvent *e)
     {
         QPoint p1=map_point(e->pos());
 
         if(ver_picked){
-            prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
+       //     prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
                 selected_region_index,selected_point_index,cfg.DetectRegion.size());
             //  prt(info,"drag (region %d,point %d )to (%d,%d)",\
             selected_region_index,selected_point_index,e->pos().x(),e->pos().y());
@@ -159,7 +158,9 @@ public slots:
                 DetectRegionInputData r=cfg.DetectRegion[selected_region_index-1];
                 VdPoint p(p1.x(),p1.y());
                 r.set_point(p,selected_point_index);
+            //    prt(info,"before:%s",cfg.data().str().data());
                 cfg.set_region(r.data(),selected_region_index);
+              //               prt(info,"after:%s",cfg.data().str().data());
             }
             // cfg.encode();
         }
@@ -183,15 +184,10 @@ public slots:
         }
         selected_point_index=0;
         selected_region_index=0;
-
-        //        if(e->pos(),cfg
-        //        ver_picked=true;
     }
     void mouseReleaseEvent(QMouseEvent *e)
     {
         if(ver_picked){
-            //  prt(info,"drag %d",cfg.detect_regions[0].poly_vers[0].x);
-
             emit cam_data_change(cfg,this);
             ver_picked=false;
         }
@@ -221,14 +217,6 @@ private:
     {
         return QPen (QBrush (QColor(0,255,0)),5);
     }
-    //    inline bool close_enough(QPoint from,QPoint to,int distance=5)
-    //    {
-    //        if(abs(from.x()-to.x())<distance&&abs(from.y()-to.y())<distance)
-    //            return true;
-    //        else
-    //            return false;
-    //    }
-
 signals:
     void cam_data_change(CameraInputData ,QWidget *w);
     void selected(PlayerWidget *w);
