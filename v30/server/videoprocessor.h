@@ -66,27 +66,27 @@ public:
 //        pkt.set_string("ratio",f2string(private_data.scale_ratio));
         return pkt;
     }
-    virtual  bool process( Mat img)
-    {
-        return false;
-    }
-    virtual  bool process( int t)
-    {
-        return false;
-    }
-    virtual bool process(Mat img_src,vector<Rect> &rects)
-    {
+//    virtual  bool process( Mat img)
+//    {
+//        return false;
+//    }
+//    virtual  bool process( int t)
+//    {
+//        return false;
+//    }
+//    virtual bool process(Mat img_src,vector<Rect> &rects)
+//    {
 
-    }
-    virtual bool process(Mat img_src,JsonPacket &pkt)
-    {
-        prt(info,"actual processor needed");
-    }
-    virtual bool process(Mat img_src,vector<Rect> &rects,Rect detect_area)
-    {
+//    }
+    virtual bool process(Mat img_src,JsonPacket &pkt)=0;
+//    {
+//        prt(info,"actual processor needed");
+//    }
+//    virtual bool process(Mat img_src,vector<Rect> &rects,Rect detect_area)
+//    {
 
-        return false;
-    }
+//        return false;
+//    }
 
     virtual  string get_rst()
     {

@@ -12,10 +12,14 @@ INSTALLS+=install_files1
 #    detectregion.h socket.h
 #SOURCES += main.cpp  configmanager.cpp tool.cpp app.cpp server.cpp camera.cpp videosource.cpp \
 #    detectregion.cpp socket.cpp
-HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/include/json/value.h
+HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/include/json/value.h \
+    fvdprocessor.h \
+    pvdprocessor.h
 HEADERS +=  tool.h socket.h
 
-SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
+SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp \
+    fvdprocessor.cpp \
+    pvdprocessor.cpp
 SOURCES +=  tool.cpp socket.cpp
 #LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
 #LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
