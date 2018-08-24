@@ -567,8 +567,8 @@ private:
             PlayerWidget *player=new PlayerWidget(d);
             players.push_back(player);
             ui->groupBox_video->layout()->addWidget(player);
-//            connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
-//                    this,SLOT(generate_current_config(CameraInputData,QWidget*)));
+            connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
+                    this,SLOT(generate_current_config(CameraInputData,QWidget*)));
           prt(info,"1");
         }
              prt(info,"%s",cfg.data().str().data());
@@ -705,17 +705,17 @@ private:
         }
     }
 private slots:
-//    void generate_current_config(CameraInputData d,QWidget* w)
-//    {
-//        //   int index= ui->gridLayout_video->indexOf(w);
-//        int index= ui->groupBox_video->layout()->indexOf(w);
-//        prt(info,"wgt index %d",index);
-//        cfg.replace_camera(d.data(),index);
-//        //  ui->lineEdit_setconfig->setText(cfg.data().str().data());
-//        // ui->lineEdit_setconfig->clear();
-//        ui->lineEdit_setconfig->setText(cfg.data().str().data());
-//        //prt(info,"%d",d.detect_regions[0].poly_vers[0].x);
-//    }
+    void generate_current_config(CameraInputData d,QWidget* w)
+    {
+        //   int index= ui->gridLayout_video->indexOf(w);
+        int index= ui->groupBox_video->layout()->indexOf(w);
+        prt(info,"wgt index %d",index);
+        cfg.modify_camera(d.data(),index);
+        //  ui->lineEdit_setconfig->setText(cfg.data().str().data());
+        // ui->lineEdit_setconfig->clear();
+        ui->lineEdit_setconfig->setText(cfg.data().str().data());
+        //prt(info,"%d",d.detect_regions[0].poly_vers[0].x);
+    }
 
     void ip_found(QString ip)
     {

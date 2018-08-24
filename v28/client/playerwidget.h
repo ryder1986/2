@@ -258,6 +258,7 @@ private:
     }
 signals:
     void cam_data_change(CameraInputData ,QWidget *w);
+    void reshape_region(int region_index ,QRect rct,QWidget *w);
     void selected(PlayerWidget *w);
     void data_changed();
     void alg_changed(int index);
@@ -268,7 +269,6 @@ private:
     QMutex lock;
     int frame_rate;
     QImage img;
-    //  QPainter painter;
     QList <QPoint> area_v;
     bool show_info;
     int channel_num;
@@ -278,8 +278,6 @@ private:
     int loop;
     VideoSource *src;
     bool ver_picked;
-    //   vector <vector<QPoint>>detect_regions;
-    //QPoint vers[][POLY_VER_NUM];
     QPoint maped_point;
     int selected_region_index;
     int selected_point_index;

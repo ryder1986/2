@@ -18,7 +18,8 @@
                     "comment":"c4/dummy/pvd/fvd"
                 }
             ],
-            "Url":"rtsp://192.168.1.18/1/h264minor"
+            "Url":"rtsp://192.168.1.18/1/h264minor",
+            "Url1":"rtsp://192.168.1.18/1/h264major"
 
         },
         {
@@ -37,8 +38,8 @@
                     "comment":"c4/dummy/pvd/fvd"
                 }
             ],
-            "Url1":"rtsp://192.168.1.211:8554/live/test1",
-            "Url":"rtsp://192.168.1.95:554/av0_1"
+            "Url1":"rtsp://192.1623238.1.211:8554/live/test1",
+            "Url":"rtsp://192.168.1.1195:554/av0_1"
         }
     ]
 

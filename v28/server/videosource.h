@@ -240,12 +240,32 @@ public:
         lock.unlock();
         return ret;
     }
+//    int get_ms()
+//      {
+//          time_t tt;
+//          struct timeval tv;
+//          tt=time(NULL);
+//          gettimeofday(&tv,NULL);
+//          return tv.tv_sec*1000+tv.tv_usec/1000;
+//      }
+
+
     bool get_frame(Mat &frame, int &timestamp)
     {
         int ret=false;
         lock.lock();
+
         if(frame_list.size()>0){
             frame_list.front().copyTo(frame);
+
+
+//            int start_time=get_ms();
+//  prt(info,"%d,%d",frame.cols,frame.rows);
+//           resize(frame,frame,Size( 640,480),CV_INTER_LINEAR);
+//           int end_time=get_ms();
+//           prt(info,"%d",end_time-start_time);
+
+
             frame_list.pop_front();
             timestamp=cur_ms_list.front();
             cur_ms_list.pop_front();
