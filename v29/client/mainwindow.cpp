@@ -76,5 +76,5 @@ void MainWindow::on_pushButton_setconfig_clicked()
 
 void MainWindow::on_pushButton_addcam_clicked()
 {
-    clt.add_camera("");
+    clt.add_camera("rtsp://192.168.1.95:554/av0_1",cfg.CameraData.size());
 }

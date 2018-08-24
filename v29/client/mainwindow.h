@@ -47,8 +47,23 @@ public:
             prt(info,"fail send");
         }
     }
-    void add_camera(QString data)
+    void add_camera(string url,int index)
     {
+        string SelectedProcessor="c4";
+
+        vector <VdPoint>ExpectedAreaVers;
+        ExpectedAreaVers.push_back(VdPoint(0,0));
+        ExpectedAreaVers.push_back(VdPoint(640,0));
+        ExpectedAreaVers.push_back(VdPoint(640,480));
+        ExpectedAreaVers.push_back(VdPoint(0,480));
+        JsonPacket ProcessorData;
+
+       // DummyProcessor
+        DetectRegionInputData rdata(ProcessorData,SelectedProcessor,ExpectedAreaVers);
+        vector<JsonPacket> rs;
+        rs.push_back(rdata.data());
+        CameraInputData data(rs,url);
+         RequestPkt pkt(App::Operation::INSERT_CAMERA,index,data.data());
 //        string url=data.toStdString().data();
 //        VdPoint p1(100,100);
 //        VdPoint p2(200,100);
@@ -66,10 +81,10 @@ public:
 //        CameraData cd(v,"rtsp://192.168.1.216:8554/test1");
 
 //        VdEvent e(App::OP::ADD_CAMERA,1,cd.data().str());
-//        bool ret= send(e.data().str());//talk to server
-//        if(!ret){
-//            prt(info,"fail send");
-//        }
+        bool ret= send(pkt.data().str());//talk to server
+        if(!ret){
+            prt(info,"fail send");
+        }
     }
 #if 0
     void get_config()

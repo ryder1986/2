@@ -38,6 +38,27 @@ public:
         ENCODE_OBJ_ARRAY_MEM_G(DetectedObjects);
     }
 };
+class DummyProcessorInputData:public JsonData{
+
+public:
+
+    DummyProcessorInputData()
+    {
+    }
+    DummyProcessorInputData(JsonPacket str):JsonData(str)
+    {
+        decode();
+    }
+
+    void decode()
+    {
+
+    }
+    void encode()
+    {
+
+    }
+};
 class DummyProcessor:public VideoProcessor
 {
     int loop;
@@ -90,6 +111,33 @@ public:
     void encode()
     {
         ENCODE_OBJ_ARRAY_MEM_G(Rects);
+    }
+};
+class C4ProcessorInputData:public JsonData{
+
+public:
+    string ratio;
+    int scan_step;
+    C4ProcessorInputData()
+    {
+    }
+    C4ProcessorInputData(JsonPacket str):JsonData(str)
+    {
+        decode();
+    }
+    C4ProcessorInputData(int st,string ra):scan_step(st),ratio(ra)
+    {
+        encode();
+    }
+    void decode()
+    {
+        DECODE_INT_MEM(scan_step);
+        DECODE_STRING_MEM(ratio);
+    }
+    void encode()
+    {
+        ENCODE_INT_MEM(scan_step);
+        ENCODE_STRING_MEM(ratio);
     }
 };
 class PvdC4Processor : public VideoProcessor
