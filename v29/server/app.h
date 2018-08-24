@@ -92,6 +92,21 @@ public:
         ENCODE_OBJ_MEM(CameraOutput);
     }
 };
+class DestClient{
+public:
+    DestClient(string i):ip(i)
+    {
+
+    }
+    string get_ip()
+    {
+        return ip;
+    }
+
+private:
+    string ip;
+};
+
 class App:public VdData<AppInputData>
 {
 public:
@@ -218,11 +233,25 @@ private:
         }
         case App::Operation::OPEN_CAMERA_DATA:
         {
+            bool exist=false;
+            for(DestClient dst:dest_clients ){
+                if(dst.get_ip()==client_tmp_ip)
+                    exist=true;
+            }
+            if(!exist)
+                dest_clients.push_back(DestClient(client_tmp_ip));
             ret=true;
             break;
         }
         case App::Operation::CLOSE_CAMERA_DATA:
         {
+            bool exist=false;
+            vector<DestClient>::iterator  bg=   dest_clients.begin();
+            for(int i=0;i<dest_clients.size();i++ ){
+                DestClient dst=dest_clients[i];
+                if(dst.get_ip()==client_tmp_ip)
+                    dest_clients.erase(bg+i);
+            }
             ret=true;
             break;
         }
@@ -249,6 +278,8 @@ private:
     vector <Camera*> cms;
     LocationService lservice;
     ConfigManager *p_cm;
+    vector <DestClient > dest_clients;
+    string client_tmp_ip;
 };
 
 #endif // APP_H

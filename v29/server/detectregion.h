@@ -43,7 +43,7 @@ public:
     }
     void encode()
     {
-     //   ENCODE_OBJ_ARRAY_MEM(obj_2_pkt_array(ExpectedAreaVers));
+        //   ENCODE_OBJ_ARRAY_MEM(obj_2_pkt_array(ExpectedAreaVers));
         ENCODE_OBJ_ARRAY_MEM_G(ExpectedAreaVers);
         ENCODE_STRING_MEM(SelectedProcessor);
         ENCODE_OBJ_MEM(ProcessorData);
@@ -91,7 +91,8 @@ class DetectRegion : public VdData<DetectRegionInputData>
     Rect detect_rect;
 public:
     enum OP{
-        CHANGE_RECT
+        CHANGE_RECT,
+        CHANGE_PROCESSOR
     };
 
     DetectRegion(DetectRegionInputData pkt):VdData(pkt)
@@ -125,9 +126,27 @@ public:
         private_data.ExpectedAreaVers=poly_vers;
     }
 
-    void modify()
+    void modify(RequestPkt pkt)
     {
+        int op=pkt.Operation;
+        switch(op){
+        case OP::CHANGE_RECT:
+        {
+            JsonPacket vers=pkt.Argument;
+            vector<JsonPacket> vs=vers.get("ExpectedAreaVers").to_array();
+            vector<VdPoint> ps;
+            for(JsonPacket pp:vs)
+            {
+                ps.push_back(VdPoint(pp));
+            }
+            detect_rect=reshape_2_rect(ps);
+            break;
+        }
+        case OP::CHANGE_PROCESSOR:
+            break;
 
+          defalut:break;
+        }
     }
     bool process(JsonPacket data)
     {

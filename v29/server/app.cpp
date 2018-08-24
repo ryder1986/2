@@ -29,6 +29,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         prt(info,"process string %s\n left string %s",valid_buf.data(),str_stream.data());
         RequestPkt event(valid_buf);
         ReplyPkt ret_pkt;
+        client_tmp_ip=clt->ip();
         process_event(event,ret_pkt);
         string ret=ret_pkt.data().str();
         clt->send(ret.data(),ret.length());
@@ -53,12 +54,20 @@ void App::process_camera_data(Camera *camera, string data)
     }
     int fd=Socket::UdpCreateSocket(5000);
     AppOutputData rst(idx+1,JsonPacket(data));
+
     if(stream_cmd)
         for(Session *ss:*stream_cmd)
         {
             //       prt(info,"send %s",rst.data().str().data());
             Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
+    for(DestClient dst:dest_clients){
+          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
+    }
+
+
+
+
     close(fd);
 }
 

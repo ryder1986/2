@@ -59,16 +59,16 @@ public:
         encode();
     }
 
-//    void set_region(JsonPacket data,int index)
-//    {
-//        DetectRegion[index-1]=data;
-//        encode();
-//    }
+    //    void set_region(JsonPacket data,int index)
+    //    {
+    //        DetectRegion[index-1]=data;
+    //        encode();
+    //    }
 
-//    void replace_point()
-//    {
+    //    void replace_point()
+    //    {
 
-//    }
+    //    }
     void decode()
     {
         DECODE_INT_MEM(Timestamp);
@@ -127,7 +127,7 @@ public:
                     callback_result(this,ret.str());
                 }
 #endif
-             vector<   JsonPacket >pkt;
+                vector<   JsonPacket >pkt;
                 for(DetectRegion *r:drs){
                     JsonPacket ret=r->work(frame);
                     pkt.push_back(ret);
@@ -167,22 +167,37 @@ public:
     }
     void modify(JsonPacket jp)
     {
-         RequestPkt req(jp);
-         switch (req.Operation) {
-         case OP::CHANGE_URL:
-             break;
-         case OP::INSERT_REGION:
-
-             break;
-         case OP::DELETE_REGION:
-
-             break;
-         case OP::MODIFY_REGION:
-
-             break;
-         default:
-             break;
-         }
+        RequestPkt req(jp);
+        int index=req.Index;
+        switch (req.Operation) {
+        case OP::CHANGE_URL:
+            change_source(req.Argument.get("Url").to_string());
+            break;
+        case OP::INSERT_REGION:
+        {
+            vector<DetectRegion*>::iterator it=drs.begin();
+            DetectRegion rr(req.Argument.get("RegionData"));
+            drs.insert(it+index-1,&rr);
+            break;
+        }
+        case OP::DELETE_REGION:
+        {
+            vector<DetectRegion*>::iterator it=drs.begin();
+            drs.erase(it+index-1);
+            break;
+        }
+        case OP::MODIFY_REGION:
+        {
+            vector<DetectRegion*>::iterator it=drs.begin();
+            DetectRegion *rg= drs[index-1];
+            rg->modify(req.Argument.get("ModifyRegion"));
+            private_data.set_region(rg->get_data().data(),index);
+            break;
+        }
+            break;
+        default:
+            break;
+        }
     }
 
 private:

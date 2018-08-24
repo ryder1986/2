@@ -58,34 +58,27 @@ public:
         ExpectedAreaVers.push_back(VdPoint(0,480));
         JsonPacket ProcessorData;
 
-       // DummyProcessor
+        // DummyProcessor
         DetectRegionInputData rdata(ProcessorData,SelectedProcessor,ExpectedAreaVers);
         vector<JsonPacket> rs;
         rs.push_back(rdata.data());
         CameraInputData data(rs,url);
-         RequestPkt pkt(App::Operation::INSERT_CAMERA,index,data.data());
-//        string url=data.toStdString().data();
-//        VdPoint p1(100,100);
-//        VdPoint p2(200,100);
-//        VdPoint p3(200,200);
-//        VdPoint p4(100,200);
-//        vector <VdPoint>ps;
-//        ps.push_back(p1);
-//        ps.push_back(p2);
-//        ps.push_back(p3);
-//        ps.push_back(p4);
-
-//        DetectRegionData d(3,"dummy",ps);
-//        vector<DetectRegionData> v;
-//        v.push_back(d);
-//        CameraData cd(v,"rtsp://192.168.1.216:8554/test1");
-
-//        VdEvent e(App::OP::ADD_CAMERA,1,cd.data().str());
+        RequestPkt pkt(App::Operation::INSERT_CAMERA,index,data.data());
         bool ret= send(pkt.data().str());//talk to server
         if(!ret){
             prt(info,"fail send");
         }
     }
+    void del_camera(int index)
+    {
+          RequestPkt pkt(App::Operation::DELETE_CAMERA,index,JsonPacket());
+          bool ret= send(pkt.data().str());//talk to server
+          if(!ret){
+              prt(info,"fail send");
+          }
+
+    }
+
 #if 0
     void get_config()
     {
@@ -584,9 +577,9 @@ private:
             ui->groupBox_video->layout()->addWidget(player);
             connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
                     this,SLOT(generate_current_config(CameraInputData,QWidget*)));
-          prt(info,"1");
+            prt(info,"1");
         }
-             prt(info,"%s",cfg.data().str().data());
+        prt(info,"%s",cfg.data().str().data());
 
     }
     void stop_config()
@@ -617,76 +610,76 @@ private:
             AppOutputData rst(p);
             //prt(info,"recving %s",rst.data().str().data());
             int cam_index=rst.CameraIndex;
-        //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
+            //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
             PlayerWidget *w= players[cam_index-1];
             w->set_overlay(rst.CameraOutput);
 
-//            int cam_index=rst.CameraIndex;
-//            int ts=rst.Timestamp;
-//            JsonPacket cam_data=rst.DetectionResult;
-//            //prt(info,"cfg %s",cfg.data().str().data());
-//            //prt(info,"index %d, num %d",cam_index, cfg.CameraData.size());
-//            CameraInputData perdata=  cfg.CameraData[cam_index-1];
-//            PlayerWidget *w= players[cam_index-1];
+            //            int cam_index=rst.CameraIndex;
+            //            int ts=rst.Timestamp;
+            //            JsonPacket cam_data=rst.DetectionResult;
+            //            //prt(info,"cfg %s",cfg.data().str().data());
+            //            //prt(info,"index %d, num %d",cam_index, cfg.CameraData.size());
+            //            CameraInputData perdata=  cfg.CameraData[cam_index-1];
+            //            PlayerWidget *w= players[cam_index-1];
 
-//            vector<JsonPacket> cd=cam_data.to_array();
-//            for(int i=0;i<perdata.DetectRegion.size();i++){
-//               DetectRegionInputData rd= perdata.DetectRegion[i];
-//               if(rd.SelectedProcessor.data()=="dummy"){
-//                  prt(info,"dummy");
-//                  DummyProcessorOutputData dod(cam_data);
-//               }
-//               if(rd.SelectedProcessor.data()=="c4"){
-//                  prt(info,"c4");
+            //            vector<JsonPacket> cd=cam_data.to_array();
+            //            for(int i=0;i<perdata.DetectRegion.size();i++){
+            //               DetectRegionInputData rd= perdata.DetectRegion[i];
+            //               if(rd.SelectedProcessor.data()=="dummy"){
+            //                  prt(info,"dummy");
+            //                  DummyProcessorOutputData dod(cam_data);
+            //               }
+            //               if(rd.SelectedProcessor.data()=="c4"){
+            //                  prt(info,"c4");
 
-//               }
-//            }
-//            for(DetectRegionData data:perdata.DetectRegion){
-//                data.ProcessorData
-//            }
-         //w->set_overlay(result_rects,ts);
-        //  prt(info,"%s",perdata.DetectRegion);
-//          for(DetectRegionData dr:perdata.DetectRegion)
-//          {
-//            prt(info,"alg %s",dr.SelectedProcessor.data());
-//          }
+            //               }
+            //            }
+            //            for(DetectRegionData data:perdata.DetectRegion){
+            //                data.ProcessorData
+            //            }
+            //w->set_overlay(result_rects,ts);
+            //  prt(info,"%s",perdata.DetectRegion);
+            //          for(DetectRegionData dr:perdata.DetectRegion)
+            //          {
+            //            prt(info,"alg %s",dr.SelectedProcessor.data());
+            //          }
 
             //            prt(info,"get %s(%s)",rst.config.str().data(),str.data());
             //            prt(info,"geted %s",buf);
 
 
-//            vector <JsonPacket>  regions=cam_data.to_array();
-//            JsonPacket cam_data_region1=regions.front();
-//            RegionRst rrst(cam_data_region1);
+            //            vector <JsonPacket>  regions=cam_data.to_array();
+            //            JsonPacket cam_data_region1=regions.front();
+            //            RegionRst rrst(cam_data_region1);
 
-//            VdRect dr(rrst.DetectionRect);
-//            JsonPacket jp=   rrst.reslut_rect.get("rect_result");
-                 //     prt(info,"%s",rrst.data().str().data());
+            //            VdRect dr(rrst.DetectionRect);
+            //            JsonPacket jp=   rrst.reslut_rect.get("rect_result");
+            //     prt(info,"%s",rrst.data().str().data());
 
 
-//             // prt(info,"######### %s , %s",jp.str().data(),rrst.config.str().data());
-//            for(JsonPacket pk:jp.to_array()){
-//             //   prt(info,"get rect");
-//                VdRect tmp(pk);
-//                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
-//                for(PlayerWidget *p:players){
-//                    p->set_object_rect(rc);
-//                }
-//            }
+            //             // prt(info,"######### %s , %s",jp.str().data(),rrst.config.str().data());
+            //            for(JsonPacket pk:jp.to_array()){
+            //             //   prt(info,"get rect");
+            //                VdRect tmp(pk);
+            //                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
+            //                for(PlayerWidget *p:players){
+            //                    p->set_object_rect(rc);
+            //                }
+            //            }
 
-//            vector<QRect> result_rects;
+            //            vector<QRect> result_rects;
 
-//            for(JsonPacket pk:jp.to_array()){
-//                VdRect tmp(pk);
-//                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
-//                result_rects.push_back(rc);
-//            }
-//            for(int i=0;i<players.size();i++){
-//                if(cam_index==i+1){
-//                    PlayerWidget *p=players[i];
-//                    p->set_overlay(result_rects,ts);
-//                }
-//            }
+            //            for(JsonPacket pk:jp.to_array()){
+            //                VdRect tmp(pk);
+            //                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
+            //                result_rects.push_back(rc);
+            //            }
+            //            for(int i=0;i<players.size();i++){
+            //                if(cam_index==i+1){
+            //                    PlayerWidget *p=players[i];
+            //                    p->set_overlay(result_rects,ts);
+            //                }
+            //            }
 
 
             //            for(VdRect r:rrst.){
@@ -745,7 +738,7 @@ private slots:
         //  int op=pkt.get("op").to_int();
         prt(info,"str :",str.data());
         prt(info,"cmd :%d",cmd);
-       switch(cmd){
+        switch(cmd){
         case App::Operation::GET_CONFIG:
         {
             //cfg=pkt.get("ret");
@@ -782,6 +775,8 @@ private slots:
     void on_pushButton_setconfig_clicked();
 
     void on_pushButton_addcam_clicked();
+
+    void on_pushButton_delcam_clicked();
 
 private:
     Ui::MainWindow *ui;

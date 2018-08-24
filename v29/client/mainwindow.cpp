@@ -76,5 +76,11 @@ void MainWindow::on_pushButton_setconfig_clicked()
 
 void MainWindow::on_pushButton_addcam_clicked()
 {
-    clt.add_camera("rtsp://192.168.1.95:554/av0_1",cfg.CameraData.size());
+    clt.add_camera(ui->pushButton_addcam->text().toUtf8().data(),cfg.CameraData.size());
+}
+
+void MainWindow::on_pushButton_delcam_clicked()
+{
+    int index=ui->lineEdit_delcam->text().toInt();
+    clt.del_camera(index);
 }
