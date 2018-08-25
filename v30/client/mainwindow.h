@@ -324,15 +324,17 @@ public slots:
             }
         }
 #else
+        tmp_msg.clear();
         ret_ba=tcp_socket->readAll();
         QByteArray valid_buf;
         valid_buf.clear();
         tmp_msg.append(ret_ba);
         while(get_valid_buf(tmp_msg,valid_buf)) {
             DataPacket pkt(string(valid_buf.data()));
-            prt(info,"get %d bytes ",valid_buf.size());
+            prt(info,"get %d bytes ** %s ** ",valid_buf.size(),valid_buf.data());
             if(valid_buf.size()>0)
                 need_read=true;
+            prt(info,"left  %d bytes ** %s ** ",tmp_msg.size(),tmp_msg.data());
 
             emit server_msg(pkt.data().data());
         }
@@ -611,6 +613,11 @@ private:
             //prt(info,"recving %s",rst.data().str().data());
             int cam_index=rst.CameraIndex;
             //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
+
+
+            //prt(info,"recving cam %d",cam_index);
+            if(players.size()<cam_index)
+                continue;
             PlayerWidget *w= players[cam_index-1];
             w->set_overlay(rst.CameraOutput);
 

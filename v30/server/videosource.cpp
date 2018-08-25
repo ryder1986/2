@@ -76,12 +76,13 @@ void VideoSource::run()
                 //    int ts=vcap.get(CV_CAP_PROP_FRAME_COUNT);
 
                 int ts=vcap.get(CV_CAP_PROP_POS_AVI_RATIO);
-
-
                 //prt(info,"timestamp  %dms", ts);
                 frame_rate++;
                 lock.lock();
-
+                if(!(frame_rate%30))
+                {
+                    prt(info,"running %s",url.data());
+                }
                 if(frame_list.size()<3&&frame.rows>0&&frame.cols>0){
                     frame_list.push_back(frame);
                     cur_ms_list.push_back(ts);
@@ -101,12 +102,10 @@ void VideoSource::run()
 #else
             vcap=PdVideoCapture(url);
 #endif
-            //  vcap=VideoCapture( url.data());
-            //vcap=PdVideoCapture( url.data());
             prt(info,"open url err:%s",url.data());
         }
     }
-    prt(info,"thread is ending");
+    prt(info,"thread is quiting");
     if( vcap.isOpened())
         vcap.release();
 }

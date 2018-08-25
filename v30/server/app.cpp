@@ -49,21 +49,21 @@ void App::process_camera_data(Camera *camera, string data)
     if(idx<cms.size()){
         //prt(info,"process camera %d",idx+1);
     }else{
-        prt(info,"process invalid camera index");
+        prt(info,"process invalid camera index %d, sz %d",idx,cms.size());
         return;
     }
     int fd=Socket::UdpCreateSocket(5000);
     AppOutputData rst(idx+1,JsonPacket(data));
-
+    //prt(info,"ouput index %d(sz %d)",idx+1,cms.size());
     if(stream_cmd)
         for(Session *ss:*stream_cmd)
         {
             //       prt(info,"send %s",rst.data().str().data());
             Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
-    for(DestClient dst:dest_clients){
-          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
-    }
+//    for(DestClient dst:dest_clients){
+//          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
+//    }
 
 
 

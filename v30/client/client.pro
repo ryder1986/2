@@ -3,11 +3,11 @@
 # Project created by QtCreator 2018-07-12T11:30:37
 #
 #-------------------------------------------------
-greaterThan(QT_MAJOR_VERSION, 4) QT += widgets
-QT       += core  network
+#greaterThan(QT_MAJOR_VERSION, 4) QT += widgets
+#QT       += core  network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += widgets network
 TARGET = client
 TEMPLATE = app
 

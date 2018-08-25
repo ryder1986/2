@@ -31,7 +31,7 @@ public:
 
     void insert_camera(JsonPacket d,int index)
     {
-        if(index>0&&index<=CameraData.size()){
+        if(index>=0&&index<=CameraData.size()){
             prt(info," cams  size  %d", CameraData.size());
             vector <JsonPacket>::iterator it=CameraData.begin();
             CameraData.insert(it+index,d);
@@ -47,7 +47,7 @@ public:
         if(index>0&&index<=CameraData.size()){
             prt(info," cams  size  %d", CameraData.size());
             vector <JsonPacket>::iterator it=CameraData.begin();
-            CameraData.erase(it+index);
+            CameraData.erase(it+index-1);
             prt(info," cams new size  %d", CameraData.size());
         }else{
             prt(info," cams size  %d,unchange with index %d", CameraData.size(),index);
@@ -164,14 +164,16 @@ private:
         }
     }
 
-    void del_camera(int index)//delete who ? 1~size
+    bool del_camera(int index)//delete who ? 1~size
     {
         if(1<=index&&index<=cms.size()){
             delete cms[index-1];
             vector<Camera*>::iterator it=cms.begin();
             cms.erase(it+index-1);
             private_data.delete_camera(index);
+            return true;
         }
+        return false;
     }
 
     void mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
@@ -196,7 +198,7 @@ private:
             prt(info,"cfg %s",cfg.str().data());
             ReplyPkt rp(cfg);
             r=rp;
-            prt(info,"reply %s",r.data().str().data());
+            prt(info,"reply %s (%d)",r.data().str().data(),r.data().str().size());
             ret=true;
             break;
         }
@@ -246,7 +248,7 @@ private:
         case App::Operation::CLOSE_CAMERA_DATA:
         {
             bool exist=false;
-            vector<DestClient>::iterator  bg=   dest_clients.begin();
+            vector<DestClient>::iterator  bg= dest_clients.begin();
             for(int i=0;i<dest_clients.size();i++ ){
                 DestClient dst=dest_clients[i];
                 if(dst.get_ip()==client_tmp_ip)

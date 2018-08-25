@@ -68,12 +68,7 @@ public:
         //        RTPDemuxContext *demux = stream->transport_priv;
         //        demux->timestamp
 
-
-       //RTSPState *state=(RTSPState) fmt->priv_data;
-
-
-
-
+        //RTSPState *state=(RTSPState) fmt->priv_data;
         int64_t dt,wt;
         av_get_output_timestamp(fmt,0,&dt,&wt);
         prt(info,"read frm stamp %d ",fmt->start_time_realtime);
@@ -88,9 +83,8 @@ public:
             memcpy(YUVImage.data + size, buf_u, size /4);
             memcpy(YUVImage.data + size + size /4, buf_v, size / 4);
             cvtColor(YUVImage, BGRImage, CV_YUV2BGR_I420);
-           // imshow("123",BGRImage);
-
-         //   waitKey(10);
+            // imshow("123",BGRImage);
+            //   waitKey(10);
             return true;
         }else{
             prt(info,"decode a fail");
@@ -164,7 +158,7 @@ private:
         int len = 0;
 
         while (av_pkt.size > 0) {
-           // prt(info,"decoing size: %d",av_pkt.size);
+            // prt(info,"decoing size: %d",av_pkt.size);
             len = avcodec_decode_video2(codec_ctx, avframe, &got_picture, &av_pkt);
             if (len < 0) {
                 return false;
@@ -174,7 +168,7 @@ private:
                 buf_y = (unsigned char *) avframe->data[0];
                 buf_u = (unsigned char *) avframe->data[1];
                 buf_v = (unsigned char *) avframe->data[2];
-         //      prt(info,"decode size %d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
+                //      prt(info,"decode size %d  (%d  %d)",av_pkt.size,avframe->width,avframe->height);
                 //                prt(info,"%d",av_pkt.pts);
                 width=avframe->height;
                 height=avframe->width;
@@ -240,14 +234,14 @@ public:
         lock.unlock();
         return ret;
     }
-//    int get_ms()
-//      {
-//          time_t tt;
-//          struct timeval tv;
-//          tt=time(NULL);
-//          gettimeofday(&tv,NULL);
-//          return tv.tv_sec*1000+tv.tv_usec/1000;
-//      }
+    //    int get_ms()
+    //      {
+    //          time_t tt;
+    //          struct timeval tv;
+    //          tt=time(NULL);
+    //          gettimeofday(&tv,NULL);
+    //          return tv.tv_sec*1000+tv.tv_usec/1000;
+    //      }
 
 
     bool get_frame(Mat &frame, int &timestamp)
@@ -259,11 +253,11 @@ public:
             frame_list.front().copyTo(frame);
 
 
-//            int start_time=get_ms();
-//  prt(info,"%d,%d",frame.cols,frame.rows);
-//           resize(frame,frame,Size( 640,480),CV_INTER_LINEAR);
-//           int end_time=get_ms();
-//           prt(info,"%d",end_time-start_time);
+            //            int start_time=get_ms();
+            //  prt(info,"%d,%d",frame.cols,frame.rows);
+            //           resize(frame,frame,Size( 640,480),CV_INTER_LINEAR);
+            //           int end_time=get_ms();
+            //           prt(info,"%d",end_time-start_time);
 
 
             frame_list.pop_front();

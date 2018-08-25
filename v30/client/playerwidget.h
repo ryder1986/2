@@ -21,7 +21,7 @@ public:
         prt(info,"delete wgt");
         tick_timer->stop();
         delete tick_timer;
-        //   delete src;
+        delete src;
     }
 
     PlayerWidget(CameraInputData data)

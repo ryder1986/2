@@ -11,14 +11,14 @@ public:
         skt=fd;
         int ul = 0;
         ioctl(fd, FIONBIO, &ul);
-        cout<<"new connection"<<endl;
+        prt(info,"handle new connection: %s ",ip.data());
         auto func_recv=bind(&Session::recv,this);
 
         trd=new thread([func_recv](){func_recv();});
     }
     ~Session()
     {
-        cout<<"session deleteing "<<ip()<<endl;
+        prt(info,"quit connection: %s ",ip());
         quit=true;
         trd->join();
         delete trd;
@@ -29,9 +29,9 @@ public:
     {
         int ret= Socket::SendDataByTcp(skt,buf,len);
         if(ret){
-            cout<<"send  "<<ret<<" bytes"<<endl;
+            prt(info,"succeed in sending %d bytes",ret);
         }else{
-            cout<<"send  fail"<<endl;
+            prt(info,"send fail",ret);
         }
     }
     int recv()
@@ -39,15 +39,14 @@ public:
         while(!quit){
             int ret=Socket::RecvDataByTcp1(skt,buf,BUF_SIZE);
             if(ret){
-                cout<<"read  "<<ret<<" bytes"<<endl;
+                prt(info,"succeed in reading %d bytes",ret);
                 process_data(this,buf,ret);
             }else{
-                cout<<"ret  "<<ret<<endl;
+                prt(info,"read socket error");
                 break;
                 cout<<"socket maybe closed,retry read after 1sec"  <<endl;
                 this_thread::sleep_for(chrono::seconds(1));
             }
-
         }
         end_this(this);
     }
@@ -130,13 +129,6 @@ public:
             clients[0]->send("123456",6);
         }
     }
-    //    void set_ret_func(function <void(char *,int )> func)
-    //    {
-    //        for(int i=0;i<clients.size();i++){
-    //            clients[i]->process_data=func;
-    //        }
-    //    }
-
     void size()
     {
         cout<<clients.size();
