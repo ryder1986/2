@@ -71,11 +71,11 @@ public:
     }
     void del_camera(int index)
     {
-          RequestPkt pkt(App::Operation::DELETE_CAMERA,index,JsonPacket());
-          bool ret= send(pkt.data().str());//talk to server
-          if(!ret){
-              prt(info,"fail send");
-          }
+        RequestPkt pkt(App::Operation::DELETE_CAMERA,index,JsonPacket());
+        bool ret= send(pkt.data().str());//talk to server
+        if(!ret){
+            prt(info,"fail send");
+        }
 
     }
 
@@ -564,13 +564,14 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
+    mutex thread_lock;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
     void start_config()
     {
+        thread_lock.lock();
         for(CameraInputData d:cfg.CameraData)
         {
             ui->comboBox_cameras->addItem(d.Url.data());
@@ -582,10 +583,11 @@ private:
             prt(info,"1");
         }
         prt(info,"%s",cfg.data().str().data());
-
+        thread_lock.unlock();
     }
     void stop_config()
     {
+        thread_lock.lock();
         ui->comboBox_cameras->clear();
         for(PlayerWidget *w:players){
             ui->groupBox_video->layout()->removeWidget(w);
@@ -593,7 +595,7 @@ private:
             delete w;
         }
         players.clear();
-
+        thread_lock.unlock();
     }
 
     void recv_rst()
@@ -614,109 +616,16 @@ private:
             int cam_index=rst.CameraIndex;
             //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
 
-
+            thread_lock.lock();
             //prt(info,"recving cam %d",cam_index);
             if(players.size()<cam_index)
+            {
+                thread_lock.unlock();
                 continue;
+            }
             PlayerWidget *w= players[cam_index-1];
             w->set_overlay(rst.CameraOutput);
-
-            //            int cam_index=rst.CameraIndex;
-            //            int ts=rst.Timestamp;
-            //            JsonPacket cam_data=rst.DetectionResult;
-            //            //prt(info,"cfg %s",cfg.data().str().data());
-            //            //prt(info,"index %d, num %d",cam_index, cfg.CameraData.size());
-            //            CameraInputData perdata=  cfg.CameraData[cam_index-1];
-            //            PlayerWidget *w= players[cam_index-1];
-
-            //            vector<JsonPacket> cd=cam_data.to_array();
-            //            for(int i=0;i<perdata.DetectRegion.size();i++){
-            //               DetectRegionInputData rd= perdata.DetectRegion[i];
-            //               if(rd.SelectedProcessor.data()=="dummy"){
-            //                  prt(info,"dummy");
-            //                  DummyProcessorOutputData dod(cam_data);
-            //               }
-            //               if(rd.SelectedProcessor.data()=="c4"){
-            //                  prt(info,"c4");
-
-            //               }
-            //            }
-            //            for(DetectRegionData data:perdata.DetectRegion){
-            //                data.ProcessorData
-            //            }
-            //w->set_overlay(result_rects,ts);
-            //  prt(info,"%s",perdata.DetectRegion);
-            //          for(DetectRegionData dr:perdata.DetectRegion)
-            //          {
-            //            prt(info,"alg %s",dr.SelectedProcessor.data());
-            //          }
-
-            //            prt(info,"get %s(%s)",rst.config.str().data(),str.data());
-            //            prt(info,"geted %s",buf);
-
-
-            //            vector <JsonPacket>  regions=cam_data.to_array();
-            //            JsonPacket cam_data_region1=regions.front();
-            //            RegionRst rrst(cam_data_region1);
-
-            //            VdRect dr(rrst.DetectionRect);
-            //            JsonPacket jp=   rrst.reslut_rect.get("rect_result");
-            //     prt(info,"%s",rrst.data().str().data());
-
-
-            //             // prt(info,"######### %s , %s",jp.str().data(),rrst.config.str().data());
-            //            for(JsonPacket pk:jp.to_array()){
-            //             //   prt(info,"get rect");
-            //                VdRect tmp(pk);
-            //                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
-            //                for(PlayerWidget *p:players){
-            //                    p->set_object_rect(rc);
-            //                }
-            //            }
-
-            //            vector<QRect> result_rects;
-
-            //            for(JsonPacket pk:jp.to_array()){
-            //                VdRect tmp(pk);
-            //                QRect rc(tmp.x+dr.x,tmp.y+dr.y,tmp.w,tmp.h);
-            //                result_rects.push_back(rc);
-            //            }
-            //            for(int i=0;i<players.size();i++){
-            //                if(cam_index==i+1){
-            //                    PlayerWidget *p=players[i];
-            //                    p->set_overlay(result_rects,ts);
-            //                }
-            //            }
-
-
-            //            for(VdRect r:rrst.){
-            //                int x=r.x+dr.x;
-            //                int y=r.y+dr.y;
-            //                int w=r.w;
-            //                int h=r.h;
-            //            //    prt(info,"set %d",x);
-            //                QRect rc(x,y,w,h);
-            //                for(PlayerWidget *p:players){
-            //                    p->set_object_rect(rc);
-            //                }
-            //            }
-
-
-
-            //            vector <JsonPacket> d_a=cam_data.to_array();
-
-            //            // prt(info,"index %d",cam_index);
-            //            if(cam_data.to_array().size()){
-            //                int x=d_a[0].get("x").to_int();
-            //                int y=d_a[0].get("y").to_int();
-            //                int w=d_a[0].get("w").to_int();
-            //                int h=d_a[0].get("h").to_int();
-            //                QRect r(x,y,w,h);
-            //                for(PlayerWidget *p:players){
-            //                    p->set_object_rect(r);
-            //                }
-
-            //            }
+            thread_lock.unlock();
         }
     }
 private slots:
