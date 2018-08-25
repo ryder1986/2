@@ -76,7 +76,7 @@ void MainWindow::on_pushButton_setconfig_clicked()
 
 void MainWindow::on_pushButton_addcam_clicked()
 {
-    clt.add_camera(ui->pushButton_addcam->text().toUtf8().data(),cfg.CameraData.size());
+    clt.add_camera(ui->lineEdit_addcam->text().toUtf8().data(),cfg.CameraData.size());
 }
 
 void MainWindow::on_pushButton_delcam_clicked()
