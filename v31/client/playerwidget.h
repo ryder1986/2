@@ -11,13 +11,19 @@
 #include <QMouseEvent>
 #include "camera.h"
 #include "videosource.h"
+#include "detectregion.h"
 #define POLY_VER_NUM 4
 class PlayerWidget : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-
+    enum OP{
+        ADD_REGION,
+        DEL_REGION,
+        FULL_SCREEN,
+        NORMAL_SCREEN
+    };
     ~PlayerWidget()
     {
         prt(info,"delete wgt");
@@ -204,7 +210,7 @@ public slots:
     }
     void add_region(bool)
     {
-      //  emit
+      //  emitl;
         prt(info,"add region");
     }
     void del_region(bool)
@@ -288,10 +294,14 @@ private:
     }
 signals:
     void cam_data_change(CameraInputData ,QWidget *w);
-    void reshape_region(int region_index ,QRect rct,QWidget *w);
+   // void reshape_region(int region_index ,QRect rct,QWidget *w);
+    void add_region(int region_index ,DetectRegionInputData rct,QWidget *w);
+    void del_region(int region_index ,QWidget *w);
+    void mod_region(int region_index ,JsonPacket mod_data,QWidget *w);
     void selected(PlayerWidget *w);
     void data_changed();
     void alg_changed(int index);
+
 private:
     int pic_w;
     int pic_h;
