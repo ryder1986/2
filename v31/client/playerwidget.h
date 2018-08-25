@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QMutex>
 #include <QPainter>
+#include <QMenu>
+#include <QAction>
 #include <QMouseEvent>
 #include "camera.h"
 #include "videosource.h"
@@ -24,7 +26,7 @@ public:
         delete src;
     }
 
-    PlayerWidget(CameraInputData data)
+    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this)
     {
         rects.clear();
         loop=0;
@@ -33,8 +35,23 @@ public:
         frame_rate=0;
         tick_timer=new QTimer();
         connect(tick_timer,SIGNAL(timeout()),this,SLOT(timeout()));
+
         tick_timer->start(100);
         src=new VideoSource(data.Url);
+        //         menu=new QMenu(this);
+        //         action_add_channel=new QAction(this);   action_del_channel->setText("del channel")
+        //         menu->addAction(action_add_channel);
+        //         connect(action_add_channel,SIGNAL(triggered(bool)),this,SLOT(add_channel(bool)));
+        //         menu->exec(pos);
+        setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(right_click(QPoint)));
+        action_add_region.setText("add region");
+        connect(&action_add_region,SIGNAL(triggered(bool)),this,SLOT(add_region(bool)));
+        action_del_region.setText("del region");
+        connect(&action_del_region,SIGNAL(triggered(bool)),this,SLOT(del_region(bool)));
+        menu.addAction(&action_add_region);
+        menu.addAction(&action_del_region);
+
     }
     void set_title(QString t)
     {
@@ -58,38 +75,33 @@ public:
     void set_overlay(JsonPacket cam_out)
     {
         lock.lock();
-    //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
+        //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
         CameraOutputData  out=cam_out;
 
-   //       prt(info,"sz %d",out.DetectionResult.size());
+        //       prt(info,"sz %d",out.DetectionResult.size());
         for(int i=0;i<out.DetectionResult.size();i++){
             DetectRegionInputData d=  cfg.DetectRegion[i];
             DetectRegionOutputData  o= out.DetectionResult[i];
-   //         prt(info,"processor %s",d.SelectedProcessor.data());
+            //         prt(info,"processor %s",d.SelectedProcessor.data());
             if(d.SelectedProcessor=="c4"){
                 C4ProcessorOutputData c4o=o.Result;
                 //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
-             //   rects.clear();
+                //   rects.clear();
                 for(VdRect v:c4o.Rects){
                     QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
                     rects.push_back(r);
                 }
                 QRect rrr=rects.at(rects.size()-1);
-         //          prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
+                //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
             }
             if(d.SelectedProcessor=="dummy"){
-
                 DummyProcessorOutputData dummyo=o.Result;
-                //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
-              //  rects.clear();
+
                 for(ObjectRect objectrect:dummyo.DetectedObjects){
                     QRect rct(objectrect.x+o.DetectionRect.x,objectrect.y+o.DetectionRect.y,objectrect.w,objectrect.h);
                     rects.push_back(rct);
                 }
-               // prt(info,"get %d dummy rect ",rects.size())
-            //        prt(info,"process dummy %d results ",dummyo.DetectedObjects.size());
-
             }
             if(d.SelectedProcessor=="pvd"){}
             if(d.SelectedProcessor=="fvd"){}
@@ -178,7 +190,27 @@ protected:
     }
 
 public slots:
-
+    void right_click(QPoint pos)
+    {
+        prt(info,"right click at %d %d",pos.x(),pos.y());
+        prt(info,"pos at %d %d",this->x(),this->y());
+        //  menu.exec(pos);
+        menu.exec(QCursor::pos());
+        //         menu=new QMenu(this);
+        //         action_add_channel=new QAction(this);
+        //         menu->addAction(action_add_channel);
+        //         connect(action_add_channel,SIGNAL(triggered(bool)),this,SLOT(add_channel(bool)));
+        //         menu->exec(pos);
+    }
+    void add_region(bool)
+    {
+      //  emit
+        prt(info,"add region");
+    }
+    void del_region(bool)
+    {
+        prt(info,"del region");
+    }
     void timeout()
     {
         this->update();
@@ -186,6 +218,7 @@ public slots:
     void mouseMoveEvent(QMouseEvent *e)
     {
         QPoint p1=map_point(e->pos());
+        //  QPoint p1=map_point(QCursor::pos());
 
         if(ver_picked){
             //     prt(info,"seting %d, picked %d , index1:%d ,index2:%d,size %d",e->pos().x(),ver_picked,\
@@ -206,11 +239,8 @@ public slots:
     }
     void mousePressEvent(QMouseEvent *e)
     {
-
-
         vector <DetectRegionInputData >detect_regions;
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
-        ;
         for(int i=0;i<detect_regions.size();i++){
             vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
             int point_index=match_point(pnts,map_point(e->pos()));
@@ -285,6 +315,10 @@ private:
     vector <QRect> rects;
     QTimer *tick_timer;
     int timestamp;
+
+    QMenu menu;
+    QAction action_add_region;
+    QAction action_del_region;
 };
 
 #endif // PLAYERWIDGET_H
