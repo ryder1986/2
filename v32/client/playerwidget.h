@@ -18,9 +18,7 @@ class PlayerWidget : public QOpenGLWidget
     Q_OBJECT
 
 public:
-    enum OP{
-        ADD_REGION,
-        DEL_REGION,
+    enum Operation{
         FULL_SCREEN,
         NORMAL_SCREEN
     };
@@ -210,7 +208,19 @@ public slots:
     }
     void add_region(bool)
     {
+        string SelectedProcessor="c4";
+        vector <VdPoint>ExpectedAreaVers;
+        ExpectedAreaVers.push_back(VdPoint(0,0));
+        ExpectedAreaVers.push_back(VdPoint(640,0));
+        ExpectedAreaVers.push_back(VdPoint(640,480));
+        ExpectedAreaVers.push_back(VdPoint(0,480));
+        C4ProcessorInputData c4d(6,"0.6");
+        JsonPacket ProcessorData=c4d.data();
+        DetectRegionInputData rd(ProcessorData,SelectedProcessor,ExpectedAreaVers);
+        RequestPkt pkt(Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),rd.data());
+        signal_camera(this,Camera::OP::INSERT_REGION,pkt.data());
       //  emitl;
+
         prt(info,"add region");
     }
     void del_region(bool)
@@ -294,7 +304,9 @@ private:
     }
 signals:
     void cam_data_change(CameraInputData ,QWidget *w);
-   // void reshape_region(int region_index ,QRect rct,QWidget *w);
+    void signal_camera(PlayerWidget *w,int op,JsonPacket data);
+    void signal_region(PlayerWidget *w,int region_index,int op,JsonPacket data);
+       // void reshape_region(int region_index ,QRect rct,QWidget *w);
     void add_region(int region_index ,DetectRegionInputData rct,QWidget *w);
     void del_region(int region_index ,QWidget *w);
     void mod_region(int region_index ,JsonPacket mod_data,QWidget *w);
@@ -329,6 +341,7 @@ private:
     QMenu menu;
     QAction action_add_region;
     QAction action_del_region;
+    int screen_state;
 };
 
 #endif // PLAYERWIDGET_H

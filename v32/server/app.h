@@ -21,7 +21,7 @@ public:
     void modify_camera(JsonPacket d,int index)
     {
         if(index>0&&index<=CameraData.size()){
-            prt(info," cams  size  %d", CameraData.size());
+            prt(info,"camera %d, data change to =##########==>%s",index,d.str().data());
             CameraData[index-1]=d;
         }else{
             prt(info," cams size  %d,unchange with index %d", CameraData.size(),index);
@@ -181,7 +181,9 @@ private:
         if(1<=index&&index<=cms.size()){
 
             vector<Camera*>::iterator it=cms.begin();
-            Camera *c=cms.at(index-1);
+            Camera *c=cms[index-1];
+
+
             c->modify(pkt);
             private_data.modify_camera(c->get_data().data(),index);
         }
@@ -196,6 +198,7 @@ private:
         {
             JsonPacket cfg=p_cm->get_config();//get config
             prt(info,"cfg %s",cfg.str().data());
+            printf("$$$$$ %s $$$$$\n",cfg.str().data());
             ReplyPkt rp(cfg);
             r=rp;
             prt(info,"reply %s (%d)",r.data().str().data(),r.data().str().size());
@@ -221,7 +224,10 @@ private:
         }
         case App::Operation::MODIFY_CAMERA:
         {
+            printf("#########before  %s",private_data.data().str().data());
+
             mod_camera(e.Index,e.Argument);
+            printf("#########after  %s",private_data.data().str().data());
             p_cm->set_config(private_data.data().str());
             ret=true;
             break;

@@ -25,6 +25,12 @@ public:
         DetectRegion[index-1]=data;
         encode();
     }
+    void insert_region(JsonPacket data,int index)
+    {
+        vector <JsonPacket >::iterator begin=DetectRegion.begin();
+        DetectRegion.insert(begin+index,data);
+        encode();
+    }
 
     void replace_point()
     {
@@ -127,16 +133,20 @@ public:
                     callback_result(this,ret.str());
                 }
 #endif
+                lock.lock();
                 vector<   JsonPacket >pkt;
+                int tmp=0;
                 for(DetectRegion *r:drs){
+                     prt(info,"region siz %d,now (%d) ",drs.size(),++tmp);
                     JsonPacket ret=r->work(frame);
                     pkt.push_back(ret);
-                    //prt(info,"get a rect ");
+
                 }
 
                 CameraOutputData cod(pkt,ts);
                 timestamp=ts;
                 callback_result(this,cod.data().str());
+                lock.unlock();
             }
         }
     }
@@ -167,6 +177,7 @@ public:
     }
     void modify(JsonPacket jp)
     {
+        lock.lock();
         RequestPkt req(jp);
         int index=req.Index;
         switch (req.Operation) {
@@ -176,8 +187,9 @@ public:
         case OP::INSERT_REGION:
         {
             vector<DetectRegion*>::iterator it=drs.begin();
-            DetectRegion rr(req.Argument.get("RegionData"));
-            drs.insert(it+index-1,&rr);
+            DetectRegion *rg=new DetectRegion(req.Argument);
+            drs.insert(it+index,rg);
+            private_data.insert_region(req.Argument,index);
             break;
         }
         case OP::DELETE_REGION:
@@ -198,6 +210,7 @@ public:
         default:
             break;
         }
+        lock.unlock();
     }
 
 private:
@@ -206,6 +219,7 @@ private:
     bool quit;
     thread *work_trd;
     int timestamp;
+    mutex lock;
 };
 
 #endif // CAMERA_H

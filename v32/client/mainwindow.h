@@ -78,6 +78,14 @@ public:
         }
 
     }
+    void send_cmd(JsonPacket pkt)
+    {
+        //        RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,JsonPacket());
+        bool ret= send(pkt.str());//talk to server
+        if(!ret){
+            prt(info,"fail send");
+        }
+    }
 
 #if 0
     void get_config()
@@ -418,9 +426,9 @@ public:
         write_bytes=tcp_socket->write(ba.data(),ba.length());
         bool flush_ret=tcp_socket->flush();//TODO,not work for flush
         if(flush_ret){
-            prt(info,"flush ok");
+            prt(info,"send ok");
         }else{
-            prt(info,"flush err");
+            prt(info,"send err");
         }
 
         if(write_bytes!=len){
@@ -580,9 +588,15 @@ private:
             ui->groupBox_video->layout()->addWidget(player);
             connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
                     this,SLOT(generate_current_config(CameraInputData,QWidget*)));
-            prt(info,"1");
+
+            connect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
+                    this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
+            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
+                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
+
         }
         prt(info,"%s",cfg.data().str().data());
+        printf("$$$$$ %s $$$$$\n",cfg.data().str().data());
         thread_lock.unlock();
     }
     void stop_config()
@@ -603,7 +617,6 @@ private:
         int fd= Socket::UdpCreateSocket(12349);
         int ret;
         static  char buf[1000];
-
         while(true){
             if(!connected)
                 continue;
@@ -629,6 +642,29 @@ private:
         }
     }
 private slots:
+    void slot_camera(PlayerWidget *w,int op,JsonPacket data)
+    {
+        int index= ui->groupBox_video->layout()->indexOf(w);
+        prt(info,"get sig from player %d",index);
+       // thread_lock.lock();
+        stop_config();
+        switch(op){
+        case Camera::OP::INSERT_REGION:
+        {
+            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
+            clt.send_cmd(pkt.data());
+            break;
+        }
+        default:break;
+        }
+       // thread_lock.unlock();
+    }
+    void slot_region(PlayerWidget *w,int region_index,int op,JsonPacket data)
+    {
+        int index= ui->groupBox_video->layout()->indexOf(w);
+        prt(info,"get sig from player %d",index);
+
+    }
     void generate_current_config(CameraInputData d,QWidget* w)
     {
         //   int index= ui->gridLayout_video->indexOf(w);
