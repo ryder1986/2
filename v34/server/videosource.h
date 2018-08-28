@@ -129,12 +129,14 @@ private:
     bool init_decoder()
     {
         bool ret=false;
-        codec = avcodec_find_decoder(CODEC_ID_H264);
+        //codec = avcodec_find_decoder(CODEC_ID_H264);
+        codec = avcodec_find_decoder(AV_CODEC_ID_H264);
         codec_ctx = avcodec_alloc_context3(codec);
         if (avcodec_open2(codec_ctx, codec, NULL) >= 0){
             avframe=NULL;
-            avframe= avcodec_alloc_frame();
-            if(avframe)
+           // avframe= avcodec_alloc_frame();av_frame_alloc();
+            avframe= av_frame_alloc();
+             if(avframe)
                 ret=true;
         }
         else {
@@ -198,7 +200,7 @@ public:
     int width;
     int height;
 };
-#define USE_CVCAP 1
+//#define USE_CVCAP 1
 
 class VideoSource
 {

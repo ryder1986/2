@@ -4,7 +4,7 @@
 #include "videoprocessor.h"
 #include "c4common.h"
 #include "datapacket.h"
-#include "track/Ctracker.h"
+//#include "track/Ctracker.h"
 
 #define KALMAN_LOST_FRAME_THREDHOLD 5
 #define KALMAN_TRACE_LEN 100
@@ -195,15 +195,15 @@ public:
         loaded=false;
         p_scanner=new DetectionScanner(HUMAN_height,HUMAN_width,HUMAN_xdiv,
                                        HUMAN_ydiv,256,string2f("0.8"));
-        tracker=new CTracker(0.2f, 0.1f, 60.0f,
-                             KALMAN_LOST_FRAME_THREDHOLD,
-                             KALMAN_TRACE_LEN);
+//        tracker=new CTracker(0.2f, 0.1f, 60.0f,
+//                             KALMAN_LOST_FRAME_THREDHOLD,
+//                             KALMAN_TRACE_LEN);
     }
 
     ~PvdC4Processor()
     {
         delete p_scanner;
-        delete tracker;
+      //  delete tracker;
     }
     string get_rst()
     {
@@ -382,7 +382,7 @@ private:
     bool real_process( Mat &src_image,m_result &rst)
     {
         std::vector<cv::Rect>  result_rects;
-        std::vector<Point_t>  centers;
+        std::vector<CvPoint>  centers;
         bool ret=false;
         if(!loaded){
             LoadCascade(*p_scanner);
@@ -444,12 +444,12 @@ private:
             //   cv::rectangle(detect_region, real_position, cv::Scalar(0,255,0), 2);
             result_rects.push_back(real_position);
 
-            centers.push_back(Point_t(real_position.x + ((float)real_position.width/2),
+            centers.push_back(CvPoint(real_position.x + ((float)real_position.width/2),
                                       real_position.y + ((float)real_position.height/2)));
 
         }
 
-        tracker->Update(centers, result_rects, CTracker::RectsDist);
+       // tracker->Update(centers, result_rects, CTracker::RectsDist);
 #endif
         double end_time = cv::getTickCount();
         double spend_time;
@@ -467,6 +467,6 @@ private:
 private:
     bool loaded;
     DetectionScanner *p_scanner;
-    CTracker *tracker;
+  //  CTracker *tracker;
 };
 #endif // PVDPROCESSOR_H
