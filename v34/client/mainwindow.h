@@ -616,16 +616,17 @@ private:
     {
         int fd= Socket::UdpCreateSocket(12349);
         int ret;
-        static  char buf[1000];
+        static  char buf[10000];
         while(true){
             if(!connected)
                 continue;
-            ret= Socket::RecvDataByUdp(fd,buf,1000);
+            ret= Socket::RecvDataByUdp(fd,buf,10000);
+            //prt(info,"rget udp len %d",ret);
             string str(buf);
             JsonPacket p(str);
-            //prt(info,"recving %s",p.str().data());
+            //prt(info,"recving %s(%d)",p.str().data(),p.str().size());
             AppOutputData rst(p);
-            //prt(info,"recving %s",rst.data().str().data());
+
             int cam_index=rst.CameraIndex;
             //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
 
@@ -646,8 +647,10 @@ private slots:
     {
         int index= ui->groupBox_video->layout()->indexOf(w);
         prt(info,"get sig from player %d",index);
+
        // thread_lock.lock();
-        stop_config();
+       // stop_config();
+         //return ;
         switch(op){
         case Camera::OP::INSERT_REGION:
         {

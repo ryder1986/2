@@ -198,13 +198,7 @@ public slots:
     {
         prt(info,"right click at %d %d",pos.x(),pos.y());
         prt(info,"pos at %d %d",this->x(),this->y());
-        //  menu.exec(pos);
         menu.exec(QCursor::pos());
-        //         menu=new QMenu(this);
-        //         action_add_channel=new QAction(this);
-        //         menu->addAction(action_add_channel);
-        //         connect(action_add_channel,SIGNAL(triggered(bool)),this,SLOT(add_channel(bool)));
-        //         menu->exec(pos);
     }
     void add_region(bool)
     {
@@ -225,7 +219,7 @@ public slots:
     }
     void del_region(bool)
     {
-        prt(info,"del region");
+        prt(info,"del region ");
     }
     void timeout()
     {
