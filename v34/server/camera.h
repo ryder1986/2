@@ -135,14 +135,12 @@ public:
 #endif
                 lock.lock();
                 vector<   JsonPacket >pkt;
-                int tmp=0;
+             //   int tmp=0;
                 for(DetectRegion *r:drs){
-                     prt(info,"region siz %d,now (%d) ",drs.size(),++tmp);
+                    // prt(info,"region siz %d,now (%d) ",drs.size(),++tmp);
                     JsonPacket ret=r->work(frame);
                     pkt.push_back(ret);
-
                 }
-
                 CameraOutputData cod(pkt,ts);
                 timestamp=ts;
                 callback_result(this,cod.data().str());

@@ -36,13 +36,16 @@ public:
         height=0;
         if(!init_input()){
             prt(info,"@@@@@err");
-            exit(0);
+            //exit(0);
+        }else{
+            if(!init_decoder()){
+                prt(info,"@@@@@err");
+                //exit(0);
+            }else{
+                opened=true;
+            }
         }
-        if(!init_decoder()){
-            prt(info,"@@@@@err");
-            exit(0);
-        }
-        opened=true;
+
         //  int t= cvNamedWindow("123");
     }
     ~PdVideoCapture()
@@ -71,11 +74,11 @@ public:
         //RTSPState *state=(RTSPState) fmt->priv_data;
         int64_t dt,wt;
         av_get_output_timestamp(fmt,0,&dt,&wt);
-        prt(info,"read frm stamp %d ",fmt->start_time_realtime);
-        prt(info,"read frm stamp1 %d ",fmt->start_time);
-        prt(info,"read frm stamp2 %d ",av_pkt.pts);
-        prt(info,"read frm stamp3 %d ",av_pkt.dts);
-        prt(info,"read frm stamp4 %d ",av_pkt.pos);
+        //        prt(info,"read frm stamp %d ",fmt->start_time_realtime);
+        //        prt(info,"read frm stamp1 %d ",fmt->start_time);
+        //        prt(info,"read frm stamp2 %d ",av_pkt.pts);
+        //        prt(info,"read frm stamp3 %d ",av_pkt.dts);
+        //        prt(info,"read frm stamp4 %d ",av_pkt.pos);
         if(decode()){
             // prt(info,"decode a frame");
             YUVImage.create(width*3/2, height, CV_8UC1);
@@ -134,9 +137,9 @@ private:
         codec_ctx = avcodec_alloc_context3(codec);
         if (avcodec_open2(codec_ctx, codec, NULL) >= 0){
             avframe=NULL;
-           // avframe= avcodec_alloc_frame();av_frame_alloc();
+            // avframe= avcodec_alloc_frame();av_frame_alloc();
             avframe= av_frame_alloc();
-             if(avframe)
+            if(avframe)
                 ret=true;
         }
         else {

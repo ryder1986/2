@@ -382,7 +382,7 @@ private:
     bool real_process( Mat &src_image,m_result &rst)
     {
         std::vector<cv::Rect>  result_rects;
-        std::vector<CvPoint>  centers;
+       // std::vector<CvPoint>  centers;
         bool ret=false;
         if(!loaded){
             LoadCascade(*p_scanner);
@@ -443,9 +443,9 @@ private:
             real_position.height = (results[i].bottom - results[i].top);
             //   cv::rectangle(detect_region, real_position, cv::Scalar(0,255,0), 2);
             result_rects.push_back(real_position);
-
-            centers.push_back(CvPoint(real_position.x + ((float)real_position.width/2),
-                                      real_position.y + ((float)real_position.height/2)));
+//            CvPoint pnt((int)real_position.x + ((int)real_position.width/2),
+//                                                  (int)real_position.y + ((int)real_position.height/2));
+//            centers.push_back(pnt);
 
         }
 
