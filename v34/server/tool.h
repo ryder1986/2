@@ -95,8 +95,15 @@ inline void print_backstrace(void)
         str=string(strings[j]);
         string sub=get_last_sub_string(str,'(','+');
         realname=demangle(sub.data());
-        if(realname)
-            cout<<realname<<endl;
+        if(realname){
+            string tmp(realname);
+            if(tmp.size()<40)
+                cout<<"--->"<<tmp<<endl;
+            else
+                cout<<"--->"<<tmp.substr(0,40)<<"......"<<endl;
+
+
+        }
     }
 
 

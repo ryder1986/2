@@ -595,8 +595,8 @@ private:
                     this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
 
         }
-        prt(info,"%s",cfg.data().str().data());
-        printf("$$$$$ %s $$$$$\n",cfg.data().str().data());
+        prt(info,"start config: %s",cfg.data().str().data());
+        //printf("$$$$$ %s $$$$$\n",cfg.data().str().data());
         thread_lock.unlock();
     }
     void stop_config()
@@ -656,6 +656,14 @@ private slots:
         {
             RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
             clt.send_cmd(pkt.data());
+            clt.get_config();
+            break;
+        }
+        case Camera::OP::DELETE_REGION:
+        {
+            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
+            clt.send_cmd(pkt.data());
+            clt.get_config();
             break;
         }
         default:break;

@@ -53,9 +53,12 @@ public:
         connect(&action_add_region,SIGNAL(triggered(bool)),this,SLOT(add_region(bool)));
         action_del_region.setText("del region");
         connect(&action_del_region,SIGNAL(triggered(bool)),this,SLOT(del_region(bool)));
+        action_set_region.setText("del region");
+        connect(&action_set_region,SIGNAL(triggered(bool)),this,SLOT(set_region(bool)));
         menu.addAction(&action_add_region);
         menu.addAction(&action_del_region);
-
+        menu.addAction(&action_set_region);
+    connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void set_title(QString t)
     {
@@ -95,7 +98,7 @@ public:
                     QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
                     rects.push_back(r);
                 }
-                QRect rrr=rects.at(rects.size()-1);
+               // QRect rrr=rects.at(rects.size()-1);
                 //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
             }
@@ -178,7 +181,12 @@ protected:
         img_painter.setPen(red_pen1());
         cnt=0;
         // prt(info,"start draw-> %s",cfg.data().str().data());
-        for(DetectRegionInputData p:cfg.DetectRegion){
+        for(int i=0;i<cfg.DetectRegion.size();i++){
+            DetectRegionInputData p=cfg.DetectRegion[i];
+            if(ver_picked&&i==selected_region_index-1)
+                     img_painter.setPen(blue_pen2());
+            else
+                     img_painter.setPen(green_pen2());
             // prt(info,"p-> %s",p.data().str().data());
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
@@ -194,6 +202,12 @@ protected:
     }
 
 public slots:
+    void hide_menu()
+    {
+        prt(info,"hide menu");
+        ver_picked=false;
+
+    }
     void right_click(QPoint pos)
     {
         prt(info,"right click at %d %d",pos.x(),pos.y());
@@ -220,6 +234,15 @@ public slots:
     void del_region(bool)
     {
         prt(info,"del region ");
+        RequestPkt pkt(Camera::OP::DELETE_REGION,selected_region_index,JsonPacket());
+        signal_camera(this,Camera::OP::DELETE_REGION,pkt.data());
+    }
+    void set_region(bool)
+    {
+        prt(info,"mod region ");
+        RequestPkt r_pkt(DetectRegion::OP::);
+        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,JsonPacket());
+        signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
     void timeout()
     {
@@ -276,6 +299,11 @@ private:
     {
         return QPen (QBrush (QColor(0,0,222)),1);
     }
+//    QPen green_pen1()
+//    {
+//        return QPen (QBrush (QColor(0,222,0)),1);
+//    }
+
     QPen blue_pen2()
     {
         return QPen (QBrush (QColor(0,0,222)),5);
@@ -303,6 +331,7 @@ signals:
        // void reshape_region(int region_index ,QRect rct,QWidget *w);
     void add_region(int region_index ,DetectRegionInputData rct,QWidget *w);
     void del_region(int region_index ,QWidget *w);
+    void set_region(int region_index ,QWidget *w);
     void mod_region(int region_index ,JsonPacket mod_data,QWidget *w);
     void selected(PlayerWidget *w);
     void data_changed();
@@ -335,6 +364,7 @@ private:
     QMenu menu;
     QAction action_add_region;
     QAction action_del_region;
+    QAction action_set_region;
     int screen_state;
 };
 

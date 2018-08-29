@@ -179,12 +179,9 @@ private:
     void mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
     {
         if(1<=index&&index<=cms.size()){
-
             vector<Camera*>::iterator it=cms.begin();
             Camera *c=cms[index-1];
-
-
-            c->modify(pkt);
+            if(c->modify(pkt))
             private_data.modify_camera(c->get_data().data(),index);
         }
     }
@@ -197,11 +194,11 @@ private:
         case App::Operation::GET_CONFIG:
         {
             JsonPacket cfg=p_cm->get_config();//get config
-            prt(info,"cfg %s",cfg.str().data());
-            printf("$$$$$ %s $$$$$\n",cfg.str().data());
+            //prt(info,"cfg %s",cfg.str().data());
+            //printf("$$$$$ %s $$$$$\n",cfg.str().data());
             ReplyPkt rp(cfg);
             r=rp;
-            prt(info,"reply %s (%d)",r.data().str().data(),r.data().str().size());
+            //prt(info,"reply %s (%d)",r.data().str().data(),r.data().str().size());
             ret=true;
             break;
         }
@@ -224,10 +221,10 @@ private:
         }
         case App::Operation::MODIFY_CAMERA:
         {
-            printf("#########before  %s",private_data.data().str().data());
+            //printf("#########before  %s",private_data.data().str().data());
 
             mod_camera(e.Index,e.Argument);
-            printf("#########after  %s",private_data.data().str().data());
+            //printf("#########after  %s",private_data.data().str().data());
             p_cm->set_config(private_data.data().str());
             ret=true;
             break;

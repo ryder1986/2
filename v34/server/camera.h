@@ -31,7 +31,12 @@ public:
         DetectRegion.insert(begin+index,data);
         encode();
     }
-
+    void delete_region(int index)
+    {
+        vector <JsonPacket >::iterator begin=DetectRegion.begin();
+        DetectRegion.erase(begin+index);
+        encode();
+    }
     void replace_point()
     {
 
@@ -135,7 +140,7 @@ public:
 #endif
                 lock.lock();
                 vector<   JsonPacket >pkt;
-             //   int tmp=0;
+                //   int tmp=0;
                 for(DetectRegion *r:drs){
                     // prt(info,"region siz %d,now (%d) ",drs.size(),++tmp);
                     JsonPacket ret=r->work(frame);
@@ -173,11 +178,14 @@ public:
     {
         return timestamp;
     }
-    void modify(JsonPacket jp)
+    bool modify(JsonPacket jp)
     {
-        lock.lock();
+
         RequestPkt req(jp);
         int index=req.Index;
+        if(index<0||index>drs.size())
+            return false;
+        lock.lock();
         switch (req.Operation) {
         case OP::CHANGE_URL:
             change_source(req.Argument.get("Url").to_string());
@@ -192,12 +200,18 @@ public:
         }
         case OP::DELETE_REGION:
         {
+            if(!index)
+                return false;
             vector<DetectRegion*>::iterator it=drs.begin();
+            delete drs[index-1];
             drs.erase(it+index-1);
+            private_data.delete_region(index);
             break;
         }
         case OP::MODIFY_REGION:
         {
+            if(!index)
+                return false;
             vector<DetectRegion*>::iterator it=drs.begin();
             DetectRegion *rg= drs[index-1];
             rg->modify(req.Argument.get("ModifyRegion"));
@@ -209,6 +223,7 @@ public:
             break;
         }
         lock.unlock();
+        return true;
     }
 
 private:

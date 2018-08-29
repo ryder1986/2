@@ -81,7 +81,7 @@ void VideoSource::run()
                 lock.lock();
                 if(!(frame_rate%30))
                 {
-                    prt(info,"running %s",url.data());
+                    //prt(info,"running %s",url.data());
                 }
                 if(frame_list.size()<3&&frame.rows>0&&frame.cols>0){
                     frame_list.push_back(frame);

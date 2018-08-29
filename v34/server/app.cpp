@@ -24,15 +24,20 @@ void App::process_client_cmd(Session *clt, char *data, int len)
 #if 1
     string valid_buf;
     valid_buf.clear();
-
+    string ret_str;
+    bool process_ret;
     while(JsonStr::get_valid_buf(str_stream,valid_buf)) {//Get valid json object, TODO:we only check {} matches, we should check json grammar
         prt(info,"process string %s\n left string %s",valid_buf.data(),str_stream.data());
         RequestPkt event(valid_buf);
         ReplyPkt ret_pkt;
         client_tmp_ip=clt->ip();
-        process_event(event,ret_pkt);
-        string ret=ret_pkt.data().str();
-        clt->send(ret.data(),ret.length());
+        process_ret=process_event(event,ret_pkt);
+        if(process_ret)
+            ret_str=ret_pkt.data().str();
+        else
+        //    ret_str=JsonPacket().str();
+            ret_str={"{ret:false}"};
+        clt->send(ret_str.data(),ret_str.length());
     }
 #endif
 }
@@ -61,9 +66,9 @@ void App::process_camera_data(Camera *camera, string data)
             //       prt(info,"send %s",rst.data().str().data());
             Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
-//    for(DestClient dst:dest_clients){
-//          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
-//    }
+    //    for(DestClient dst:dest_clients){
+    //          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
+    //    }
 
 
 

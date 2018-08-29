@@ -93,7 +93,7 @@ public:
 
     void set_config(string cfg)
     {
-        prt(info,"set config %s",cfg.data())
+        //prt(info,"set config %s",cfg.data())
         db.save(cfg);
     }
 

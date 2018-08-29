@@ -18,7 +18,7 @@ public:
     }
     ~Session()
     {
-        prt(info,"quit connection: %s ",ip());
+        prt(info,"quit connection: %s ",ip().data());
         quit=true;
         trd->join();
         delete trd;
@@ -30,6 +30,7 @@ public:
         int ret= Socket::SendDataByTcp(skt,buf,len);
         if(ret){
             prt(info,"succeed in sending %d bytes",ret);
+            printf("$$ %s $$",buf);
         }else{
             prt(info,"send fail",ret);
         }
@@ -39,7 +40,7 @@ public:
         while(!quit){
             int ret=Socket::RecvDataByTcp1(skt,buf,BUF_SIZE);
             if(ret){
-                prt(info,"succeed in reading %d bytes",ret);
+                prt(info,"read %d bytes",ret);
                 process_data(this,buf,ret);
             }else{
                 prt(info,"read socket error");

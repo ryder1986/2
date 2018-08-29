@@ -175,6 +175,7 @@ public:
     {
         if(val.empty()){
             prt(info,"to int error :no content");
+            print_backstrace();
             return 0;
         }
         if(!val.isInt()){
