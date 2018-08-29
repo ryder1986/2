@@ -666,6 +666,20 @@ private slots:
             clt.get_config();
             break;
         }
+        case Camera::OP::MODIFY_REGION:
+        {
+            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
+            clt.send_cmd(pkt.data());
+            clt.get_config();
+            break;
+        }
+        case Camera::OP::CHANGE_URL:
+        {
+            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
+            clt.send_cmd(pkt.data());
+            clt.get_config();
+            break;
+        }
         default:break;
         }
        // thread_lock.unlock();
@@ -705,7 +719,7 @@ private slots:
         case App::Operation::GET_CONFIG:
         {
             //cfg=pkt.get("ret");
-            cfg=event.Ret;
+            cfg=event.Data;
             prt(info,"get config :%s",cfg.data().str().data());
             ui->lineEdit_getconfig->setText(cfg.data().str().data());
             prt(info,"stopping");

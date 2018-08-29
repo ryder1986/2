@@ -53,11 +53,15 @@ public:
         connect(&action_add_region,SIGNAL(triggered(bool)),this,SLOT(add_region(bool)));
         action_del_region.setText("del region");
         connect(&action_del_region,SIGNAL(triggered(bool)),this,SLOT(del_region(bool)));
-        action_set_region.setText("del region");
+        action_set_region.setText("set region");
         connect(&action_set_region,SIGNAL(triggered(bool)),this,SLOT(set_region(bool)));
+        action_change_url.setText("set url");
+        connect(&action_change_url,SIGNAL(triggered(bool)),this,SLOT(set_url(bool)));
+
         menu.addAction(&action_add_region);
         menu.addAction(&action_del_region);
         menu.addAction(&action_set_region);
+        menu.addAction(&action_change_url);
     connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void set_title(QString t)
@@ -237,11 +241,35 @@ public slots:
         RequestPkt pkt(Camera::OP::DELETE_REGION,selected_region_index,JsonPacket());
         signal_camera(this,Camera::OP::DELETE_REGION,pkt.data());
     }
+    void set_url(bool)
+    {
+        JsonPacket p;
+        p.add("Url","rtsp://192.168.1.95:554/av0_1");
+        RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
+        signal_camera(this,Camera::OP::CHANGE_URL,pkt.data());
+    }
     void set_region(bool)
     {
         prt(info,"mod region ");
-        RequestPkt r_pkt(DetectRegion::OP::);
-        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,JsonPacket());
+        vector <DetectRegionInputData >detect_regions;
+
+        detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
+        DetectRegionInputData tmp=detect_regions[selected_region_index-1];
+        vector <VdPoint  > vers=tmp.ExpectedAreaVers;
+        vector <JsonPacket  > vers_pkt;
+//        vers.push_back(VdPoint(0,0));
+//        vers.push_back(VdPoint(330,0));
+//        vers.push_back(VdPoint(330,330));
+//        vers.push_back(VdPoint(0,330));
+        JsonPacket p;
+      //  vers_pkt.assign(vers.begin(),vers.end());
+        for(int i=0;i<vers.size();i++){
+            vers_pkt.push_back(vers[i].data());
+        }
+      p.add("ExpectedAreaVers",vers_pkt);
+      //    p.add("ExpectedAreaVers",);
+        RequestPkt r_pkt(DetectRegion::OP::CHANGE_RECT,0,p);
+        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,r_pkt.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
     void timeout()
@@ -365,6 +393,7 @@ private:
     QAction action_add_region;
     QAction action_del_region;
     QAction action_set_region;
+    QAction action_change_url;
     int screen_state;
 };
 

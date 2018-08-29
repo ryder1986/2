@@ -176,14 +176,18 @@ private:
         return false;
     }
 
-    void mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
+    bool mod_camera(int index,JsonPacket pkt)//delete who ? 1~size
     {
+        bool ret=false;
         if(1<=index&&index<=cms.size()){
             vector<Camera*>::iterator it=cms.begin();
             Camera *c=cms[index-1];
-            if(c->modify(pkt))
-            private_data.modify_camera(c->get_data().data(),index);
+            if(c->modify(pkt)){
+                private_data.modify_camera(c->get_data().data(),index);
+                ret=true;
+            }
         }
+        return ret;
     }
 
     bool process_event(RequestPkt e,ReplyPkt &r)
@@ -196,7 +200,7 @@ private:
             JsonPacket cfg=p_cm->get_config();//get config
             //prt(info,"cfg %s",cfg.str().data());
             //printf("$$$$$ %s $$$$$\n",cfg.str().data());
-            ReplyPkt rp(cfg);
+            ReplyPkt rp(true,App::Operation::GET_CONFIG,cfg);
             r=rp;
             //prt(info,"reply %s (%d)",r.data().str().data(),r.data().str().size());
             ret=true;
@@ -223,10 +227,13 @@ private:
         {
             //printf("#########before  %s",private_data.data().str().data());
 
-            mod_camera(e.Index,e.Argument);
-            //printf("#########after  %s",private_data.data().str().data());
-            p_cm->set_config(private_data.data().str());
-            ret=true;
+            if(mod_camera(e.Index,e.Argument)){
+                //printf("#########after  %s",private_data.data().str().data());
+                p_cm->set_config(private_data.data().str());
+                ret=true;
+                ReplyPkt p(true,App::Operation::MODIFY_CAMERA,JsonPacket());
+                r=p;
+            }
             break;
         }
         case App::Operation::DELETE_CAMERA:

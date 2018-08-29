@@ -31,6 +31,11 @@ public:
         DetectRegion.insert(begin+index,data);
         encode();
     }
+    void change_url(string u)
+    {
+        Url=u;
+        encode();
+    }
     void delete_region(int index)
     {
         vector <JsonPacket >::iterator begin=DetectRegion.begin();
@@ -188,8 +193,12 @@ public:
         lock.lock();
         switch (req.Operation) {
         case OP::CHANGE_URL:
-            change_source(req.Argument.get("Url").to_string());
+        {
+            string url=req.Argument.get("Url").to_string();
+            change_source(url);
+            private_data.change_url(url);
             break;
+        }
         case OP::INSERT_REGION:
         {
             vector<DetectRegion*>::iterator it=drs.begin();
@@ -214,7 +223,8 @@ public:
                 return false;
             vector<DetectRegion*>::iterator it=drs.begin();
             DetectRegion *rg= drs[index-1];
-            rg->modify(req.Argument.get("ModifyRegion"));
+            // rg->modify(req.Argument.get("ModifyRegion"));
+            rg->modify(req.Argument);
             private_data.set_region(rg->get_data().data(),index);
             break;
         }

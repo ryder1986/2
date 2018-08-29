@@ -443,8 +443,10 @@ public:
 class ReplyPkt:public JsonData
 {
 public:
-    JsonPacket Ret;
-    ReplyPkt(JsonPacket p):Ret(p)
+    bool Ret;
+    int Operation;
+    JsonPacket Data;
+    ReplyPkt(bool p,int o,JsonPacket pkt):Ret(p),Operation(o),Data(pkt)
     {
         encode();
     }
@@ -458,11 +460,15 @@ public:
     }
     void encode()
     {
-        ENCODE_OBJ_MEM(Ret);
+        ENCODE_BOOL_MEM(Ret);
+        ENCODE_INT_MEM(Operation);
+        ENCODE_OBJ_MEM(Data);
     }
     void decode()
     {
-        DECODE_OBJ_MEM(Ret);
+        DECODE_BOOL_MEM(Ret);
+        DECODE_INT_MEM(Operation);
+        DECODE_OBJ_MEM(Data);
     }
 
 };

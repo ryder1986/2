@@ -30,6 +30,13 @@ public:
         ExpectedAreaVers[index-1]=p;
         encode();
     }
+
+    void set_points(vector <VdPoint> p)
+    {
+        ExpectedAreaVers=p;
+        encode();
+    }
+
     void operator =(DetectRegionInputData dt)
     {
         config=dt.config;
@@ -89,6 +96,7 @@ class DetectRegion : public VdData<DetectRegionInputData>
     int tmp;
     VideoProcessor *p;
     Rect detect_rect;
+    mutex lock;
 public:
     enum OP{
         CHANGE_RECT,
@@ -107,12 +115,14 @@ public:
 
     JsonPacket work(Mat frame)
     {
+        lock.lock();
         JsonPacket rst_r;
         Mat tmp=frame(detect_rect);
         p->process(tmp,rst_r);
         VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
         JsonPacket dct_rct=r.data();
         DetectRegionOutputData rst(rst_r,dct_rct);
+        lock.unlock();
         return rst.data();
     }
 
@@ -128,6 +138,7 @@ public:
 
     void modify(RequestPkt pkt)
     {
+        lock.lock();
         int op=pkt.Operation;
         switch(op){
         case OP::CHANGE_RECT:
@@ -140,6 +151,7 @@ public:
                 ps.push_back(VdPoint(pp));
             }
             detect_rect=reshape_2_rect(ps);
+            private_data.set_points(ps);
             break;
         }
         case OP::CHANGE_PROCESSOR:
@@ -147,6 +159,7 @@ public:
 
           defalut:break;
         }
+        lock.unlock();
     }
     bool process(JsonPacket data)
     {
