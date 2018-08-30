@@ -1,7 +1,5 @@
 #ifndef SOCKET_H
 #define SOCKET_H
-
-
 #include <iostream>
 #include <thread>
 #include <functional>
@@ -11,7 +9,6 @@ using namespace std;
 #define IP_STR_LEN 20
 #include <cstring>
 #include <algorithm>
-
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -25,13 +22,9 @@ using namespace std;
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <errno.h>
-//#include <tcp.h>
 #include <sys/ioctl.h>
-//#include "common.h"
-//#include "zenlog.h"
-
 #include <vector>
-//using namespace std;
+#include "tool.h"
 #define	TCP_NODELAY	 1
 class Socket{
 public:
@@ -78,7 +71,7 @@ public:
     {
         struct sockaddr user_addr;
         int leng=sizeof(struct sockaddr_in);// TODO:important
-      //  printf("geting broadcast ...");fflush(NULL);
+        //  printf("geting broadcast ...");fflush(NULL);
         int rec_len= recvfrom(sock,buffer,len,0,(struct sockaddr *)&user_addr,(socklen_t *)&leng);
         if(rec_len>0){
             struct sockaddr_in *p=( struct sockaddr_in *)&user_addr;
@@ -91,7 +84,7 @@ public:
     {
         struct sockaddr user_addr;
         int leng=sizeof(struct sockaddr_in);// TODO:important
-      // printf("geting broadcast ...");fflush(NULL);
+        // printf("geting broadcast ...");fflush(NULL);
         int rec_len= recvfrom(sock,buffer,len,0,(struct sockaddr *)&user_addr,(socklen_t *)&leng);
         if(rec_len>0){
             struct sockaddr_in *p=( struct sockaddr_in *)&user_addr;
@@ -584,19 +577,16 @@ public:
                     if (!strcmp(ip_str, "127.0.0.1")) {
                         continue;
                     }
-
-
-
-                    printf("get ip %s\n", ip_str);
+                    prt(info:"local ip %s\n", ip_str);
                     memcpy(ipaddr,ip_str,16);
 
 
                     if (!(ioctl(tmp_fd, SIOCGIFNETMASK, (char *) &if_buf[ifs]))) {
                         mask_str=	(char*) inet_ntoa(
                                     ((struct sockaddr_in*) (&if_buf[ifs].ifr_addr))->sin_addr);
-                        printf("mask:%s\n",mask_str
-                               );
 
+
+                        prt(info:"local mask %s\n", mask_str);
                         memcpy(mask,mask_str,16);
                     } else {
                         char str[256];
@@ -608,7 +598,7 @@ public:
 
 
                     if (!(ioctl(tmp_fd, SIOCGIFBRDADDR, (char *) &if_buf[ifs]))) {
-                        printf("broad:%s\n",
+                        printf("broadcast:%s\n",
                                (char*) inet_ntoa(
                                    ((struct sockaddr_in*) (&if_buf[ifs].ifr_addr))->sin_addr));
                     } else {
@@ -617,7 +607,7 @@ public:
                         perror(str);
                     }
                     if (!(ioctl(tmp_fd, SIOCGIFHWADDR, (char *) &if_buf[ifs]))) {
-                        printf("mac:%x:%x:%x:%x:%x:%x\n",
+                        printf("mac addr:%x:%x:%x:%x:%x:%x\n",
                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[0],
                                 (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[1],
                                 (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[2],
@@ -642,15 +632,7 @@ public:
                                 if_buf[ifs].ifr_name);
                         perror(str);
                     }
-
-
-                    //return 1;
-
-
-
-
                 } else {
-
                     // printf("status: DOWN\n");
                 }
             }

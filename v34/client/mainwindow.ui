@@ -21,13 +21,6 @@
        <string>text_box</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="9" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_start">
-         <property name="text">
-          <string>start all</string>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="0">
         <widget class="QPlainTextEdit" name="plainTextEdit_recive"/>
        </item>
@@ -81,13 +74,6 @@
        <item row="5" column="0">
         <widget class="QLineEdit" name="lineEdit_setconfig"/>
        </item>
-       <item row="10" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_stop">
-         <property name="text">
-          <string>stop all</string>
-         </property>
-        </widget>
-       </item>
        <item row="8" column="1">
         <widget class="QPushButton" name="pushButton_delcam">
          <property name="text">
@@ -125,8 +111,28 @@
        <string>video_box</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButton_start">
+         <property name="text">
+          <string>start all</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_video"/>
+        <widget class="QWidget" name="widget_video" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_video"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="pushButton_stop">
+         <property name="text">
+          <string>stop all</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -139,7 +145,7 @@
      <x>0</x>
      <y>0</y>
      <width>796</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

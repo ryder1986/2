@@ -62,7 +62,7 @@ public:
         menu.addAction(&action_del_region);
         menu.addAction(&action_set_region);
         menu.addAction(&action_change_url);
-    connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
+        connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void set_title(QString t)
     {
@@ -102,7 +102,7 @@ public:
                     QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
                     rects.push_back(r);
                 }
-               // QRect rrr=rects.at(rects.size()-1);
+                // QRect rrr=rects.at(rects.size()-1);
                 //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
             }
@@ -188,9 +188,9 @@ protected:
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
             if(ver_picked&&i==selected_region_index-1)
-                     img_painter.setPen(blue_pen2());
+                img_painter.setPen(blue_pen2());
             else
-                     img_painter.setPen(green_pen2());
+                img_painter.setPen(green_pen2());
             // prt(info,"p-> %s",p.data().str().data());
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
@@ -208,14 +208,14 @@ protected:
 public slots:
     void hide_menu()
     {
-        prt(info,"hide menu");
+        //prt(info,"hide menu");
         ver_picked=false;
 
     }
     void right_click(QPoint pos)
     {
-        prt(info,"right click at %d %d",pos.x(),pos.y());
-        prt(info,"pos at %d %d",this->x(),this->y());
+        //prt(info,"right click at %d %d",pos.x(),pos.y());
+        //prt(info,"pos at %d %d",this->x(),this->y());
         menu.exec(QCursor::pos());
     }
     void add_region(bool)
@@ -231,7 +231,7 @@ public slots:
         DetectRegionInputData rd(ProcessorData,SelectedProcessor,ExpectedAreaVers);
         RequestPkt pkt(Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),rd.data());
         signal_camera(this,Camera::OP::INSERT_REGION,pkt.data());
-      //  emitl;
+        //  emitl;
 
         prt(info,"add region");
     }
@@ -252,22 +252,15 @@ public slots:
     {
         prt(info,"mod region ");
         vector <DetectRegionInputData >detect_regions;
-
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         DetectRegionInputData tmp=detect_regions[selected_region_index-1];
         vector <VdPoint  > vers=tmp.ExpectedAreaVers;
         vector <JsonPacket  > vers_pkt;
-//        vers.push_back(VdPoint(0,0));
-//        vers.push_back(VdPoint(330,0));
-//        vers.push_back(VdPoint(330,330));
-//        vers.push_back(VdPoint(0,330));
         JsonPacket p;
-      //  vers_pkt.assign(vers.begin(),vers.end());
         for(int i=0;i<vers.size();i++){
             vers_pkt.push_back(vers[i].data());
         }
-      p.add("ExpectedAreaVers",vers_pkt);
-      //    p.add("ExpectedAreaVers",);
+        p.add("ExpectedAreaVers",vers_pkt);
         RequestPkt r_pkt(DetectRegion::OP::CHANGE_RECT,0,p);
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,r_pkt.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
@@ -319,6 +312,7 @@ public slots:
     {
         if(ver_picked){
             emit cam_data_change(cfg,this);
+            set_region(true);
             ver_picked=false;
         }
     }
@@ -327,10 +321,10 @@ private:
     {
         return QPen (QBrush (QColor(0,0,222)),1);
     }
-//    QPen green_pen1()
-//    {
-//        return QPen (QBrush (QColor(0,222,0)),1);
-//    }
+    //    QPen green_pen1()
+    //    {
+    //        return QPen (QBrush (QColor(0,222,0)),1);
+    //    }
 
     QPen blue_pen2()
     {
@@ -356,7 +350,7 @@ signals:
     void cam_data_change(CameraInputData ,QWidget *w);
     void signal_camera(PlayerWidget *w,int op,JsonPacket data);
     void signal_region(PlayerWidget *w,int region_index,int op,JsonPacket data);
-       // void reshape_region(int region_index ,QRect rct,QWidget *w);
+    // void reshape_region(int region_index ,QRect rct,QWidget *w);
     void add_region(int region_index ,DetectRegionInputData rct,QWidget *w);
     void del_region(int region_index ,QWidget *w);
     void set_region(int region_index ,QWidget *w);

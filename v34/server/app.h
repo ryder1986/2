@@ -193,7 +193,7 @@ private:
     bool process_event(RequestPkt e,ReplyPkt &r)
     {
         bool ret=false;
-        prt(info,"get cmd %d",e.Operation);
+        prt(info,"handle cmd type %d",e.Operation);
         switch(e.Operation){
         case App::Operation::GET_CONFIG:
         {

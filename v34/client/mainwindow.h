@@ -11,6 +11,7 @@
 class Client : public QObject
 {
     QByteArray tmp_msg;
+    string tmp_msg1;
     Q_OBJECT
 public:
     char buf[2000];
@@ -22,7 +23,7 @@ public:
         in.setDevice(tcp_socket);
         in.setVersion(QDataStream::Qt_1_0);
         connect(tcp_socket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
-        connect(tcp_socket,SIGNAL(readyRead()),this,SLOT(handle_server_msg()),Qt::DirectConnection);
+        connect(tcp_socket,SIGNAL(readyRead()),this,SLOT(handle_server_msg1()),Qt::DirectConnection);
         connect(tcp_socket,SIGNAL(connected()),this,SLOT(handle_connected()),Qt::DirectConnection);
     }
     ~Client()
@@ -295,6 +296,21 @@ public:
 
     }
 
+    bool get_valid_buf1(QByteArray &src,QByteArray &dst)
+    {
+        string src1(src.data());
+        string dst1(dst.data());
+        bool ret=false;
+
+        if(JsonStr::get_valid_buf(src1,dst1)){
+            dst.setRawData(dst1.data(),dst1.size());
+            src.setRawData(src1.data(),src1.size());
+            //  src=QByteArray(src1.data(),src1.size());
+            ret= true;
+        }
+        ret= false;
+        return ret;
+    }
 public slots:
     void handle_connected()
     {
@@ -302,7 +318,25 @@ public slots:
         emit connect_done();
     }
 
+void handle_server_msg1()
+{
 
+    tmp_msg1.clear();
+     string  ret_str=tcp_socket->readAll().data();
+    string valid_buf;
+    valid_buf.clear();
+    tmp_msg1.append(ret_str);
+    prt(info,"get server msg %s",ret_str.data());
+   //   while(get_valid_buf1(tmp_msg,valid_buf)) {
+      while(JsonStr::get_valid_buf(tmp_msg1,valid_buf)) {
+                DataPacket pkt(valid_buf);
+        prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
+        if(valid_buf.size()>0)
+            need_read=true;
+        emit server_msg(pkt.data().data());
+    }
+
+}
     void handle_server_msg()
     {
 
@@ -337,27 +371,24 @@ public slots:
         QByteArray valid_buf;
         valid_buf.clear();
         tmp_msg.append(ret_ba);
-        while(get_valid_buf(tmp_msg,valid_buf)) {
-            DataPacket pkt(string(valid_buf.data()));
-            prt(info,"get %d bytes ** %s ** ",valid_buf.size(),valid_buf.data());
+        prt(info,"get server msg %s",ret_ba.data());
+       //   while(get_valid_buf1(tmp_msg,valid_buf)) {
+          while(get_valid_buf(tmp_msg,valid_buf)) {
+                    DataPacket pkt(string(valid_buf.data()));
+            prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
             if(valid_buf.size()>0)
                 need_read=true;
-            prt(info,"left  %d bytes ** %s ** ",tmp_msg.size(),tmp_msg.data());
-
             emit server_msg(pkt.data().data());
         }
 
 #endif
     }
 
-
     void connect_to_server(QString ip)
     {
         if(ip.size()){
-            //  prt(info,"state %d ",tcp_socket->state());
             if(tcp_socket->state()==QAbstractSocket::ConnectedState)
                 tcp_socket->disconnectFromHost();
-            //     prt(info,"new ip %s connect (%d)",server_ip.toStdString().data(),tcp_socket->state());
             if(ip==server_ip){
                 prt(info,"reconnecting %s",server_ip.toStdString().data());
                 tcp_socket->connectToHost(server_ip,12345);
@@ -426,7 +457,7 @@ public:
         write_bytes=tcp_socket->write(ba.data(),ba.length());
         bool flush_ret=tcp_socket->flush();//TODO,not work for flush
         if(flush_ret){
-            prt(info,"send ok");
+            prt(info,"send %d bytes----> %s",write_bytes,ba.data());
         }else{
             prt(info,"send err");
         }
@@ -462,7 +493,7 @@ public slots:
                 prt(info,"get server info : %s",datagram.data());
                 server_ip.clear();
                 server_ip.append(datagram.split(',')[0]);
-                prt(info,"ip : %s",server_ip.toStdString().data());
+                //prt(info,"ip : %s",server_ip.toStdString().data());
                 ip_list.append(server_ip);
                 emit resultReady(server_ip);
             }else{
@@ -475,8 +506,6 @@ public slots:
 signals:
     void resultReady(  QString result);
 private:
-    //  QUdpSocket *udp_skt_find_server;
-
     QByteArray datagram;
     QString server_ip;
     QStringList ip_list;
@@ -493,10 +522,6 @@ public:
 
         udp_skt_find_server=new QUdpSocket(this);
         udp_skt_find_server->bind(12347,QUdpSocket::ShareAddress);
-        //     connect(udp_skt_find_server,SIGNAL(readyRead()),this,SLOT(get_reply()),Qt::QueuedConnection);
-
-        //   connect();
-
         p_checker=new ServerReplyCheckRouting;
         p_checker->moveToThread(&check_thread);
         connect(&check_thread,&QThread::finished,p_checker,&QObject::deleteLater);
@@ -519,7 +544,6 @@ public:
     }
     void search()
     {
-
         check_thread.start();
         emit begin_search(udp_skt_find_server);
     }
@@ -529,9 +553,6 @@ public:
         ip_list.clear();
         broadcast_info();
         search();
-        //   p_find_server_thread=new std::thread(find_server);
-        //   QThread::msleep(3000);
-
     }
     QStringList search_rst()
     {
@@ -539,7 +560,7 @@ public:
     }
     static void find_server()
     {
-        prt(info," find server thread");
+        //prt(info," find server thread");
         int times=10;
         while(times--){
 
@@ -585,18 +606,21 @@ private:
             ui->comboBox_cameras->addItem(d.Url.data());
             PlayerWidget *player=new PlayerWidget(d);
             players.push_back(player);
-            ui->groupBox_video->layout()->addWidget(player);
+            //ui->groupBox_video->layout()->addWidget(player);
+//            prt(info,"ori %p", ui->widget_video->layout());
+//            prt(info,"new %p", ui->gridLayout_video);
+//             ui->widget_video->setLayout(ui->gridLayout_video);
+            ui->gridLayout_video->addWidget(player);
             connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
                     this,SLOT(generate_current_config(CameraInputData,QWidget*)));
 
             connect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
                     this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
-            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
-                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
+//            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
+//                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
 
         }
         prt(info,"start config: %s",cfg.data().str().data());
-        //printf("$$$$$ %s $$$$$\n",cfg.data().str().data());
         thread_lock.unlock();
     }
     void stop_config()
@@ -604,135 +628,33 @@ private:
         thread_lock.lock();
         ui->comboBox_cameras->clear();
         for(PlayerWidget *w:players){
-            ui->groupBox_video->layout()->removeWidget(w);
-            w->hide();
+            //ui->groupBox_video->layout()->removeWidget(w);
+          //  ui->widget_video->layout()->removeWidget(w);
+            ui->gridLayout_video->removeWidget(w);
+             w->hide();
             delete w;
         }
         players.clear();
         thread_lock.unlock();
     }
 
-    void recv_rst()
-    {
-        int fd= Socket::UdpCreateSocket(12349);
-        int ret;
-        static  char buf[10000];
-        while(true){
-            if(!connected)
-                continue;
-            ret= Socket::RecvDataByUdp(fd,buf,10000);
-            //prt(info,"rget udp len %d",ret);
-            string str(buf);
-            JsonPacket p(str);
-            //prt(info,"recving %s(%d)",p.str().data(),p.str().size());
-            AppOutputData rst(p);
-
-            int cam_index=rst.CameraIndex;
-            //    CameraInputData camera_cfg=cfg.CameraData[cam_index];
-
-            thread_lock.lock();
-            //prt(info,"recving cam %d",cam_index);
-            if(players.size()<cam_index)
-            {
-                thread_lock.unlock();
-                continue;
-            }
-            PlayerWidget *w= players[cam_index-1];
-            w->set_overlay(rst.CameraOutput);
-            thread_lock.unlock();
-        }
-    }
+    void recv_server_output();
 private slots:
-    void slot_camera(PlayerWidget *w,int op,JsonPacket data)
-    {
-        int index= ui->groupBox_video->layout()->indexOf(w);
-        prt(info,"get sig from player %d",index);
-
-       // thread_lock.lock();
-       // stop_config();
-         //return ;
-        switch(op){
-        case Camera::OP::INSERT_REGION:
-        {
-            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
-            clt.send_cmd(pkt.data());
-            clt.get_config();
-            break;
-        }
-        case Camera::OP::DELETE_REGION:
-        {
-            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
-            clt.send_cmd(pkt.data());
-            clt.get_config();
-            break;
-        }
-        case Camera::OP::MODIFY_REGION:
-        {
-            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
-            clt.send_cmd(pkt.data());
-            clt.get_config();
-            break;
-        }
-        case Camera::OP::CHANGE_URL:
-        {
-            RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
-            clt.send_cmd(pkt.data());
-            clt.get_config();
-            break;
-        }
-        default:break;
-        }
-       // thread_lock.unlock();
-    }
-    void slot_region(PlayerWidget *w,int region_index,int op,JsonPacket data)
-    {
-        int index= ui->groupBox_video->layout()->indexOf(w);
-        prt(info,"get sig from player %d",index);
-
-    }
+    void slot_camera(PlayerWidget *w,int op,JsonPacket data);
     void generate_current_config(CameraInputData d,QWidget* w)
     {
-        //   int index= ui->gridLayout_video->indexOf(w);
-        int index= ui->groupBox_video->layout()->indexOf(w);
+       // int index= ui->groupBox_video->layout()->indexOf(w);
+        int index= ui->gridLayout_video->indexOf(w)+1;
         prt(info,"wgt index %d",index);
         cfg.modify_camera(d.data(),index);
-        //  ui->lineEdit_setconfig->setText(cfg.data().str().data());
-        // ui->lineEdit_setconfig->clear();
         ui->lineEdit_setconfig->setText(cfg.data().str().data());
-        //prt(info,"%d",d.detect_regions[0].poly_vers[0].x);
     }
 
     void ip_found(QString ip)
     {
         ui->comboBox_search->addItem(ip);
     }
-    void server_msg(QString msg)
-    {
-        ui->plainTextEdit_recive->setPlainText(msg);//show what we got
-        string str(msg.toUtf8());
-        //JsonPacket pkt(str);
-        ReplyPkt event(str);
-        //  int op=pkt.get("op").to_int();
-        prt(info,"str :",str.data());
-        prt(info,"cmd :%d",cmd);
-        switch(cmd){
-        case App::Operation::GET_CONFIG:
-        {
-            //cfg=pkt.get("ret");
-            cfg=event.Data;
-            prt(info,"get config :%s",cfg.data().str().data());
-            ui->lineEdit_getconfig->setText(cfg.data().str().data());
-            prt(info,"stopping");
-            stop_config();
-            prt(info,"starting");
-            start_config();
-            prt(info,"start done");
-            connected=true;
-            break;
-        }
-        default:break;
-        }
-    }
+    void server_msg(QString msg);
     void on_pushButton_search_clicked();
 
     void on_comboBox_search_activated(const QString &arg1);

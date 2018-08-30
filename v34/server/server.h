@@ -29,8 +29,9 @@ public:
     {
         int ret= Socket::SendDataByTcp(skt,buf,len);
         if(ret){
-            prt(info,"succeed in sending %d bytes",ret);
-            printf("$$ %s $$",buf);
+            prt(info,"send start(%d bytes)<========",ret);
+            printf("%s",buf);
+            prt(info,"send end(%d bytes)<========",ret);
         }else{
             prt(info,"send fail",ret);
         }
@@ -115,7 +116,7 @@ public:
             memset(peer_ip,0,IP_STR_LEN);
             int cl_fd=Socket::WaitTcpConnect(fd,1,peer_ip,&peer_port);
             if(cl_fd>0){
-                cout<<"get connect from "<<peer_ip<<":"<<peer_port<<endl;
+                prt(info,"get connect from %s:%d",peer_ip,peer_port);
                 Session *s=new Session(cl_fd,peer_ip,peer_port);
                 s->end_this=bind(&Tcpserver::quit_session,this,placeholders::_1);
                 s->process_data=fct;
