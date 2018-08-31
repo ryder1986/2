@@ -221,6 +221,8 @@ private:
             add_camera(e.Index,e.Argument);
             p_cm->set_config(private_data.data().str());//get config
             ret=true;
+            ReplyPkt p(true,App::Operation::MODIFY_CAMERA,JsonPacket());
+            r=p;
             break;
         }
         case App::Operation::MODIFY_CAMERA:
@@ -241,6 +243,8 @@ private:
             del_camera(e.Index);
             p_cm->set_config(private_data.data().str());
             ret=true;
+            ReplyPkt p(true,App::Operation::DELETE_CAMERA,JsonPacket());
+            r=p;
             break;
         }
         case App::Operation::OPEN_CAMERA_DATA:

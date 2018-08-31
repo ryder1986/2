@@ -184,6 +184,10 @@ private:
             if(y>y_max)
                 y_max=y;
         }
+        x_min=x_min>0?x_min:0;
+        y_min=y_min>0?y_min:0;
+        x_max=x_max>0?x_max:0;
+        y_max=y_max>0?y_max:0;
         return Rect(x_min,y_min,x_max-x_min,y_max-y_min);
     }
 };

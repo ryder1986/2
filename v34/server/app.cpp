@@ -27,7 +27,7 @@ void App::process_client_cmd(Session *clt, char *data, int len)
     string ret_str;
     bool process_ret;
     while(JsonStr::get_valid_buf(str_stream,valid_buf)) {//Get valid json object, TODO:we only check {} matches, we should check json grammar
-        prt(info,"recive object %s(%d bytes left)",valid_buf.data(),str_stream.size());
+        prt(info,"recive object--> %s(%d bytes left)",valid_buf.data(),str_stream.size());
         RequestPkt event(valid_buf);
         ReplyPkt ret_pkt;
         client_tmp_ip=clt->ip();

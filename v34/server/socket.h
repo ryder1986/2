@@ -5,7 +5,9 @@
 #include <functional>
 #include <sys/ioctl.h>
 using namespace std;
-#define BUF_SIZE 10
+#define BUF_SIZE 10000
+//#define BUF_SIZE 10//if size if 10,
+//recived byte sequence maybe interupt by other connection,and become disorder
 #define IP_STR_LEN 20
 #include <cstring>
 #include <algorithm>
@@ -130,11 +132,6 @@ public:
             cl_fd = -1;
             return cl_fd;
         }
-        //  	//prt(net,"select rst %d",cl_fd);
-        //	if(0== cl_fd){
-        //	   	//prt(err,"select time out,need select again  fd %d",cl_fd);
-        //	return 0;
-        //	}
 
         if(FD_ISSET(sock, &rd_set))
         {

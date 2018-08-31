@@ -326,7 +326,7 @@ void handle_server_msg1()
     string valid_buf;
     valid_buf.clear();
     tmp_msg1.append(ret_str);
-    prt(info,"get server msg %s",ret_str.data());
+    prt(info,"get server msg(%d bytes): %s",ret_str.size(),ret_str.data());
    //   while(get_valid_buf1(tmp_msg,valid_buf)) {
       while(JsonStr::get_valid_buf(tmp_msg1,valid_buf)) {
                 DataPacket pkt(valid_buf);
