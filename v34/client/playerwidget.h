@@ -53,9 +53,9 @@ public:
         connect(&action_add_region,SIGNAL(triggered(bool)),this,SLOT(add_region(bool)));
         action_del_region.setText("del region");
         connect(&action_del_region,SIGNAL(triggered(bool)),this,SLOT(del_region(bool)));
-        action_set_region.setText("set region");
+        action_set_region.setText("change processor");
         connect(&action_set_region,SIGNAL(triggered(bool)),this,SLOT(set_region(bool)));
-        action_change_url.setText("set url");
+        action_change_url.setText("change url");
         connect(&action_change_url,SIGNAL(triggered(bool)),this,SLOT(set_url(bool)));
 
         menu.addAction(&action_add_region);

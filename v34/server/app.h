@@ -214,6 +214,8 @@ private:
             private_data=AppInputData(dt);
             restart_all();
             ret=true;
+            ReplyPkt p(ret,App::Operation::SET_CONFIG,JsonPacket());
+            r=p;
             break;
         }
         case App::Operation::INSERT_CAMERA:
@@ -240,10 +242,12 @@ private:
         }
         case App::Operation::DELETE_CAMERA:
         {
-            del_camera(e.Index);
-            p_cm->set_config(private_data.data().str());
-            ret=true;
-            ReplyPkt p(true,App::Operation::DELETE_CAMERA,JsonPacket());
+            ret=false;
+            if(del_camera(e.Index)){
+                p_cm->set_config(private_data.data().str());
+                ret=true;
+            }
+            ReplyPkt p(ret,App::Operation::DELETE_CAMERA,JsonPacket());
             r=p;
             break;
         }

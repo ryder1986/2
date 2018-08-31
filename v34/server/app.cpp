@@ -32,11 +32,11 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         ReplyPkt ret_pkt;
         client_tmp_ip=clt->ip();
         process_ret=process_event(event,ret_pkt);
-        if(process_ret)
-            ret_str=ret_pkt.data().str();
-        else
-            ret_str={"{\"Data\":null,\"Operation\":4,\"Ret\":true}"};
-        clt->send(ret_str.data(),ret_str.length());
+//        if(process_ret)
+//            ret_str=ret_pkt.data().str();
+//        else
+//            ret_str={"{\"Data\":null,\"Operation\":4,\"Ret\":true}"};
+        clt->send(ret_pkt.data().str().data(),ret_pkt.data().str().length());
     }
 #endif
 }
