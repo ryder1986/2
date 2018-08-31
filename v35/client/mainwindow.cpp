@@ -56,11 +56,13 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     //int index= ui->groupBox_video->layout()->indexOf(w);
     int index= ui->gridLayout_video->indexOf(w)+1;
      prt(info,"handle player %d request",index);
+     thread_lock.lock();
     switch(op){
     case Camera::OP::INSERT_REGION:
     {
         RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
         clt.send_cmd(pkt.data());
+        //stop_config();
         clt.get_config();
         break;
     }
@@ -87,7 +89,7 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     }
     default:break;
     }
-    // thread_lock.unlock();
+    thread_lock.unlock();
 }
 
 void MainWindow::server_msg(QString msg)

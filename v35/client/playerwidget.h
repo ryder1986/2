@@ -30,7 +30,7 @@ public:
         delete src;
     }
 
-    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this)
+    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this),menu_processor("processor")
     {
         rects.clear();
         loop=0;
@@ -53,14 +53,22 @@ public:
         connect(&action_add_region,SIGNAL(triggered(bool)),this,SLOT(add_region(bool)));
         action_del_region.setText("del region");
         connect(&action_del_region,SIGNAL(triggered(bool)),this,SLOT(del_region(bool)));
-        action_set_region.setText("change processor");
-        connect(&action_set_region,SIGNAL(triggered(bool)),this,SLOT(set_region(bool)));
+        //menu_processor.setText("change processor");
+        // connect(&menu_processor,SIGNAL(triggered(bool)),this,SLOT(set_region(bool)));
         action_change_url.setText("change url");
         connect(&action_change_url,SIGNAL(triggered(bool)),this,SLOT(set_url(bool)));
 
         menu.addAction(&action_add_region);
         menu.addAction(&action_del_region);
-        menu.addAction(&action_set_region);
+        menu.addMenu(&menu_processor);
+        processor_c4.setText("c4");
+        processor_dummy.setText("dummy");
+        processor_c4.setCheckable(true);
+        processor_c4.setChecked(false);
+        processor_dummy.setCheckable(true);
+        processor_dummy.setChecked(false);
+        menu_processor.addAction(&processor_c4);
+        menu_processor.addAction(&processor_dummy);
         menu.addAction(&action_change_url);
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
@@ -217,6 +225,7 @@ public slots:
         //prt(info,"right click at %d %d",pos.x(),pos.y());
         //prt(info,"pos at %d %d",this->x(),this->y());
         menu.exec(QCursor::pos());
+
     }
     void add_region(bool)
     {
@@ -293,6 +302,8 @@ public slots:
     }
     void mousePressEvent(QMouseEvent *e)
     {
+        //   prt(info,"press");
+
         vector <DetectRegionInputData >detect_regions;
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         for(int i=0;i<detect_regions.size();i++){
@@ -302,6 +313,20 @@ public slots:
                 ver_picked=true;
                 selected_point_index=point_index;
                 selected_region_index=i+1;
+
+
+
+                int index=selected_region_index;
+                DetectRegionInputData input= cfg.DetectRegion[index-1];
+                if(input.SelectedProcessor=="c4")
+                    processor_c4.setChecked(true);
+                else
+                   processor_c4.setChecked(false);
+                if(input.SelectedProcessor=="dummy")
+                    processor_dummy.setChecked(true);
+                else
+                    processor_dummy.setChecked(false);
+
                 return;
             }
         }
@@ -386,8 +411,10 @@ private:
     QMenu menu;
     QAction action_add_region;
     QAction action_del_region;
-    QAction action_set_region;
+    QMenu menu_processor;
     QAction action_change_url;
+    QAction processor_c4;
+    QAction processor_dummy;
     int screen_state;
 };
 

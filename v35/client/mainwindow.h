@@ -318,25 +318,25 @@ public slots:
         emit connect_done();
     }
 
-void handle_server_msg1()
-{
+    void handle_server_msg1()
+    {
 
-    tmp_msg1.clear();
-     string  ret_str=tcp_socket->readAll().data();
-    string valid_buf;
-    valid_buf.clear();
-    tmp_msg1.append(ret_str);
-    prt(info,"get server msg(%d bytes): %s",ret_str.size(),ret_str.data());
-   //   while(get_valid_buf1(tmp_msg,valid_buf)) {
-      while(JsonStr::get_valid_buf(tmp_msg1,valid_buf)) {
-                DataPacket pkt(valid_buf);
-        prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
-        if(valid_buf.size()>0)
-            need_read=true;
-        emit server_msg(pkt.data().data());
+        tmp_msg1.clear();
+        string  ret_str=tcp_socket->readAll().data();
+        string valid_buf;
+        valid_buf.clear();
+        tmp_msg1.append(ret_str);
+        prt(info,"get server msg(%d bytes): %s",ret_str.size(),ret_str.data());
+        //   while(get_valid_buf1(tmp_msg,valid_buf)) {
+        while(JsonStr::get_valid_buf(tmp_msg1,valid_buf)) {
+            DataPacket pkt(valid_buf);
+            prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
+            if(valid_buf.size()>0)
+                need_read=true;
+            emit server_msg(pkt.data().data());
+        }
+
     }
-
-}
     void handle_server_msg()
     {
 
@@ -372,9 +372,9 @@ void handle_server_msg1()
         valid_buf.clear();
         tmp_msg.append(ret_ba);
         prt(info,"get server msg %s",ret_ba.data());
-       //   while(get_valid_buf1(tmp_msg,valid_buf)) {
-          while(get_valid_buf(tmp_msg,valid_buf)) {
-                    DataPacket pkt(string(valid_buf.data()));
+        //   while(get_valid_buf1(tmp_msg,valid_buf)) {
+        while(get_valid_buf(tmp_msg,valid_buf)) {
+            DataPacket pkt(string(valid_buf.data()));
             prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
             if(valid_buf.size()>0)
                 need_read=true;
@@ -607,17 +607,17 @@ private:
             PlayerWidget *player=new PlayerWidget(d);
             players.push_back(player);
             //ui->groupBox_video->layout()->addWidget(player);
-//            prt(info,"ori %p", ui->widget_video->layout());
-//            prt(info,"new %p", ui->gridLayout_video);
-//             ui->widget_video->setLayout(ui->gridLayout_video);
+            //            prt(info,"ori %p", ui->widget_video->layout());
+            //            prt(info,"new %p", ui->gridLayout_video);
+            //             ui->widget_video->setLayout(ui->gridLayout_video);
             ui->gridLayout_video->addWidget(player);
             connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
                     this,SLOT(generate_current_config(CameraInputData,QWidget*)));
 
             connect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
                     this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
-//            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
-//                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
+            //            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
+            //                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
 
         }
         prt(info,"start config: %s",cfg.data().str().data());
@@ -629,9 +629,9 @@ private:
         ui->comboBox_cameras->clear();
         for(PlayerWidget *w:players){
             //ui->groupBox_video->layout()->removeWidget(w);
-          //  ui->widget_video->layout()->removeWidget(w);
+            //  ui->widget_video->layout()->removeWidget(w);
             ui->gridLayout_video->removeWidget(w);
-             w->hide();
+            w->hide();
             delete w;
         }
         players.clear();
@@ -643,7 +643,7 @@ private slots:
     void slot_camera(PlayerWidget *w,int op,JsonPacket data);
     void generate_current_config(CameraInputData d,QWidget* w)
     {
-       // int index= ui->groupBox_video->layout()->indexOf(w);
+        // int index= ui->groupBox_video->layout()->indexOf(w);
         int index= ui->gridLayout_video->indexOf(w)+1;
         prt(info,"wgt index %d",index);
         cfg.modify_camera(d.data(),index);
