@@ -20,8 +20,6 @@ App::App(ConfigManager *p_config_manager):str_stream(""),
 void App::process_client_cmd(Session *clt, char *data, int len)
 {
     str_stream.append(string(data,len));
-    prt(debug,"string is %s",str_stream.data());
-#if 1
     string valid_buf;
     valid_buf.clear();
     string ret_str;
@@ -32,13 +30,9 @@ void App::process_client_cmd(Session *clt, char *data, int len)
         ReplyPkt ret_pkt;
         client_tmp_ip=clt->ip();
         process_ret=process_event(event,ret_pkt);
-//        if(process_ret)
-//            ret_str=ret_pkt.data().str();
-//        else
-//            ret_str={"{\"Data\":null,\"Operation\":4,\"Ret\":true}"};
-        clt->send(ret_pkt.data().str().data(),ret_pkt.data().str().length());
+        ret_str=ret_pkt.data().str();
+        clt->send(ret_str.data(),ret_str.length());
     }
-#endif
 }
 
 void App::process_camera_data(Camera *camera, string data)
@@ -58,7 +52,6 @@ void App::process_camera_data(Camera *camera, string data)
     }
     int fd=Socket::UdpCreateSocket(5000);
     AppOutputData rst(idx+1,JsonPacket(data));
-    //prt(info,"ouput index %d(sz %d)",idx+1,cms.size());
     if(stream_cmd)
         for(Session *ss:*stream_cmd)
         {
@@ -68,10 +61,6 @@ void App::process_camera_data(Camera *camera, string data)
     //    for(DestClient dst:dest_clients){
     //          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
     //    }
-
-
-
-
     close(fd);
 }
 

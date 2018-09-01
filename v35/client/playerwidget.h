@@ -55,7 +55,7 @@ public:
         connect(&action_del_region,SIGNAL(triggered(bool)),this,SLOT(del_region(bool)));
         //menu_processor.setText("change processor");
         // connect(&menu_processor,SIGNAL(triggered(bool)),this,SLOT(set_region(bool)));
-        action_change_url.setText("change url");
+        action_change_url.setText("reset url");
         connect(&action_change_url,SIGNAL(triggered(bool)),this,SLOT(set_url(bool)));
 
         menu.addAction(&action_add_region);
@@ -67,7 +67,9 @@ public:
         processor_c4.setChecked(false);
         processor_dummy.setCheckable(true);
         processor_dummy.setChecked(false);
-        menu_processor.addAction(&processor_c4);
+        connect(&processor_dummy,SIGNAL(triggered(bool)),this,SLOT(set_processor_dummy(bool)));
+        connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
+          menu_processor.addAction(&processor_c4);
         menu_processor.addAction(&processor_dummy);
         menu.addAction(&action_change_url);
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
@@ -102,7 +104,7 @@ public:
             DetectRegionInputData d=  cfg.DetectRegion[i];
             DetectRegionOutputData  o= out.DetectionResult[i];
             //         prt(info,"processor %s",d.SelectedProcessor.data());
-            if(d.SelectedProcessor=="c4"){
+            if(d.SelectedProcessor=="C4"){
                 C4ProcessorOutputData c4o=o.Result;
                 //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
                 //   rects.clear();
@@ -114,7 +116,7 @@ public:
                 //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
             }
-            if(d.SelectedProcessor=="dummy"){
+            if(d.SelectedProcessor=="Dummy"){
                 DummyProcessorOutputData dummyo=o.Result;
 
                 for(ObjectRect objectrect:dummyo.DetectedObjects){
@@ -122,8 +124,8 @@ public:
                     rects.push_back(rct);
                 }
             }
-            if(d.SelectedProcessor=="pvd"){}
-            if(d.SelectedProcessor=="fvd"){}
+            if(d.SelectedProcessor=="Pvd"){}
+            if(d.SelectedProcessor=="Fvd"){}
 
 
         }
@@ -240,8 +242,6 @@ public slots:
         DetectRegionInputData rd(ProcessorData,SelectedProcessor,ExpectedAreaVers);
         RequestPkt pkt(Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),rd.data());
         signal_camera(this,Camera::OP::INSERT_REGION,pkt.data());
-        //  emitl;
-
         prt(info,"add region");
     }
     void del_region(bool)
@@ -256,6 +256,24 @@ public slots:
         p.add("Url","rtsp://192.168.1.95:554/av0_1");
         RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
         signal_camera(this,Camera::OP::CHANGE_URL,pkt.data());
+    }
+    void set_processor_dummy(bool checked)
+    {
+        prt(info,"checked %d",checked);
+        JsonPacket p;
+        p.add("SelectedProcessor","Dummy");
+        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
+        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
+        signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
+    }
+    void set_processor_c4(bool checked)
+    {
+        prt(info,"checked %d",checked);
+        JsonPacket p;
+        p.add("SelectedProcessor","C4");
+        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
+        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
+        signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
     void set_region(bool)
     {
@@ -318,11 +336,11 @@ public slots:
 
                 int index=selected_region_index;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
-                if(input.SelectedProcessor=="c4")
+                if(input.SelectedProcessor=="C4")
                     processor_c4.setChecked(true);
                 else
                    processor_c4.setChecked(false);
-                if(input.SelectedProcessor=="dummy")
+                if(input.SelectedProcessor=="Dummy")
                     processor_dummy.setChecked(true);
                 else
                     processor_dummy.setChecked(false);
@@ -346,10 +364,6 @@ private:
     {
         return QPen (QBrush (QColor(0,0,222)),1);
     }
-    //    QPen green_pen1()
-    //    {
-    //        return QPen (QBrush (QColor(0,222,0)),1);
-    //    }
 
     QPen blue_pen2()
     {
@@ -375,7 +389,6 @@ signals:
     void cam_data_change(CameraInputData ,QWidget *w);
     void signal_camera(PlayerWidget *w,int op,JsonPacket data);
     void signal_region(PlayerWidget *w,int region_index,int op,JsonPacket data);
-    // void reshape_region(int region_index ,QRect rct,QWidget *w);
     void add_region(int region_index ,DetectRegionInputData rct,QWidget *w);
     void del_region(int region_index ,QWidget *w);
     void set_region(int region_index ,QWidget *w);

@@ -36,7 +36,11 @@ public:
         ExpectedAreaVers=p;
         encode();
     }
-
+    void set_processor(string p)
+    {
+        SelectedProcessor=p;
+        encode();
+    }
     void operator =(DetectRegionInputData dt)
     {
         config=dt.config;
@@ -106,9 +110,9 @@ public:
     DetectRegion(DetectRegionInputData pkt):VdData(pkt)
     {
         //  p=new PvdMvncProcessor();
-        if(private_data.SelectedProcessor=="c4")
+        if(private_data.SelectedProcessor=="C4")
             p=new PvdC4Processor(pkt.data());
-        if(private_data.SelectedProcessor=="dummy")
+        if(private_data.SelectedProcessor=="Dummy")
             p=new DummyProcessor(JsonPacket());
         detect_rect=reshape_2_rect(private_data.ExpectedAreaVers);
     }
@@ -155,9 +159,22 @@ public:
             break;
         }
         case OP::CHANGE_PROCESSOR:
+
+            if(p){
+                delete p;
+            }
+            string pro=    pkt.Argument.get("SelectedProcessor").to_string();
+            if(pro=="C4"){
+                p=new PvdC4Processor(JsonPacket());
+                private_data.set_processor(pro);
+            }
+            if(pro=="Dummy"){
+                p=new DummyProcessor(JsonPacket());
+                private_data.set_processor(pro);
+            }
             break;
 
-          defalut:break;
+            defalut:break;
         }
         lock.unlock();
     }
