@@ -68,10 +68,10 @@ public:
         menu.addMenu(&menu_processor);
         processor_c4.setText("c4");
         processor_dummy.setText("dummy");
-        processor_c4.setCheckable(true);
-        processor_c4.setChecked(false);
-        processor_dummy.setCheckable(true);
-        processor_dummy.setChecked(false);
+//        processor_c4.setCheckable(true);
+//        processor_c4.setChecked(false);
+//        processor_dummy.setCheckable(true);
+//        processor_dummy.setChecked(false);
         connect(&processor_dummy,SIGNAL(triggered(bool)),this,SLOT(set_processor_dummy(bool)));
         connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
         menu_processor.addAction(&processor_c4);
@@ -276,7 +276,12 @@ public slots:
     {
         //prt(info,"hide menu");
         ver_picked=false;
-
+//        processor_dummy.setChecked(false);
+//        processor_c4.setChecked(false);
+        processor_c4.setCheckable(false);
+        processor_c4.setChecked(false);
+        processor_dummy.setCheckable(false);
+        processor_dummy.setChecked(false);
     }
     void right_click(QPoint pos)
     {
@@ -316,6 +321,8 @@ public slots:
     }
     void set_processor_dummy(bool checked)
     {
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
         prt(info,"checked %d",checked);
         JsonPacket p;
         p.add("SelectedProcessor","Dummy");
@@ -328,9 +335,12 @@ public slots:
     }
     void set_processor_c4(bool checked)
     {
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
         prt(info,"checked %d",checked);
         JsonPacket p;
         p.add("SelectedProcessor","C4");
+
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
         DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
@@ -409,7 +419,10 @@ public slots:
                 selected_point_index=point_index;
                 selected_region_index=i+1;
 
-
+                processor_c4.setCheckable(true);
+                processor_c4.setChecked(false);
+                processor_dummy.setCheckable(true);
+                processor_dummy.setChecked(false);
 
                 int index=selected_region_index;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
@@ -456,6 +469,11 @@ public slots:
             emit cam_data_change(cfg,this);
             set_region(true);
             ver_picked=false;
+
+            processor_c4.setCheckable(false);
+            processor_c4.setChecked(false);
+            processor_dummy.setCheckable(false);
+            processor_dummy.setChecked(false);
         }
         if(line_picked){
             emit cam_data_change(cfg,this);
@@ -465,9 +483,6 @@ public slots:
     }
     void mouseDoubleClickEvent(QMouseEvent *event)
     {
-        //        prt(info,"double click");
-        //          this->setWindowState(Qt::WindowFullScreen);
-
         if(++double_click_flag%2)
             emit click_event(this,ClickEvent::SHOW_ONE);
         else
