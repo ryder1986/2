@@ -39,6 +39,7 @@ public:
         rects.clear();
         loop=0;
         ver_picked=false;
+        line_picked=false;
         cfg=data;
         frame_rate=0;
         tick_timer=new QTimer();
@@ -135,8 +136,6 @@ public:
             }
             if(d.SelectedProcessor=="Pvd"){}
             if(d.SelectedProcessor=="Fvd"){}
-
-
         }
         //      rects.assign(rs.begin(),rs.end());
         //      timestamp=ts;
@@ -170,8 +169,15 @@ public:
         QPoint p1(QPoint(points.front().x,points.front().y));
         QPoint p2(QPoint(points.back().x,points.back().y));
         pt.drawLine(p1,p2);
+
+
+        pt.setPen(red_pen2());
+        for(int i=0;i<points.size();i++){
+            QPoint p_center(points[i].x,points[i].y);
+            pt.drawEllipse(p_center,10,10);
+        }
     }
-    int match_point(const vector <VdPoint> points,QPoint p,int distance=20)
+    int match_point_on_ver(const vector <VdPoint> points,QPoint p,int distance=20)
     {
         for(int i=0;i<points.size();i++){
             if(abs(points[i].x-p.x())<distance&&(abs(points[i].y-p.y()))<distance){
@@ -179,6 +185,47 @@ public:
             }
         }
         return 0;
+
+    }
+    inline bool p_on_l(QPoint b,QPoint e, QPoint dst)
+    {
+      //  return true;
+
+        bool v1= (((dst.x()<b.x()+10)||(dst.x()<e.x()+10))&&((dst.x()>b.x()-10)||(dst.x()>e.x()-10)));
+        bool v2=(  ((dst.y()<b.y()+10)||(dst.y()<e.y()+10))&&((dst.y()>b.y()-10)||(dst.y()>e.y()-10)));
+        bool v3= (abs(((dst.x()-e.x())*(dst.y()-b.y()))-((dst.y()-e.y())*(dst.x()-b.x())))<1000);
+        //         if ( (((dst.x()<b.x())||(dst.x()<e.x()))&&((dst.x()>b.x())||(dst.x()>e.x())))&&
+        //              (  ((dst.y()<b.y())||(dst.y()<e.y()))&&((dst.y()>b.y())||(dst.y()>e.y())))&&
+        //                (abs(((dst.x()-e.x())*(dst.y()-b.y()))-((dst.y()-e.y())*(dst.x()-b.x())))<100))
+
+       // if(v1&&v2&&v3)
+            if(v1&&v2&&v3)
+             return true;
+        else
+            return false;
+    }
+    bool match_point_on_line(const vector <VdPoint> line,QPoint p,int distance=20)
+    {
+        vector<QPoint> pns;
+        for(VdPoint p:line){
+            pns.push_back(QPoint(p.x,p.y));
+
+        }
+
+        for(int i=1;i<pns.size();i++){
+            if(p_on_l(pns[i-1],pns[i],p)){
+                return true;
+            }
+        }
+        if(p_on_l(pns[0],pns[line.size()-1],p)){
+            return true;
+        }
+        //        for(int i=0;i<points.size();i++){
+        //            if(abs(points[i].x-p.x())<distance&&(abs(points[i].y-p.y()))<distance){
+        //                return (i+1);
+        //            }
+        //        }
+        return false;
 
     }
     QPoint map_point(QPoint p)
@@ -274,6 +321,9 @@ public slots:
         p.add("SelectedProcessor","Dummy");
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
+        DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
+        di.set_processor("Dummy");
+        cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
     void set_processor_c4(bool checked)
@@ -283,6 +333,9 @@ public slots:
         p.add("SelectedProcessor","C4");
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
+        DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
+        di.set_processor("C4");
+        cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
     void set_region(bool)
@@ -327,6 +380,20 @@ public slots:
             }
             // cfg.encode();
         }
+
+        if(line_picked){
+            DetectRegionInputData r=cfg.DetectRegion[selected_region_index-1];
+            vector <VdPoint> ps;
+            QPoint end_p= map_point(e->pos());
+            QPoint ori_p= map_point(ori_point);
+            for(VdPoint p:r.ExpectedAreaVers){
+                ps.push_back(VdPoint(p.x+(end_p.x()-ori_p.x()),p.y+(end_p.y()-ori_p.y())));
+            }
+            r.set_points(ps);
+            cfg.set_region(r.data(),selected_region_index);
+            ori_point=e->pos();
+            prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
+        }
     }
     void mousePressEvent(QMouseEvent *e)
     {
@@ -336,7 +403,7 @@ public slots:
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         for(int i=0;i<detect_regions.size();i++){
             vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
-            int point_index=match_point(pnts,map_point(e->pos()));
+            int point_index=match_point_on_ver(pnts,map_point(e->pos()));
             if(point_index>0){
                 ver_picked=true;
                 selected_point_index=point_index;
@@ -357,6 +424,28 @@ public slots:
 
                 return;
             }
+
+            bool online=match_point_on_line(pnts,map_point(e->pos()));
+            if(online){
+                line_picked=true;
+                ori_point=QPoint(e->pos());
+                selected_region_index=i+1;
+
+
+
+                //                int index=selected_region_index;
+                //                DetectRegionInputData input= cfg.DetectRegion[index-1];
+                //                if(input.SelectedProcessor=="C4")
+                //                    processor_c4.setChecked(true);
+                //                else
+                //                    processor_c4.setChecked(false);
+                //                if(input.SelectedProcessor=="Dummy")
+                //                    processor_dummy.setChecked(true);
+                //                else
+                //                    processor_dummy.setChecked(false);
+
+                return;
+            }
         }
         selected_point_index=0;
         selected_region_index=0;
@@ -367,6 +456,11 @@ public slots:
             emit cam_data_change(cfg,this);
             set_region(true);
             ver_picked=false;
+        }
+        if(line_picked){
+            emit cam_data_change(cfg,this);
+            set_region(true);
+            line_picked=false;
         }
     }
     void mouseDoubleClickEvent(QMouseEvent *event)
@@ -435,9 +529,12 @@ private:
     int loop;
     VideoSource *src;
     bool ver_picked;
+    bool line_picked;
+
     QPoint maped_point;
     int selected_region_index;
     int selected_point_index;
+    QPoint ori_point;
     int cnt;
     vector <QRect> rects;
     QTimer *tick_timer;

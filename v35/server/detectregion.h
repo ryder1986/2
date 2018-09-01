@@ -129,6 +129,7 @@ public:
     {
         lock.lock();
         JsonPacket rst_r;
+        valid_rect(detect_rect,frame.cols,frame.rows);
         Mat tmp=frame(detect_rect);
         p->process(tmp,rst_r);
         VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
@@ -192,6 +193,13 @@ defalut:break;
 
     }
 private:
+    inline void valid_rect(Rect &area,int max_w,int max_h)
+    {
+        if((area.x+area.width)>max_w)
+            area.width=max_w-area.x;
+        if((area.y+area.height)>max_h)
+            area.height=max_h-area.y;
+    }
     Rect reshape_2_rect(vector <VdPoint> area)
     {
         int x_min=10000;
