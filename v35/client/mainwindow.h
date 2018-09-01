@@ -50,7 +50,7 @@ public:
     }
     void add_camera(string url,int index)
     {
-        string SelectedProcessor="c4";
+        string SelectedProcessor="C4";
 
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));
@@ -616,6 +616,11 @@ private:
 
             connect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
                     this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
+
+            connect(player,SIGNAL(click_event(PlayerWidget *,int)),\
+                    this,SLOT(player_event(PlayerWidget*,int)));
+
+
             //            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
             //                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
 
@@ -640,6 +645,32 @@ private:
 
     void recv_server_output();
 private slots:
+    void player_event(PlayerWidget *w,int t){
+        int index= ui->gridLayout_video->indexOf(w)+1;
+        switch (t) {
+        case PlayerWidget::SHOW_ONE:
+        {
+            prt(info,"show one");
+            for(int i=0;i<players.size();i++){
+                if(index!=i+1){players[i]->hide();}
+            }
+            ui->groupBox_text->hide();
+        }
+            break;
+        case PlayerWidget::SHOW_ALL:
+        {
+            prt(info,"show all");
+            for(int i=0;i<players.size();i++){
+                if(index!=i+1){players[i]->show();}
+            }
+            ui->groupBox_text->show();
+        }
+
+            break;
+        default:
+            break;
+        }
+    }
     void slot_camera(PlayerWidget *w,int op,JsonPacket data);
     void generate_current_config(CameraInputData d,QWidget* w)
     {

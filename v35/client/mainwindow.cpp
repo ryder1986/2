@@ -32,7 +32,7 @@ void MainWindow::recv_server_output()
         //prt(info,"rget udp len %d",ret);
         string str(buf);
         JsonPacket p(str);
-        //prt(info,"recving %s(%d)",p.str().data(),p.str().size());
+      // prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
         AppOutputData rst(p);
 
         int cam_index=rst.CameraIndex;
@@ -56,18 +56,20 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     //int index= ui->groupBox_video->layout()->indexOf(w);
     int index= ui->gridLayout_video->indexOf(w)+1;
      prt(info,"handle player %d request",index);
-     thread_lock.lock();
+   //  thread_lock.lock();
     switch(op){
     case Camera::OP::INSERT_REGION:
     {
+        //stop_config();
         RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
         clt.send_cmd(pkt.data());
-        //stop_config();
+
         clt.get_config();
         break;
     }
     case Camera::OP::DELETE_REGION:
     {
+        //stop_config();
         RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
         clt.send_cmd(pkt.data());
         clt.get_config();
@@ -89,7 +91,7 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     }
     default:break;
     }
-    thread_lock.unlock();
+ //   thread_lock.unlock();
 }
 
 void MainWindow::server_msg(QString msg)

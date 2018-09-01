@@ -55,7 +55,7 @@ void App::process_camera_data(Camera *camera, string data)
     if(stream_cmd)
         for(Session *ss:*stream_cmd)
         {
-            //       prt(info,"send %s",rst.data().str().data());
+            //prt(info,"send  %d bytes --> %s",rst.data().str().size(),rst.data().str().data());
             Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
     //    for(DestClient dst:dest_clients){

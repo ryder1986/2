@@ -22,6 +22,10 @@ public:
         FULL_SCREEN,
         NORMAL_SCREEN
     };
+    enum ClickEvent{
+        SHOW_ONE,
+        SHOW_ALL
+    };
     ~PlayerWidget()
     {
         prt(info,"delete wgt");
@@ -69,7 +73,7 @@ public:
         processor_dummy.setChecked(false);
         connect(&processor_dummy,SIGNAL(triggered(bool)),this,SLOT(set_processor_dummy(bool)));
         connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
-          menu_processor.addAction(&processor_c4);
+        menu_processor.addAction(&processor_c4);
         menu_processor.addAction(&processor_dummy);
         menu.addAction(&action_change_url);
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
@@ -99,6 +103,11 @@ public:
         //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
         CameraOutputData  out=cam_out;
 
+        if(out.DetectionResult.size()!=cfg.DetectRegion.size()){
+         lock.unlock();
+         prt(info,"cfg dont match: output size %d , now size %d",out.DetectionResult.size(),cfg.DetectRegion.size());
+         return;
+        }
         //       prt(info,"sz %d",out.DetectionResult.size());
         for(int i=0;i<out.DetectionResult.size();i++){
             DetectRegionInputData d=  cfg.DetectRegion[i];
@@ -231,7 +240,7 @@ public slots:
     }
     void add_region(bool)
     {
-        string SelectedProcessor="c4";
+        string SelectedProcessor="C4";
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));
         ExpectedAreaVers.push_back(VdPoint(640,0));
@@ -339,7 +348,7 @@ public slots:
                 if(input.SelectedProcessor=="C4")
                     processor_c4.setChecked(true);
                 else
-                   processor_c4.setChecked(false);
+                    processor_c4.setChecked(false);
                 if(input.SelectedProcessor=="Dummy")
                     processor_dummy.setChecked(true);
                 else
@@ -359,7 +368,18 @@ public slots:
             ver_picked=false;
         }
     }
+    void mouseDoubleClickEvent(QMouseEvent *event)
+    {
+        //        prt(info,"double click");
+        //          this->setWindowState(Qt::WindowFullScreen);
+
+        if(++double_click_flag%2)
+            emit click_event(this,ClickEvent::SHOW_ONE);
+        else
+            emit click_event(this,ClickEvent::SHOW_ALL);
+    }
 private:
+    int double_click_flag;
     QPen blue_pen1()
     {
         return QPen (QBrush (QColor(0,0,222)),1);
@@ -386,6 +406,7 @@ private:
         return QPen (QBrush (QColor(0,255,0)),5);
     }
 signals:
+    void click_event(PlayerWidget *w,int);
     void cam_data_change(CameraInputData ,QWidget *w);
     void signal_camera(PlayerWidget *w,int op,JsonPacket data);
     void signal_region(PlayerWidget *w,int region_index,int op,JsonPacket data);

@@ -107,14 +107,22 @@ public:
         CHANGE_PROCESSOR
     };
 
-    DetectRegion(DetectRegionInputData pkt):VdData(pkt)
+    DetectRegion(DetectRegionInputData pkt):VdData(pkt),p(NULL)
     {
+        lock.lock();
+        int valid=false;
         //  p=new PvdMvncProcessor();
         if(private_data.SelectedProcessor=="C4")
-            p=new PvdC4Processor(pkt.data());
+        {    p=new PvdC4Processor(pkt.data());valid=true;}
         if(private_data.SelectedProcessor=="Dummy")
-            p=new DummyProcessor(JsonPacket());
+         {   p=new DummyProcessor(JsonPacket());valid=true;}
+        if(!valid){
+            prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());
+            exit(0);
+        }
         detect_rect=reshape_2_rect(private_data.ExpectedAreaVers);
+
+        lock.unlock();
     }
 
     JsonPacket work(Mat frame)
@@ -162,6 +170,7 @@ public:
 
             if(p){
                 delete p;
+                p=NULL;
             }
             string pro=    pkt.Argument.get("SelectedProcessor").to_string();
             if(pro=="C4"){
@@ -174,7 +183,7 @@ public:
             }
             break;
 
-            defalut:break;
+defalut:break;
         }
         lock.unlock();
     }
