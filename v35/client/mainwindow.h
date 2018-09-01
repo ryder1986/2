@@ -50,7 +50,8 @@ public:
     }
     void add_camera(string url,int index)
     {
-        string SelectedProcessor="C4";
+        //string SelectedProcessor="C4";
+        string SelectedProcessor="Dummy";
 
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));

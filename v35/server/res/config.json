@@ -8,7 +8,7 @@
                 {
                     "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
                     "C4":{"ratio":"0.8","scan_step":2},
-                    "SelectedProcessor":"C4",
+                    "SelectedProcessor":"Dummy",
                     "Comment":"C4/Dummy/Pvd/Fvd"
                 },
                 {
@@ -28,7 +28,7 @@
                 {
                     "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
                     "C4":{"ratio":"0.8","scan_step":2},
-                    "SelectedProcessor":"C4",
+                    "SelectedProcessor":"Dummy",
                     "Comment":"C4/Dummy/Pvd/Fvd"
                 },
                 {

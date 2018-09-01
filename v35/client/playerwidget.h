@@ -104,9 +104,9 @@ public:
         CameraOutputData  out=cam_out;
 
         if(out.DetectionResult.size()!=cfg.DetectRegion.size()){
-         lock.unlock();
-         prt(info,"cfg dont match: output size %d , now size %d",out.DetectionResult.size(),cfg.DetectRegion.size());
-         return;
+            lock.unlock();
+            prt(info,"cfg dont match: output size %d , now size %d",out.DetectionResult.size(),cfg.DetectRegion.size());
+            return;
         }
         //       prt(info,"sz %d",out.DetectionResult.size());
         for(int i=0;i<out.DetectionResult.size();i++){
@@ -240,7 +240,8 @@ public slots:
     }
     void add_region(bool)
     {
-        string SelectedProcessor="C4";
+        string SelectedProcessor="Dummy";
+        //string SelectedProcessor="C4";
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));
         ExpectedAreaVers.push_back(VdPoint(640,0));

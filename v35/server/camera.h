@@ -39,7 +39,7 @@ public:
     void delete_region(int index)
     {
         vector <JsonPacket >::iterator begin=DetectRegion.begin();
-        DetectRegion.erase(begin+index);
+        DetectRegion.erase(begin+index-1);
         encode();
     }
     void replace_point()
@@ -188,7 +188,7 @@ public:
 
         RequestPkt req(jp);
         int index=req.Index;
-        if(index<0||index>drs.size())
+        if(index<1||index>drs.size())
             return false;
         lock.lock();
         switch (req.Operation) {
@@ -209,7 +209,7 @@ public:
         }
         case OP::DELETE_REGION:
         {
-            if(!index)
+            if(index<=0)
                 return false;
             vector<DetectRegion*>::iterator it=drs.begin();
             delete drs[index-1];

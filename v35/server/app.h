@@ -152,8 +152,9 @@ private:
         cms.clear();
     }
 
-    void add_camera(int index,JsonPacket data)//after who ?  0~size
+    bool add_camera(int index,JsonPacket data)//after who ?  0~size
     {
+        bool ret=false;
         if(0<=index&&index<=cms.size()){
             Camera *c=new Camera(data,bind(&App::process_camera_data,
                                            this,placeholders::_1,
@@ -161,7 +162,9 @@ private:
             vector<Camera*>::iterator it=cms.begin();
             cms.insert(it+index,c);
             private_data.insert_camera(data,index);
+            ret=true;
         }
+        return ret;
     }
 
     bool del_camera(int index)//delete who ? 1~size
@@ -198,11 +201,8 @@ private:
         case App::Operation::GET_CONFIG:
         {
             JsonPacket cfg=p_cm->get_config();//get config
-            //prt(info,"cfg %s",cfg.str().data());
-            //printf("$$$$$ %s $$$$$\n",cfg.str().data());
             ReplyPkt rp(true,App::Operation::GET_CONFIG,cfg);
             r=rp;
-            //prt(info,"reply %s (%d)",r.data().str().data(),r.data().str().size());
             ret=true;
             break;
         }
@@ -220,24 +220,22 @@ private:
         }
         case App::Operation::INSERT_CAMERA:
         {
-            add_camera(e.Index,e.Argument);
-            p_cm->set_config(private_data.data().str());//get config
-            ret=true;
-            ReplyPkt p(true,App::Operation::MODIFY_CAMERA,JsonPacket());
+            if( add_camera(e.Index,e.Argument)){
+                p_cm->set_config(private_data.data().str());//get config
+                ret=true;
+            }
+            ReplyPkt p(ret,App::Operation::MODIFY_CAMERA,JsonPacket());
             r=p;
             break;
         }
         case App::Operation::MODIFY_CAMERA:
         {
-            //printf("#########before  %s",private_data.data().str().data());
-
             if(mod_camera(e.Index,e.Argument)){
-                //printf("#########after  %s",private_data.data().str().data());
                 p_cm->set_config(private_data.data().str());
                 ret=true;
-                ReplyPkt p(true,App::Operation::MODIFY_CAMERA,JsonPacket());
-                r=p;
             }
+            ReplyPkt p(ret,App::Operation::MODIFY_CAMERA,JsonPacket());
+            r=p;
             break;
         }
         case App::Operation::DELETE_CAMERA:
