@@ -49,13 +49,13 @@ public:
     void decode()
     {
         DECODE_STRING_MEM(Url);
-        DECODE_OBJ_ARRAY_MEM(DetectRegion);
+        DECODE_PKT_ARRAY_MEM(DetectRegion);
     }
     void encode()
     {
         // detect_regions.clear();
         ENCODE_STRING_MEM(Url);
-        ENCODE_OBJ_ARRAY_MEM(DetectRegion);
+        ENCODE_PKT_ARRAY_MEM(DetectRegion);
     }
 };
 class CameraOutputData:public JsonData
@@ -88,12 +88,12 @@ public:
     void decode()
     {
         DECODE_INT_MEM(Timestamp);
-        DECODE_OBJ_ARRAY_MEM(DetectionResult);
+        DECODE_PKT_ARRAY_MEM(DetectionResult);
     }
     void encode()
     {
         ENCODE_INT_MEM(Timestamp);
-        ENCODE_OBJ_ARRAY_MEM(DetectionResult);
+        ENCODE_PKT_ARRAY_MEM(DetectionResult);
     }
 };
 class Camera:public VdData<CameraInputData>

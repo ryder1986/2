@@ -46,13 +46,13 @@
 //#define SET_VALUE(mem) {config.set_pkt(#mem,this->mem);}
 
 
-//#define DECODE_OBJ_MEM(mem)  {this->mem=config.get_pkt(#mem);}
+//#define DECODE_PKT_MEM(mem)  {this->mem=config.get_pkt(#mem);}
 
 //#define DECODE_INT_MEM(mem) {this->mem=config.get_int(#mem);}
 //#define DECODE_STRING_MEM(mem) {this->mem=config.get_string(#mem);}
 #define DECODE_INT_MEM(mem) {this->mem=config.get(#mem).to_int();}
 #define DECODE_STRING_MEM(mem) {this->mem=config.get(#mem).to_string();}
-#define DECODE_OBJ_MEM(mem) {this->mem=config.get(#mem).to_pkt();}
+#define DECODE_PKT_MEM(mem) {this->mem=config.get(#mem).to_pkt();}
 #define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
 
 

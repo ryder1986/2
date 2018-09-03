@@ -12,11 +12,11 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(DetectLine);
+        DECODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM_G(DetectLine);
+        ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
 };
 
@@ -32,14 +32,14 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(PvdDetectedObjects);
+        DECODE_JSONDATA_ARRAY_MEM(PvdDetectedObjects);
         DECODE_INT_MEM(PersonFlow1);
         DECODE_INT_MEM(PersonFlow2);
         DECODE_INT_MEM(CurrentPersionCount);
      }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM_G(PvdDetectedObjects);
+        ENCODE_JSONDATA_ARRAY_MEM(PvdDetectedObjects);
         ENCODE_INT_MEM(PersonFlow1);
         ENCODE_INT_MEM(PersonFlow2);
         ENCODE_INT_MEM(CurrentPersionCount);

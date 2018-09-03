@@ -138,6 +138,20 @@ public:
         for(JsonPacket p:pkts)
             val[name].append(p.value());
     }
+    void add(string name,JsonPacket pkt)
+    {
+        val[name].clear();
+        if(!name_exist(name,"add")){
+
+        }
+        else
+        {
+            //   prt(info,"adding exist name: %s ",name.data());
+            //print_backstrace();
+        }
+        val[name]=pkt.obj();
+
+    }
     template <typename T>
     void add(string name,T value)
     {
@@ -255,10 +269,9 @@ public:
         }
         return ar;
     }
+
     JsonValue &value()
     {
-
-
         return val;
     }
 
@@ -289,9 +302,7 @@ private:
         if(v.isString())   prt(info,"isString");
         if(v.isUInt())   prt(info,"isUInt");
         if(v.isUInt64())   prt(info,"isUInt64");
-
     }
-
 private:
     JsonValue val;
 
@@ -302,7 +313,6 @@ class JsonData{
 protected:
     JsonPacket config;
 public:
-
     JsonData(JsonPacket pkt)
     {
         config=pkt;
@@ -312,13 +322,12 @@ public:
     {
 
     }
-    //    virtual void encode()=0;
-    //    virtual void decode()=0;
+    virtual void encode()=0;
+    virtual void decode()=0;
     JsonPacket data()
     {
         return config;
     }
-
 };
 template<typename TP>
 class VdData{
@@ -334,14 +343,14 @@ public:
     }
 };
 
-
-
 #define DECODE_INT_MEM(mem) {this->mem=config.get(#mem).to_int();}
 #define DECODE_STRING_MEM(mem) {this->mem=config.get(#mem).to_string();}
 #define DECODE_DOUBLE_MEM(mem) {this->mem=config.get(#mem).to_double();}
 #define DECODE_BOOL_MEM(mem) {this->mem=config.get(#mem).to_bool();}
-#define DECODE_OBJ_MEM(mem) {this->mem=config.get(#mem);}
-#define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
+#define DECODE_PKT_MEM(mem) {this->mem=config.get(#mem);}
+#define DECODE_PKT_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
+#define DECODE_JSONDATA_MEM(mem) {this->mem=config.get(#mem);}
+#define DECODE_JSONDATA_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
 
 #define ENCODE_MEM(mem) {config.add(#mem,this->mem);}
 
@@ -349,50 +358,13 @@ public:
 #define ENCODE_STRING_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_DOUBLE_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
-//#define ENCODE_OBJ_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.obj());}
-#define ENCODE_OBJ_MEM_G(mem) {config.add(#mem,this->mem.data().obj());}
-#define ENCODE_OBJ_ARRAY_MEM(mem) {config.add(#mem,mem);}
-#define ENCODE_OBJ_ARRAY_MEM_G(mem) { vector<JsonPacket> pkts;\
+#define ENCODE_PKT_MEM(mem) {config.add(#mem,this->mem);}
+#define ENCODE_PKT_ARRAY_MEM(mem) {config.add(#mem,mem);}
+#define ENCODE_JSONDATA_MEM(mem) {config.add(#mem,this->mem.data());}
+#define ENCODE_JSONDATA_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
     config.add(#mem,pkts);}
-//#define DECODE_OBJ_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();\
-this->mem.assign(tmp.begin(),tmp.end());}
-//#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
-//    for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
-//    config.add(#mem,pkts);}
-//#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.str());}
-//#define ENCODE_OBJ_MEM(mem) {config.add(#mem,this->mem.config.obj());}
-//#define ENCODE_OBJ_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
-//    for(auto tmp1:this->mem){pkts.push_back(tmp1);}\
-//    config.add(#mem,pkts);}
-template <typename T>
-class RequestData:public JsonData
-{
-public:
-    int op;
-    int index;
-    T data;
 
-    RequestData(int op,int index , T data):op(op),index(index),data(data)
-    {
-
-    }
-    RequestData()
-    {
-
-    }
-
-    void encode()
-    {
-
-    }
-    void decode()
-    {
-
-    }
-
-};
 
 class RequestPkt:public JsonData
 {
@@ -409,34 +381,17 @@ public:
     {
         decode();
     }
-
-    //    VdEvent(JsonPacket &&p):JsonData(p)
-    //    {
-    //        decode();
-    //    }
-    //    VdEvent(VdEvent &&e):JsonData(e.data)
-    //    {
-    //        decode();
-    //    }
-    //    VdEvent(VdEvent &e):JsonData(e.data)
-    //    {
-    //        decode();
-    //    }
-    //    void operator =(const VdEvent &e)
-    //    {
-    //          decode();
-    //    }
     void encode()
     {
         ENCODE_INT_MEM(Index);
         ENCODE_INT_MEM(Operation);
-        ENCODE_OBJ_MEM(Argument);
+        ENCODE_PKT_MEM(Argument);
     }
     void decode()
     {
         DECODE_INT_MEM(Operation);
         DECODE_INT_MEM(Index);
-        DECODE_OBJ_MEM(Argument);
+        DECODE_PKT_MEM(Argument);
     }
 
 };
@@ -462,13 +417,13 @@ public:
     {
         ENCODE_BOOL_MEM(Ret);
         ENCODE_INT_MEM(Operation);
-        ENCODE_OBJ_MEM(Data);
+        ENCODE_PKT_MEM(Data);
     }
     void decode()
     {
         DECODE_BOOL_MEM(Ret);
         DECODE_INT_MEM(Operation);
-        DECODE_OBJ_MEM(Data);
+        DECODE_PKT_MEM(Data);
     }
 
 };

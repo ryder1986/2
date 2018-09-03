@@ -31,11 +31,11 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(DetectedObjects);
+        DECODE_JSONDATA_ARRAY_MEM(DetectedObjects);
     }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM_G(DetectedObjects);
+        ENCODE_JSONDATA_ARRAY_MEM(DetectedObjects);
     }
 };
 class DummyProcessorInputData:public JsonData{
@@ -106,11 +106,11 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(Rects);
+        DECODE_JSONDATA_ARRAY_MEM(Rects);
     }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM_G(Rects);
+        ENCODE_JSONDATA_ARRAY_MEM(Rects);
     }
 };
 class C4ProcessorInputData:public JsonData{

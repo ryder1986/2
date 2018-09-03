@@ -48,16 +48,16 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(ExpectedAreaVers);
-        DECODE_OBJ_MEM(ProcessorData);
+        DECODE_JSONDATA_ARRAY_MEM(ExpectedAreaVers);
+        DECODE_PKT_MEM(ProcessorData);
         DECODE_STRING_MEM(SelectedProcessor);
     }
     void encode()
     {
-        //   ENCODE_OBJ_ARRAY_MEM(obj_2_pkt_array(ExpectedAreaVers));
-        ENCODE_OBJ_ARRAY_MEM_G(ExpectedAreaVers);
+        //   ENCODE_PKT_ARRAY_MEM(obj_2_pkt_array(ExpectedAreaVers));
+        ENCODE_JSONDATA_ARRAY_MEM(ExpectedAreaVers);
         ENCODE_STRING_MEM(SelectedProcessor);
-        ENCODE_OBJ_MEM(ProcessorData);
+        ENCODE_PKT_MEM(ProcessorData);
     }
 
 };
@@ -82,14 +82,14 @@ public:
 
     void decode()
     {
-        DECODE_OBJ_MEM(DetectionRect);
-        DECODE_OBJ_MEM(Result);
+        DECODE_PKT_MEM(DetectionRect);
+        DECODE_PKT_MEM(Result);
     }
 
     void encode()
     {
-        ENCODE_OBJ_MEM_G(DetectionRect);
-        ENCODE_OBJ_MEM(Result);
+        ENCODE_JSONDATA_MEM(DetectionRect);
+        ENCODE_PKT_MEM(Result);
     }
 
 };

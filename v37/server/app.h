@@ -58,13 +58,13 @@ public:
     void decode()
     {
         DECODE_STRING_MEM(DeviceName);
-        DECODE_OBJ_ARRAY_MEM(CameraData);
+        DECODE_PKT_ARRAY_MEM(CameraData);
     }
 
     void encode()
     {
         ENCODE_STRING_MEM(DeviceName);
-        ENCODE_OBJ_ARRAY_MEM(CameraData);
+        ENCODE_PKT_ARRAY_MEM(CameraData);
     }
 };
 class AppOutputData:public JsonData{
@@ -84,12 +84,12 @@ public:
     void decode()
     {
         DECODE_INT_MEM(CameraIndex);
-        DECODE_OBJ_MEM(CameraOutput);
+        DECODE_PKT_MEM(CameraOutput);
     }
     void encode()
     {
         ENCODE_INT_MEM(CameraIndex);
-        ENCODE_OBJ_MEM(CameraOutput);
+        ENCODE_PKT_MEM(CameraOutput);
     }
 };
 class DestClient{
