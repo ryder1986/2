@@ -188,7 +188,7 @@ public:
 
         RequestPkt req(jp);
         int index=req.Index;
-        if(index<1||index>drs.size())
+        if(index<0||index>drs.size())
             return false;
         lock.lock();
         switch (req.Operation) {
@@ -219,7 +219,7 @@ public:
         }
         case OP::MODIFY_REGION:
         {
-            if(!index)
+            if(index<=0)
                 return false;
             vector<DetectRegion*>::iterator it=drs.begin();
             DetectRegion *rg= drs[index-1];
