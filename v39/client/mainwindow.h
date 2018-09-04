@@ -51,7 +51,7 @@ public:
     void add_camera(string url,int index)
     {
         //string SelectedProcessor="C4";
-        string SelectedProcessor="Dummy";
+        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
 
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));
@@ -602,7 +602,7 @@ private:
     void start_config()
     {
         thread_lock.lock();
-        for(CameraInputData d:cfg.DeviceConfig.CameraData)
+        for(CameraInputData d:cfg.CameraData)
         {
             ui->comboBox_cameras->addItem(d.Url.data());
             PlayerWidget *player=new PlayerWidget(d);
@@ -678,7 +678,7 @@ private slots:
         // int index= ui->groupBox_video->layout()->indexOf(w);
         int index= ui->gridLayout_video->indexOf(w)+1;
         prt(info,"wgt index %d",index);
-        cfg.DeviceConfig.modify_camera(d.data(),index);
+        cfg.modify_camera(d.data(),index);
         ui->lineEdit_setconfig->setText(cfg.data().str().data());
     }
 

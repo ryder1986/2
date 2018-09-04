@@ -36,15 +36,16 @@ public:
         Url=u;
         encode();
     }
+    void change_url(JsonPacket url)
+    {
+        Url=url.get("Url").to_string();
+        encode();
+    }
     void delete_region(int index)
     {
         vector <JsonPacket >::iterator begin=DetectRegion.begin();
         DetectRegion.erase(begin+index-1);
         encode();
-    }
-    void replace_point()
-    {
-
     }
     void decode()
     {
@@ -53,9 +54,30 @@ public:
     }
     void encode()
     {
-        // detect_regions.clear();
         ENCODE_STRING_MEM(Url);
         ENCODE_PKT_ARRAY_MEM(DetectRegion);
+    }
+};
+class UrlJsonData:public JsonData
+{
+public:
+    string Url;
+    UrlJsonData(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    UrlJsonData(string url)
+    {
+        Url=url;
+        encode();
+    }
+    void decode()
+    {
+        DECODE_STRING_MEM(Url);
+    }
+    void encode()
+    {
+        ENCODE_STRING_MEM(Url);
     }
 };
 class CameraOutputData:public JsonData
@@ -194,9 +216,9 @@ public:
         switch (req.Operation) {
         case OP::CHANGE_URL:
         {
-            string url=req.Argument.get("Url").to_string();
-            change_source(url);
-            private_data.change_url(url);
+            UrlJsonData u(req.Argument);
+            change_source(u.Url);
+            private_data.change_url(u.Url);
             break;
         }
         case OP::INSERT_REGION:

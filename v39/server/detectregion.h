@@ -8,6 +8,8 @@
 #include <opencv2/objdetect/objdetect.hpp>
 using namespace std;
 using namespace cv;
+#define LABLE_PROCESSOR_C4 "C4"
+#define LABLE_PROCESSOR_DUMMY "Dummy"
 class DetectRegionInputData:public JsonData
 {
 
@@ -54,17 +56,56 @@ public:
     }
     void encode()
     {
-        //   ENCODE_PKT_ARRAY_MEM(obj_2_pkt_array(ExpectedAreaVers));
         ENCODE_JSONDATA_ARRAY_MEM(ExpectedAreaVers);
         ENCODE_STRING_MEM(SelectedProcessor);
         ENCODE_PKT_MEM(ProcessorData);
     }
 
 };
-
+class SelectedProcessorJsonData:public JsonData{
+public:
+    string SelectedProcessor;
+    SelectedProcessorJsonData(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    SelectedProcessorJsonData(string pro)
+    {
+        SelectedProcessor=pro;
+        encode();
+    }
+    void decode()
+    {
+        DECODE_STRING_MEM(SelectedProcessor);
+    }
+    void encode()
+    {
+        ENCODE_STRING_MEM(SelectedProcessor);
+    }
+};
+class AreaVersJsonData:public JsonData{
+public:
+    vector <VdPoint>ExpectedAreaVers;
+    AreaVersJsonData(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    AreaVersJsonData(vector <VdPoint> vs)
+    {
+        ExpectedAreaVers.assign(vs.begin(),vs.end());
+        encode();
+    }
+    void decode()
+    {
+        DECODE_JSONDATA_ARRAY_MEM(ExpectedAreaVers);
+    }
+    void encode()
+    {
+        ENCODE_JSONDATA_ARRAY_MEM(ExpectedAreaVers);
+    }
+};
 class DetectRegionOutputData:public JsonData
 {
-
 public:
     VdRect DetectionRect;
     JsonPacket Result;
@@ -112,10 +153,10 @@ public:
         lock.lock();
         int valid=false;
         //  p=new PvdMvncProcessor();
-        if(private_data.SelectedProcessor=="C4")
+        if(private_data.SelectedProcessor==LABLE_PROCESSOR_C4)
         {    p=new PvdC4Processor(pkt.data());valid=true;}
-        if(private_data.SelectedProcessor=="Dummy")
-         {   p=new DummyProcessor(JsonPacket());valid=true;}
+        if(private_data.SelectedProcessor==LABLE_PROCESSOR_DUMMY)
+        {   p=new DummyProcessor(JsonPacket());valid=true;}
         if(!valid){
             prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());
             exit(0);
@@ -156,15 +197,9 @@ public:
         switch(op){
         case OP::CHANGE_RECT:
         {
-            JsonPacket vers=pkt.Argument;
-            vector<JsonPacket> vs=vers.get("ExpectedAreaVers").to_array();
-            vector<VdPoint> ps;
-            for(JsonPacket pp:vs)
-            {
-                ps.push_back(VdPoint(pp));
-            }
-            detect_rect=reshape_2_rect(ps);
-            private_data.set_points(ps);
+            AreaVersJsonData vs(pkt.Argument);
+            detect_rect=reshape_2_rect(vs.ExpectedAreaVers);
+            private_data.set_points(vs.ExpectedAreaVers);
             break;
         }
         case OP::CHANGE_PROCESSOR:
@@ -173,18 +208,20 @@ public:
                 delete p;
                 p=NULL;
             }
-            string pro=    pkt.Argument.get("SelectedProcessor").to_string();
-            if(pro=="C4"){
+            SelectedProcessorJsonData sp(pkt.Argument);
+            string pro=sp.SelectedProcessor;
+            //string pro=    pkt.Argument.get("SelectedProcessor").to_string();
+            if(pro==LABLE_PROCESSOR_C4){
                 p=new PvdC4Processor(JsonPacket());
                 private_data.set_processor(pro);
             }
-            if(pro=="Dummy"){
+            if(pro==LABLE_PROCESSOR_DUMMY){
                 p=new DummyProcessor(JsonPacket());
                 private_data.set_processor(pro);
             }
             break;
 
-defalut:break;
+            defalut:break;
         }
         lock.unlock();
     }

@@ -5,16 +5,16 @@
 #include "tool.h"
 #include "camera.h"
 #include "configmanager.h"
-class DeviceConfigT:public JsonData{
+class AppInputData:public TitledJsonData{
 public:
     vector <JsonPacket> CameraData;
     string DeviceName;
 
-    DeviceConfigT(JsonPacket pkt):JsonData(pkt)
+    AppInputData(JsonPacket pkt):TitledJsonData(pkt,"DeviceConfig")
     {
         decode();
     }
-    DeviceConfigT()
+    AppInputData()
     {
 
     }
@@ -67,27 +67,27 @@ public:
         ENCODE_PKT_ARRAY_MEM(CameraData);
     }
 };
-class AppInputData:public JsonData{
+//class AppInputData:public JsonData{
 
-public:
-    DeviceConfigT DeviceConfig;
-    AppInputData()
-    {
+//public:
+//    DeviceConfigT DeviceConfig;
+//    AppInputData()
+//    {
 
-    }
-    AppInputData(JsonPacket pkt):JsonData(pkt)
-    {
-        decode();
-    }
-    void encode()
-    {
-        ENCODE_JSONDATA_MEM(DeviceConfig);
-    }
-    void decode()
-    {
-        DECODE_JSONDATA_MEM(DeviceConfig);
-    }
-};
+//    }
+//    AppInputData(JsonPacket pkt):JsonData(pkt)
+//    {
+//        decode();
+//    }
+//    void encode()
+//    {
+//        ENCODE_JSONDATA_MEM(DeviceConfig);
+//    }
+//    void decode()
+//    {
+//        DECODE_JSONDATA_MEM(DeviceConfig);
+//    }
+//};
 class AppOutputData:public JsonData{
 public:
     int CameraIndex;
@@ -158,7 +158,7 @@ private:
 
     void start_cams()
     {
-        for(JsonPacket p:private_data.DeviceConfig.CameraData){
+        for(JsonPacket p:private_data.CameraData){
             cms.push_back(new Camera(p,bind(&App::process_camera_data,
                                             this,placeholders::_1,
                                             placeholders::_2)));
@@ -182,7 +182,7 @@ private:
                                            placeholders::_2));
             vector<Camera*>::iterator it=cms.begin();
             cms.insert(it+index,c);
-            private_data.DeviceConfig.insert_camera(data,index);
+            private_data.insert_camera(data,index);
             ret=true;
         }
         return ret;
@@ -194,7 +194,7 @@ private:
             delete cms[index-1];
             vector<Camera*>::iterator it=cms.begin();
             cms.erase(it+index-1);
-            private_data.DeviceConfig.delete_camera(index);
+            private_data.delete_camera(index);
             return true;
         }
         return false;
@@ -207,7 +207,7 @@ private:
             vector<Camera*>::iterator it=cms.begin();
             Camera *c=cms[index-1];
             if(c->modify(pkt)){
-                private_data.DeviceConfig.modify_camera(c->get_data().data(),index);
+                private_data.modify_camera(c->get_data().data(),index);
                 ret=true;
             }
         }

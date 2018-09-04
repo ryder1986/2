@@ -66,8 +66,8 @@ public:
         menu.addAction(&action_add_region);
         menu.addAction(&action_del_region);
         menu.addMenu(&menu_processor);
-        processor_c4.setText("c4");
-        processor_dummy.setText("dummy");
+        processor_c4.setText(LABLE_PROCESSOR_C4);
+        processor_dummy.setText(LABLE_PROCESSOR_DUMMY);
 //        processor_c4.setCheckable(true);
 //        processor_c4.setChecked(false);
 //        processor_dummy.setCheckable(true);
@@ -114,7 +114,7 @@ public:
             DetectRegionInputData d=  cfg.DetectRegion[i];
             DetectRegionOutputData  o= out.DetectionResult[i];
             //         prt(info,"processor %s",d.SelectedProcessor.data());
-            if(d.SelectedProcessor=="C4"){
+            if(d.SelectedProcessor==LABLE_PROCESSOR_C4){
                 C4ProcessorOutputData c4o=o.Result;
                 //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
                 //   rects.clear();
@@ -126,7 +126,7 @@ public:
                 //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
             }
-            if(d.SelectedProcessor=="Dummy"){
+            if(d.SelectedProcessor==LABLE_PROCESSOR_DUMMY){
                 DummyProcessorOutputData dummyo=o.Result;
 
                 for(ObjectRect objectrect:dummyo.DetectedObjects){
@@ -292,7 +292,7 @@ public slots:
     }
     void add_region(bool)
     {
-        string SelectedProcessor="Dummy";
+        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
         //string SelectedProcessor="C4";
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));
@@ -339,12 +339,12 @@ public slots:
             return;
         prt(info,"checked %d",checked);
         JsonPacket p;
-        p.add("SelectedProcessor","C4");
+        p.add("SelectedProcessor",LABLE_PROCESSOR_C4);
 
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
         DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
-        di.set_processor("C4");
+        di.set_processor(LABLE_PROCESSOR_C4);
         cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
@@ -426,11 +426,11 @@ public slots:
 
                 int index=selected_region_index;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
-                if(input.SelectedProcessor=="C4")
+                if(input.SelectedProcessor==LABLE_PROCESSOR_C4)
                     processor_c4.setChecked(true);
                 else
                     processor_c4.setChecked(false);
-                if(input.SelectedProcessor=="Dummy")
+                if(input.SelectedProcessor==LABLE_PROCESSOR_DUMMY)
                     processor_dummy.setChecked(true);
                 else
                     processor_dummy.setChecked(false);

@@ -162,7 +162,7 @@ void MainWindow::on_pushButton_setconfig_clicked()
 void MainWindow::on_pushButton_addcam_clicked()
 {
     prt(info,"add camera");
-    clt.add_camera(ui->lineEdit_addcam->text().toUtf8().data(),cfg.DeviceConfig.CameraData.size());
+    clt.add_camera(ui->lineEdit_addcam->text().toUtf8().data(),cfg.CameraData.size());
     clt.get_config();
     stop_config();
 }

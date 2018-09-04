@@ -329,6 +329,34 @@ public:
         return config;
     }
 };
+class TitledJsonData{
+private:
+    string title;
+protected:
+    JsonPacket config;
+public:
+    TitledJsonData(JsonPacket pkt,string tt):title(tt)
+    {
+        config=pkt.get(title);
+
+    }
+    TitledJsonData()
+    {
+
+    }
+    TitledJsonData(string tt):title(tt)
+    {
+
+    }
+    virtual void encode()=0;
+    virtual void decode()=0;
+    JsonPacket data()
+    {
+        JsonPacket p;
+        p.add(title,config);
+        return p;
+    }
+};
 template<typename TP>
 class VdData{
 protected:
