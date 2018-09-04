@@ -172,7 +172,7 @@ public:
             VdRect v(rc.x,rc.y,rc.width,rc.height);
             pkt.push_back(v.data());
         }
-        VdRect v(111,111,111,111);
+        VdRect v(0,0,50,50);
         pkt.push_back(v.data());
         C4ProcessorOutputData out(pkt);
 
