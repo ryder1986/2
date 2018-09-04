@@ -68,10 +68,10 @@ public:
         menu.addMenu(&menu_processor);
         processor_c4.setText(LABLE_PROCESSOR_C4);
         processor_dummy.setText(LABLE_PROCESSOR_DUMMY);
-//        processor_c4.setCheckable(true);
-//        processor_c4.setChecked(false);
-//        processor_dummy.setCheckable(true);
-//        processor_dummy.setChecked(false);
+        //        processor_c4.setCheckable(true);
+        //        processor_c4.setChecked(false);
+        //        processor_dummy.setCheckable(true);
+        //        processor_dummy.setChecked(false);
         connect(&processor_dummy,SIGNAL(triggered(bool)),this,SLOT(set_processor_dummy(bool)));
         connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
         menu_processor.addAction(&processor_c4);
@@ -102,41 +102,43 @@ public:
     {
         lock.lock();
         //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
+
+        output_data=cam_out;
         CameraOutputData  out=cam_out;
 
-        if(out.DetectionResult.size()!=cfg.DetectRegion.size()){
-            lock.unlock();
-            prt(info,"cfg dont match: output size %d , now size %d",out.DetectionResult.size(),cfg.DetectRegion.size());
-            return;
-        }
-        //       prt(info,"sz %d",out.DetectionResult.size());
-        for(int i=0;i<out.DetectionResult.size();i++){
-            DetectRegionInputData d=  cfg.DetectRegion[i];
-            DetectRegionOutputData  o= out.DetectionResult[i];
-            //         prt(info,"processor %s",d.SelectedProcessor.data());
-            if(d.SelectedProcessor==LABLE_PROCESSOR_C4){
-                C4ProcessorOutputData c4o=o.Result;
-                //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
-                //   rects.clear();
-                for(VdRect v:c4o.Rects){
-                    QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
-                    rects.push_back(r);
-                }
-                // QRect rrr=rects.at(rects.size()-1);
-                //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
+        //        if(out.DetectionResult.size()!=cfg.DetectRegion.size()){
+        //            lock.unlock();
+        //            prt(info,"cfg dont match: output size %d , now size %d",out.DetectionResult.size(),cfg.DetectRegion.size());
+        //            return;
+        //        }
+        //        //       prt(info,"sz %d",out.DetectionResult.size());
+        //        for(int i=0;i<out.DetectionResult.size();i++){
+        //            DetectRegionInputData d=  cfg.DetectRegion[i];
+        //            DetectRegionOutputData  o= out.DetectionResult[i];
+        //            //         prt(info,"processor %s",d.SelectedProcessor.data());
+        //            if(d.SelectedProcessor==LABLE_PROCESSOR_C4){
+        //                C4ProcessorOutputData c4o=o.Result;
+        //                //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
+        //                //   rects.clear();
+        //                for(VdRect v:c4o.Rects){
+        //                    QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
+        //                    rects.push_back(r);
+        //                }
+        //                // QRect rrr=rects.at(rects.size()-1);
+        //                //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
 
-            }
-            if(d.SelectedProcessor==LABLE_PROCESSOR_DUMMY){
-                DummyProcessorOutputData dummyo=o.Result;
+        //            }
+        //            if(d.SelectedProcessor==LABLE_PROCESSOR_DUMMY){
+        //                DummyProcessorOutputData dummyo=o.Result;
 
-                for(ObjectRect objectrect:dummyo.DetectedObjects){
-                    QRect rct(objectrect.x+o.DetectionRect.x,objectrect.y+o.DetectionRect.y,objectrect.w,objectrect.h);
-                    rects.push_back(rct);
-                }
-            }
-            if(d.SelectedProcessor=="Pvd"){}
-            if(d.SelectedProcessor=="Fvd"){}
-        }
+        //                for(VdPoint v:dummyo.Points){
+        //                    QRect rct(objectrect.x+o.DetectionRect.x,objectrect.y+o.DetectionRect.y,objectrect.w,objectrect.h);
+        //                    rects.push_back(rct);
+        //                }
+        //            }
+        //            if(d.SelectedProcessor=="Pvd"){}
+        //            if(d.SelectedProcessor=="Fvd"){}
+        //        }
         //      rects.assign(rs.begin(),rs.end());
         //      timestamp=ts;
         lock.unlock();
@@ -189,7 +191,7 @@ public:
     }
     inline bool p_on_l(QPoint b,QPoint e, QPoint dst)
     {
-      //  return true;
+        //  return true;
 
         bool v1= (((dst.x()<b.x()+10)||(dst.x()<e.x()+10))&&((dst.x()>b.x()-10)||(dst.x()>e.x()-10)));
         bool v2=(  ((dst.y()<b.y()+10)||(dst.y()<e.y()+10))&&((dst.y()>b.y()-10)||(dst.y()>e.y()-10)));
@@ -198,9 +200,9 @@ public:
         //              (  ((dst.y()<b.y())||(dst.y()<e.y()))&&((dst.y()>b.y())||(dst.y()>e.y())))&&
         //                (abs(((dst.x()-e.x())*(dst.y()-b.y()))-((dst.y()-e.y())*(dst.x()-b.x())))<100))
 
-       // if(v1&&v2&&v3)
-            if(v1&&v2&&v3)
-             return true;
+        // if(v1&&v2&&v3)
+        if(v1&&v2&&v3)
+            return true;
         else
             return false;
     }
@@ -232,7 +234,18 @@ public:
     {
         return QPoint(p.x()*img.width()/this->width(),p.y()*img.height()/this->height());
     }
+    void draw_processor(string processor,JsonPacket out)
+    {
+        if(processor==LABLE_PROCESSOR_C4){
+            DummyProcessorOutputData d(out);
+            for(VdPoint p:d.Points){
+                prt(info,"%d %d",p.x,p.y);
+            }
+        }
+        if(processor==LABLE_PROCESSOR_DUMMY){
 
+        }
+    }
 protected:
     void paintEvent(QPaintEvent *)
     {
@@ -251,13 +264,20 @@ protected:
         img_painter.setPen(red_pen1());
         cnt=0;
         // prt(info,"start draw-> %s",cfg.data().str().data());
+        //        for(int i=0;i<out.DetectionResult.size();i++){
+        //            DetectRegionInputData d=  cfg.DetectRegion[i];
+        //            DetectRegionOutputData  o= out.DetectionResult[i];
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
+            //            p.SelectedProcessor
+            draw_processor( p.SelectedProcessor, output_data.DetectionResult[i]);
+            //JsonPacket ot=  output_data.DetectionResult[i];
             if(ver_picked&&i==selected_region_index-1)
                 img_painter.setPen(blue_pen2());
             else
                 img_painter.setPen(green_pen2());
             // prt(info,"p-> %s",p.data().str().data());
+
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
 
@@ -276,8 +296,8 @@ public slots:
     {
         //prt(info,"hide menu");
         ver_picked=false;
-//        processor_dummy.setChecked(false);
-//        processor_c4.setChecked(false);
+        //        processor_dummy.setChecked(false);
+        //        processor_c4.setChecked(false);
         processor_c4.setCheckable(false);
         processor_c4.setChecked(false);
         processor_dummy.setCheckable(false);
@@ -355,13 +375,15 @@ public slots:
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         DetectRegionInputData tmp=detect_regions[selected_region_index-1];
         vector <VdPoint  > vers=tmp.ExpectedAreaVers;
-        vector <JsonPacket  > vers_pkt;
-        JsonPacket p;
-        for(int i=0;i<vers.size();i++){
-            vers_pkt.push_back(vers[i].data());
-        }
-        p.add("ExpectedAreaVers",vers_pkt);
-        RequestPkt r_pkt(DetectRegion::OP::CHANGE_RECT,0,p);
+        AreaVersJsonData vs(vers);
+
+        //        vector <JsonPacket  > vers_pkt;
+        //        JsonPacket p;
+        //        for(int i=0;i<vers.size();i++){
+        //            vers_pkt.push_back(vers[i].data());
+        //        }
+        //        p.add("ExpectedAreaVers",vers_pkt);
+        RequestPkt r_pkt(DetectRegion::OP::CHANGE_RECT,0,vs.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,r_pkt.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
@@ -563,6 +585,8 @@ private:
     QAction processor_c4;
     QAction processor_dummy;
     int screen_state;
+
+    CameraOutputData output_data;
 };
 
 #endif // PLAYERWIDGET_H

@@ -32,7 +32,7 @@ void MainWindow::recv_server_output()
         //prt(info,"rget udp len %d",ret);
         string str(buf);
         JsonPacket p(str);
-      // prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
+       prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
         AppOutputData rst(p);
 
         int cam_index=rst.CameraIndex;

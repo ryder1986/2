@@ -17,7 +17,8 @@
 class DummyProcessorOutputData:public JsonData{
 
 public:
-    vector <ObjectRect> DetectedObjects;
+    vector<VdPoint> Points;
+    int Radii;
     DummyProcessorOutputData()
     {
     }
@@ -25,45 +26,56 @@ public:
     {
         decode();
     }
-    DummyProcessorOutputData(vector <ObjectRect> o):DetectedObjects(o)
+    DummyProcessorOutputData(vector<VdPoint> o,int r):Radii(r)
     {
+        Points.assign(o.begin(),o.end());
         encode();
     }
     void decode()
     {
-        DECODE_JSONDATA_ARRAY_MEM(DetectedObjects);
+        DECODE_JSONDATA_ARRAY_MEM(Points);
+        DECODE_INT_MEM(Radii);
     }
     void encode()
     {
-        ENCODE_JSONDATA_ARRAY_MEM(DetectedObjects);
+        ENCODE_JSONDATA_ARRAY_MEM(Points);
+        ENCODE_INT_MEM(Radii);
     }
 };
 class DummyProcessorInputData:public JsonData{
 
 public:
-
-    DummyProcessorInputData()
+    bool Horizon;
+    bool Vertical;
+    int Radii;
+    DummyProcessorInputData(bool h,bool v,int r):Horizon(h),Vertical(v),Radii(r)
     {
+        encode();
     }
-    DummyProcessorInputData(JsonPacket str):JsonData(str)
+    DummyProcessorInputData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
 
     void decode()
     {
-
+        DECODE_BOOL_MEM(Horizon);
+        DECODE_BOOL_MEM(Vertical);
+        DECODE_INT_MEM(Vertical);
     }
     void encode()
     {
-
+        ENCODE_BOOL_MEM(Horizon);
+        ENCODE_BOOL_MEM(Vertical);
+        ENCODE_INT_MEM(Vertical);
     }
 };
 class DummyProcessor:public VideoProcessor
 {
     int loop;
+    DummyProcessorInputData input;
 public:
-    DummyProcessor(JsonPacket input_packet)
+    DummyProcessor(JsonPacket input_packet):input(input_packet)
     {
         loop=0;
         prt(info,"set up dummy processor");
@@ -75,13 +87,23 @@ public:
         loop+=3;
         if(loop>=img_src.cols)
             loop=0;
-        vector<ObjectRect> objs;
+        //        vector<ObjectRect> objs;
 
-        ObjectRect r1(loop,11,33,33,"111",99);
-        objs.push_back(r1.data());
-        ObjectRect r2(loop,33,33,33,"111",99);
-        objs.push_back(r2.data());
-        DummyProcessorOutputData d(objs);
+        //        ObjectRect r1(loop,11,33,33,"111",99);
+        //        objs.push_back(r1.data());
+        //        ObjectRect r2(loop,33,33,33,"111",99);
+        //        objs.push_back(r2.data());
+
+        vector<VdPoint> ps;
+        if(input.Horizon){
+            VdPoint p(loop,10);
+            ps.push_back(p);
+        }
+        if(input.Vertical){
+            VdPoint p(10,loop);
+            ps.push_back(p);
+        }
+        DummyProcessorOutputData d(ps,input.Radii);
         output_pkt=d.data();
         ret=true;
         return  ret;
@@ -195,15 +217,15 @@ public:
         loaded=false;
         p_scanner=new DetectionScanner(HUMAN_height,HUMAN_width,HUMAN_xdiv,
                                        HUMAN_ydiv,256,string2f("0.8"));
-//        tracker=new CTracker(0.2f, 0.1f, 60.0f,
-//                             KALMAN_LOST_FRAME_THREDHOLD,
-//                             KALMAN_TRACE_LEN);
+        //        tracker=new CTracker(0.2f, 0.1f, 60.0f,
+        //                             KALMAN_LOST_FRAME_THREDHOLD,
+        //                             KALMAN_TRACE_LEN);
     }
 
     ~PvdC4Processor()
     {
         delete p_scanner;
-      //  delete tracker;
+        //  delete tracker;
     }
     string get_rst()
     {
@@ -382,7 +404,7 @@ private:
     bool real_process( Mat &src_image,m_result &rst)
     {
         std::vector<cv::Rect>  result_rects;
-       // std::vector<CvPoint>  centers;
+        // std::vector<CvPoint>  centers;
         bool ret=false;
         if(!loaded){
             LoadCascade(*p_scanner);
@@ -443,13 +465,13 @@ private:
             real_position.height = (results[i].bottom - results[i].top);
             //   cv::rectangle(detect_region, real_position, cv::Scalar(0,255,0), 2);
             result_rects.push_back(real_position);
-//            CvPoint pnt((int)real_position.x + ((int)real_position.width/2),
-//                                                  (int)real_position.y + ((int)real_position.height/2));
-//            centers.push_back(pnt);
+            //            CvPoint pnt((int)real_position.x + ((int)real_position.width/2),
+            //                                                  (int)real_position.y + ((int)real_position.height/2));
+            //            centers.push_back(pnt);
 
         }
 
-       // tracker->Update(centers, result_rects, CTracker::RectsDist);
+        // tracker->Update(centers, result_rects, CTracker::RectsDist);
 #endif
         double end_time = cv::getTickCount();
         double spend_time;
@@ -467,6 +489,6 @@ private:
 private:
     bool loaded;
     DetectionScanner *p_scanner;
-  //  CTracker *tracker;
+    //  CTracker *tracker;
 };
 #endif // PVDPROCESSOR_H
