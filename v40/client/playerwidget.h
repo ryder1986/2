@@ -346,12 +346,13 @@ public slots:
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
         prt(info,"checked %d",checked);
-        JsonPacket p;
-        p.add("SelectedProcessor","Dummy");
-        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
+        DummyProcessorInputData did(true,false,17);
+        ProcessorDataJsonData pd(LABLE_PROCESSOR_DUMMY,did.data());
+
+        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
         DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
-        di.set_processor("Dummy");
+        di.set_processor(LABLE_PROCESSOR_DUMMY,did.data());
         cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
@@ -360,13 +361,13 @@ public slots:
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
         prt(info,"checked %d",checked);
-        JsonPacket p;
-        p.add("SelectedProcessor",LABLE_PROCESSOR_C4);
+        C4ProcessorInputData did(8,"0.7");
+        ProcessorDataJsonData pd(LABLE_PROCESSOR_C4,did.data());
 
-        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,p);
+        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
         DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
-        di.set_processor(LABLE_PROCESSOR_C4);
+        di.set_processor(LABLE_PROCESSOR_C4,did.data());
         cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }

@@ -38,9 +38,10 @@ public:
         ExpectedAreaVers=p;
         encode();
     }
-    void set_processor(string p)
+    void set_processor(string p,JsonPacket pd)
     {
         SelectedProcessor=p;
+        ProcessorData=pd;
         encode();
     }
     void operator =(DetectRegionInputData dt)
@@ -62,25 +63,29 @@ public:
     }
 
 };
-class SelectedProcessorJsonData:public JsonData{
+class ProcessorDataJsonData:public JsonData{
 public:
     string SelectedProcessor;
-    SelectedProcessorJsonData(JsonPacket pkt):JsonData(pkt)
+    JsonPacket ProcessorData;
+    ProcessorDataJsonData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-    SelectedProcessorJsonData(string pro)
+    ProcessorDataJsonData(string pro,JsonPacket d)
     {
+        ProcessorData=d;
         SelectedProcessor=pro;
         encode();
     }
     void decode()
     {
         DECODE_STRING_MEM(SelectedProcessor);
+        DECODE_PKT_MEM(ProcessorData);
     }
     void encode()
     {
         ENCODE_STRING_MEM(SelectedProcessor);
+        ENCODE_PKT_MEM(ProcessorData);
     }
 };
 class AreaVersJsonData:public JsonData{
@@ -208,20 +213,20 @@ public:
                 delete p;
                 p=NULL;
             }
-            SelectedProcessorJsonData sp(pkt.Argument);
+            ProcessorDataJsonData sp(pkt.Argument);
             string pro=sp.SelectedProcessor;
             //string pro=    pkt.Argument.get("SelectedProcessor").to_string();
             if(pro==LABLE_PROCESSOR_C4){
-                p=new PvdC4Processor(JsonPacket());
-                private_data.set_processor(pro);
+                p=new PvdC4Processor(sp.ProcessorData);
+                private_data.set_processor(pro,sp.ProcessorData);
             }
             if(pro==LABLE_PROCESSOR_DUMMY){
-                p=new DummyProcessor(JsonPacket());
-                private_data.set_processor(pro);
+                p=new DummyProcessor(sp.ProcessorData);
+                private_data.set_processor(pro,sp.ProcessorData);
             }
             break;
 
-            defalut:break;
+defalut:break;
         }
         lock.unlock();
     }
