@@ -6,10 +6,12 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
+
 using namespace std;
 using namespace cv;
 #define LABLE_PROCESSOR_C4 "C4"
 #define LABLE_PROCESSOR_DUMMY "Dummy"
+#define LABLE_PROCESSOR_PVD "Pvd"
 class DetectRegionInputData:public JsonData
 {
 
@@ -141,6 +143,7 @@ public:
 };
 #include "videoprocessor.h"
 #include "c4processor.h"
+#include "pvdprocessor.h"
 class DetectRegion : public VdData<DetectRegionInputData>
 {
     int tmp;
@@ -162,6 +165,8 @@ public:
         {    p=new PvdC4Processor(pkt.data());valid=true;}
         if(private_data.SelectedProcessor==LABLE_PROCESSOR_DUMMY)
         {   p=new DummyProcessor(private_data.ProcessorData);valid=true;}
+        if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
+        {   p=new PvdProcessor(private_data.ProcessorData);valid=true;}
         if(!valid){
             prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());
             exit(0);
@@ -224,6 +229,12 @@ public:
                 p=new DummyProcessor(sp.ProcessorData);
                 private_data.set_processor(pro,sp.ProcessorData);
             }
+
+            if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
+            {   p=new PvdProcessor(sp.ProcessorData);valid=true;
+             private_data.set_processor(pro,sp.ProcessorData);
+            }
+
             break;
 
 defalut:break;

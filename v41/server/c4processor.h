@@ -1,5 +1,5 @@
-#ifndef PVDPROCESSOR_H
-#define PVDPROCESSOR_H
+#ifndef PVDC4PROCESSOR_H
+#define PVDC4PROCESSOR_H
 #include "tool.h"
 #include "videoprocessor.h"
 #include "c4common.h"

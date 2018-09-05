@@ -13,11 +13,11 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(DetectLine);
+        DECODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM_G(DetectLine);
+        ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
 };
 
@@ -33,14 +33,14 @@ public:
     }
     void decode()
     {
-        DECODE_OBJ_ARRAY_MEM(PvdDetectedObjects);
+        DECODE_JSONDATA_ARRAY_MEM(PvdDetectedObjects);
         DECODE_INT_MEM(PersonFlow1);
         DECODE_INT_MEM(PersonFlow2);
         DECODE_INT_MEM(CurrentPersionCount);
      }
     void encode()
     {
-        ENCODE_OBJ_ARRAY_MEM_G(PvdDetectedObjects);
+        ENCODE_JSONDATA_ARRAY_MEM(PvdDetectedObjects);
         ENCODE_INT_MEM(PersonFlow1);
         ENCODE_INT_MEM(PersonFlow2);
         ENCODE_INT_MEM(CurrentPersionCount);
@@ -79,8 +79,8 @@ public:
 		int i = 0;
 		int x = 0, y = 0, w = 0, h = 0, c;
 		string names;
-		IplImage* img = &IplImage(img_src);
-		PvdArithProc(img, p_cfg->pCfgs, p_cfg->p_outbuf)
+        IplImage* img = new IplImage(img_src);
+        PvdArithProc(img, p_cfg->pCfgs, &p_cfg->p_outbuf->PVDoutbuf);
 		PvdProcessorOutputData out;
 		out.PersonFlow1 = p_cfg->p_outbuf->PVDoutbuf.uPersonSum[0];
 		out.PersonFlow2 = p_cfg->p_outbuf->PVDoutbuf.uPersonSum[1];
@@ -88,14 +88,16 @@ public:
 		 vector <ObjectRect> PvdDetectedObjects;
 		for( i = 0; i < p_cfg->p_outbuf->PVDoutbuf.uPersonTotalSum; i++) 
 		{
-			x = p_cfg->pCfgs->detPerson.box.x;
-			y = p_cfg->pCfgs->detPerson.box.y;
-			w = p_cfg->pCfgs->detPerson.box.width;
-			h = p_cfg->pCfgs->detPerson.box.height;
-			c = p_cfg->pCfgs->detPerson.prob;
-			strcpy(names, p_cfg->pCfgs->detPerson.names);
+            x = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.x;
+            y = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.y;
+            w = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.width;
+            h = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.height;
+            c = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].prob;
+            char name_tmp[50];memset(name_tmp,0,50);
+            strcpy(name_tmp,(char*)p_cfg->p_outbuf->PVDoutbuf.detPerson[i].names);
+            names.assign(name_tmp);
 			ObjectRect  obj = ObjectRect(x, y, w, h, names, c);
-			out.PvdDetectedObjects.push_back(obj)
+            out.PvdDetectedObjects.push_back(obj);
 		}
 
 		pkt=out.data();
