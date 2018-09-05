@@ -143,7 +143,7 @@ public:
 class C4ProcessorInputData:public JsonData{
 
 public:
-    string ratio;
+    double ratio;
     int scan_step;
     C4ProcessorInputData()
     {
@@ -152,19 +152,19 @@ public:
     {
         decode();
     }
-    C4ProcessorInputData(int st,string ra):scan_step(st),ratio(ra)
+    C4ProcessorInputData(int st,double ra):scan_step(st),ratio(ra)
     {
         encode();
     }
     void decode()
     {
         DECODE_INT_MEM(scan_step);
-        DECODE_STRING_MEM(ratio);
+        DECODE_DOUBLE_MEM(ratio);
     }
     void encode()
     {
         ENCODE_INT_MEM(scan_step);
-        ENCODE_STRING_MEM(ratio);
+        ENCODE_DOUBLE_MEM(ratio);
     }
 };
 class PvdC4Processor : public VideoProcessor

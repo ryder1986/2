@@ -361,7 +361,7 @@ public slots:
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
         prt(info,"checked %d",checked);
-        C4ProcessorInputData did(8,"0.7");
+        C4ProcessorInputData did(8,0.7);
         ProcessorDataJsonData pd(LABLE_PROCESSOR_C4,did.data());
 
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
