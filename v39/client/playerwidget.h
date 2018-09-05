@@ -426,7 +426,7 @@ public slots:
             r.set_points(ps);
             cfg.set_region(r.data(),selected_region_index);
             ori_point=e->pos();
-            prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
+            //prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
         }
     }
     void mousePressEvent(QMouseEvent *e)
