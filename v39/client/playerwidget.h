@@ -36,7 +36,7 @@ public:
 
     PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this),menu_processor("processor")
     {
-        rects.clear();
+        //rects.clear();
         loop=0;
         ver_picked=false;
         line_picked=false;
@@ -94,7 +94,7 @@ public:
     void set_overlay(vector<QRect> rs,int ts)
     {
         lock.lock();
-        rects.assign(rs.begin(),rs.end());
+        //rects.assign(rs.begin(),rs.end());
         timestamp=ts;
         lock.unlock();
     }
@@ -234,16 +234,20 @@ public:
     {
         return QPoint(p.x()*img.width()/this->width(),p.y()*img.height()/this->height());
     }
-    void draw_processor(string processor,JsonPacket out)
+    void draw_processor(QPainter &pt,string processor,JsonPacket out)
     {
+        DetectRegionOutputData ro(out);
         if(processor==LABLE_PROCESSOR_C4){
-            DummyProcessorOutputData d(out);
-            for(VdPoint p:d.Points){
-                prt(info,"%d %d",p.x,p.y);
+            C4ProcessorOutputData d(ro.Result);
+            for(VdRect r:d.Rects){
+                pt.drawRect(QRect(r.x+ro.DetectionRect.x,r.y+ro.DetectionRect.y,r.w,r.h));
             }
         }
         if(processor==LABLE_PROCESSOR_DUMMY){
-
+            DummyProcessorOutputData d(ro.Result);
+            for(VdPoint p:d.Points){
+                pt.drawEllipse(QPoint(p.x+ro.DetectionRect.x,p.y+ro.DetectionRect.y),d.Radii,d.Radii);
+            }
         }
     }
 protected:
@@ -257,27 +261,21 @@ protected:
         }
         QPainter img_painter(&img);
         img_painter.setPen(blue_pen1());
-        for(QRect r:rects){
-            img_painter.drawRect(r);
-        }
-        rects.clear();
+//        for(QRect r:rects){
+//            img_painter.drawRect(r);
+//        }
+        //rects.clear();
         img_painter.setPen(red_pen1());
         cnt=0;
-        // prt(info,"start draw-> %s",cfg.data().str().data());
-        //        for(int i=0;i<out.DetectionResult.size();i++){
-        //            DetectRegionInputData d=  cfg.DetectRegion[i];
-        //            DetectRegionOutputData  o= out.DetectionResult[i];
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
-            //            p.SelectedProcessor
-            draw_processor( p.SelectedProcessor, output_data.DetectionResult[i]);
-            //JsonPacket ot=  output_data.DetectionResult[i];
+            if(output_data.DetectionResult.size()!=cfg.DetectRegion.size())
+                break;
+            draw_processor( img_painter,p.SelectedProcessor, output_data.DetectionResult[i]);
             if(ver_picked&&i==selected_region_index-1)
                 img_painter.setPen(blue_pen2());
             else
                 img_painter.setPen(green_pen2());
-            // prt(info,"p-> %s",p.data().str().data());
-
             draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
         }
 
@@ -319,9 +317,13 @@ public slots:
         ExpectedAreaVers.push_back(VdPoint(640,0));
         ExpectedAreaVers.push_back(VdPoint(640,480));
         ExpectedAreaVers.push_back(VdPoint(0,480));
-        C4ProcessorInputData c4d(6,"0.6");
-        JsonPacket ProcessorData=c4d.data();
-        DetectRegionInputData rd(ProcessorData,SelectedProcessor,ExpectedAreaVers);
+        //        C4ProcessorInputData c4d(6,"0.6");
+        //        JsonPacket ProcessorData=c4d.data();
+
+        DummyProcessorInputData dp(true,false,15);
+
+
+        DetectRegionInputData rd(dp.data(),SelectedProcessor,ExpectedAreaVers);
         RequestPkt pkt(Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),rd.data());
         signal_camera(this,Camera::OP::INSERT_REGION,pkt.data());
         prt(info,"add region");
@@ -573,7 +575,7 @@ private:
     int selected_point_index;
     QPoint ori_point;
     int cnt;
-    vector <QRect> rects;
+    //vector <QRect> rects;
     QTimer *tick_timer;
     int timestamp;
 

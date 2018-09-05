@@ -61,32 +61,37 @@ public:
     {
         DECODE_BOOL_MEM(Horizon);
         DECODE_BOOL_MEM(Vertical);
-        DECODE_INT_MEM(Vertical);
+        DECODE_INT_MEM(Radii);
     }
     void encode()
     {
         ENCODE_BOOL_MEM(Horizon);
         ENCODE_BOOL_MEM(Vertical);
-        ENCODE_INT_MEM(Vertical);
+        ENCODE_INT_MEM(Radii);
     }
 };
 class DummyProcessor:public VideoProcessor
 {
-    int loop;
+    int loopx;
+    int loopy;
     DummyProcessorInputData input;
 public:
     DummyProcessor(JsonPacket input_packet):input(input_packet)
     {
-        loop=0;
-        prt(info,"set up dummy processor");
+        loopx=0;
+        loopy=0;
     }
     virtual bool process(Mat img_src,JsonPacket &output_pkt)
     {
 
         bool ret=false;
-        loop+=3;
-        if(loop>=img_src.cols)
-            loop=0;
+        loopx+=30;
+        if(loopx>=img_src.cols)
+            loopx=0;
+
+        loopy+=30;
+        if(loopy>=img_src.rows)
+            loopy=0;
         //        vector<ObjectRect> objs;
 
         //        ObjectRect r1(loop,11,33,33,"111",99);
@@ -96,11 +101,11 @@ public:
 
         vector<VdPoint> ps;
         if(input.Horizon){
-            VdPoint p(loop,10);
+            VdPoint p(loopx,10);
             ps.push_back(p);
         }
         if(input.Vertical){
-            VdPoint p(10,loop);
+            VdPoint p(10,loopy);
             ps.push_back(p);
         }
         DummyProcessorOutputData d(ps,input.Radii);

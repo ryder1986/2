@@ -58,10 +58,10 @@ public:
         ExpectedAreaVers.push_back(VdPoint(640,0));
         ExpectedAreaVers.push_back(VdPoint(640,480));
         ExpectedAreaVers.push_back(VdPoint(0,480));
-        JsonPacket ProcessorData;
-
+        //JsonPacket ProcessorData;
+        DummyProcessorInputData dd(true,true,5);
         // DummyProcessor
-        DetectRegionInputData rdata(ProcessorData,SelectedProcessor,ExpectedAreaVers);
+        DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
         vector<JsonPacket> rs;
         rs.push_back(rdata.data());
         CameraInputData data(rs,url);

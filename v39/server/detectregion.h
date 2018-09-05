@@ -156,7 +156,7 @@ public:
         if(private_data.SelectedProcessor==LABLE_PROCESSOR_C4)
         {    p=new PvdC4Processor(pkt.data());valid=true;}
         if(private_data.SelectedProcessor==LABLE_PROCESSOR_DUMMY)
-        {   p=new DummyProcessor(JsonPacket());valid=true;}
+        {   p=new DummyProcessor(private_data.ProcessorData);valid=true;}
         if(!valid){
             prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());
             exit(0);
