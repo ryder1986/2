@@ -72,8 +72,9 @@ public:
         //        processor_c4.setChecked(false);
         //        processor_dummy.setCheckable(true);
         //        processor_dummy.setChecked(false);
+
         connect(&processor_dummy,SIGNAL(triggered(bool)),this,SLOT(set_processor_dummy(bool)));
-        connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
+                connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
         menu_processor.addAction(&processor_c4);
         menu_processor.addAction(&processor_dummy);
         menu.addAction(&action_change_url);
@@ -249,6 +250,14 @@ public:
                 pt.drawEllipse(QPoint(p.x+ro.DetectionRect.x,p.y+ro.DetectionRect.y),d.Radii,d.Radii);
             }
         }
+
+        if(processor==LABLE_PROCESSOR_PVD){
+            PvdProcessorOutputData d(ro.Result);
+            for(ObjectRect r:d.PvdDetectedObjects){
+                pt.drawRect(QRect(r.x+ro.DetectionRect.x,r.y+ro.DetectionRect.y,r.w,r.h));
+            }
+        }
+
     }
 protected:
     void paintEvent(QPaintEvent *)
@@ -340,6 +349,10 @@ public slots:
         p.add("Url","rtsp://192.168.1.95:554/av0_1");
         RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
         signal_camera(this,Camera::OP::CHANGE_URL,pkt.data());
+    }
+    void set_processor(bool checked)
+    {
+
     }
     void set_processor_dummy(bool checked)
     {
@@ -587,6 +600,7 @@ private:
     QAction action_change_url;
     QAction processor_c4;
     QAction processor_dummy;
+    vector <QAction> actions;
     int screen_state;
 
     CameraOutputData output_data;

@@ -272,9 +272,9 @@ public:
     int PersonFlow1;
     int PersonFlow2;
     int CurrentPersionCount;
-    PvdProcessorOutputData()
+    PvdProcessorOutputData(JsonPacket pkt):JsonData(pkt)
     {
-
+        decode();
     }
     PvdProcessorOutputData(    vector <ObjectRect> objs,
                                int p1,
