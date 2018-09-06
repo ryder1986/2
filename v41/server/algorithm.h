@@ -1,6 +1,12 @@
 ﻿#ifndef __ALG_H__
 #define __ALG_H__
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "darknet.h"
+#ifdef __cplusplus
+}
+#endif
 #include <stdbool.h>
 #include<sys/time.h>
 #ifndef __cplusplus
@@ -72,7 +78,6 @@ typedef struct{
 	char names[50];
 }CDetBox;
 
-
 typedef struct{
 	int class_id;
 	float prob[100];
@@ -126,11 +131,13 @@ typedef struct
 	float base_length;//基准线长
 	float near_point_length;//最近点距离 
 }FVDDETECTCFG;
+
 typedef struct
 {
 	CPoint			   ptDetectLine[2];//检测线
 	CRect              detectROI;//检测区域
 }PVDDETECTCFG;
+
 typedef struct
 {
 	FVDDETECTCFG FvdDetectCfg;
@@ -163,7 +170,6 @@ typedef struct
 	CPoint QueLine[2];   //排队长度线
 	Uint16	uReserved[20];			//预留
 }LaneDetectInfo;
-
 
 typedef struct
 {
@@ -199,8 +205,8 @@ typedef struct
 ////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct{
-	Uint16					LaneID;//车道号
-	bool		bInfoValid;				//检测器结果有效
+	Uint16	LaneID;//车道号
+	bool	bInfoValid;				//检测器结果有效
 	Uint16	bVehicleSta;			//车入车出状态
 	Uint16	uVehicleSpeed;			//车速
 	Uint16	uVehicleLength;			//车长
@@ -208,18 +214,18 @@ typedef struct{
 	Uint16  uVehicleDirection;       //车辆运行方向
 	//Uint16	uVehicleHeight;			//车高
 	Uint16	uVehicleHeadtime;		//车头时距
-	Uint16 uLastVehicleLength;    //最后一辆车的位置
+	Uint16  uLastVehicleLength;    //最后一辆车的位置
 	unsigned int calarflag;
 	unsigned int car_in;
 	unsigned int car_out;
 	CPoint	LastVehiclePos[2];
-	int AlarmLineflag;
-	bool     IsCarInTailFlag;    //尾部区域占有标志
-	bool     getQueback_flag;	//txl,20160104
+	int     AlarmLineflag;
+	bool    IsCarInTailFlag;    //尾部区域占有标志
+	bool    getQueback_flag;	//txl,20160104
 	Uint16 uDetectRegionVehiSum; //区域车辆数
 	Uint16 uVehicleQueueLength; //排队长度
 	CPoint QueLine[2]; //排队长度线
-	Uint16	uReserved[20];			//预留
+	Uint16 uReserved[20];			//预留
 }LANEDETECTRESULT;
 
 
@@ -385,11 +391,12 @@ typedef struct args{
 extern  DETECTCFGSEG    pDetectCfgSeg;
 extern  ALGCFGS        pCfgs;
 extern  ALGPARAMS      pParams;
-int alg_mem_malloc(m_args *p);
-int alg_mem_free(m_args *arg_arg);
+
+int alg_mem_free(m_args *);
 #ifdef __cplusplus
 extern "C"{
 #endif
+m_args* alg_mem_malloc( );
 	bool CfgStructParse(FVDDETECTCFG *pDetectCfgSeg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//配置参数
 	bool FvdArithInit(FVDDETECTCFG *pDetectCfgSeg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//算法初始化
 	void FvdProcessBox(float* result, int nboxes, ALGCFGS *pCfgs, int laneNum);//对检测框进行处理

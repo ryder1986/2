@@ -513,7 +513,7 @@ public:
         if(in.good()==false)
         {
             std::cout<<"SVM model "<<modelfile<<" can not be loaded."<<std::endl;
-            exit(-1);
+           // exit(-1);
         }
         std::string buffer;
         std::getline(in,buffer); // first line
@@ -548,7 +548,7 @@ public:
         if(in.good()==false)
         {
             std::cout<<"SVM model "<<modelfile<<" can not be loaded."<<std::endl;
-            exit(-1);
+         //   exit(-1);
         }
 
         std::string buffer;

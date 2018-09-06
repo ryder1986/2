@@ -6,7 +6,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-
+#include "videoprocessor.h"
+//#include "c4processor.h"
+//#include "pvdprocessor.h"
 using namespace std;
 using namespace cv;
 #define LABLE_PROCESSOR_C4 "C4"
@@ -141,9 +143,7 @@ public:
     }
 
 };
-#include "videoprocessor.h"
-#include "c4processor.h"
-#include "pvdprocessor.h"
+
 class DetectRegion : public VdData<DetectRegionInputData>
 {
     int tmp;
@@ -156,25 +156,7 @@ public:
         CHANGE_PROCESSOR
     };
 
-    DetectRegion(DetectRegionInputData pkt):VdData(pkt),p(NULL)
-    {
-        lock.lock();
-        int valid=false;
-        //  p=new PvdMvncProcessor();
-        if(private_data.SelectedProcessor==LABLE_PROCESSOR_C4)
-        {    p=new PvdC4Processor(pkt.data());valid=true;}
-        if(private_data.SelectedProcessor==LABLE_PROCESSOR_DUMMY)
-        {   p=new DummyProcessor(private_data.ProcessorData);valid=true;}
-        if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
-        {   p=new PvdProcessor(private_data.ProcessorData);valid=true;}
-        if(!valid){
-            prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());
-            exit(0);
-        }
-        detect_rect=reshape_2_rect(private_data.ExpectedAreaVers);
-
-        lock.unlock();
-    }
+    DetectRegion(DetectRegionInputData pkt);
 
     JsonPacket work(Mat frame)
     {
@@ -200,47 +182,7 @@ public:
         private_data.ExpectedAreaVers=poly_vers;
     }
 
-    void modify(RequestPkt pkt)
-    {
-        lock.lock();
-        int op=pkt.Operation;
-        switch(op){
-        case OP::CHANGE_RECT:
-        {
-            AreaVersJsonData vs(pkt.Argument);
-            detect_rect=reshape_2_rect(vs.ExpectedAreaVers);
-            private_data.set_points(vs.ExpectedAreaVers);
-            break;
-        }
-        case OP::CHANGE_PROCESSOR:
-
-            if(p){
-                delete p;
-                p=NULL;
-            }
-            ProcessorDataJsonData sp(pkt.Argument);
-            string pro=sp.SelectedProcessor;
-            //string pro=    pkt.Argument.get("SelectedProcessor").to_string();
-            if(pro==LABLE_PROCESSOR_C4){
-                p=new PvdC4Processor(sp.ProcessorData);
-                private_data.set_processor(pro,sp.ProcessorData);
-            }
-            if(pro==LABLE_PROCESSOR_DUMMY){
-                p=new DummyProcessor(sp.ProcessorData);
-                private_data.set_processor(pro,sp.ProcessorData);
-            }
-
-            if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
-            {   p=new PvdProcessor(sp.ProcessorData);
-             private_data.set_processor(pro,sp.ProcessorData);
-            }
-
-            break;
-
-defalut:break;
-        }
-        lock.unlock();
-    }
+    void modify(RequestPkt pkt);
     bool process(JsonPacket data)
     {
 

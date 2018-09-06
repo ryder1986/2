@@ -204,6 +204,7 @@ public:
     int height;
 };
 //#define USE_CVCAP 1
+//#include <list>
 
 class VideoSource
 {
@@ -231,7 +232,7 @@ public:
         lock.lock();
         if(frame_list.size()>0){
             frame_list.front().copyTo(frame);
-            frame_list.pop_front();
+            frame_list.erase(frame_list.begin());
             ret=true;
         }else{
             ret=false;
@@ -265,9 +266,9 @@ public:
             //           prt(info,"%d",end_time-start_time);
 
 
-            frame_list.pop_front();
+            frame_list.erase(frame_list.begin());
             timestamp=cur_ms_list.front();
-            cur_ms_list.pop_front();
+            cur_ms_list.erase(cur_ms_list.begin());
             ret=true;
         }else{
             ret=false;
@@ -291,8 +292,8 @@ private:
 #endif
     //  PdVideoCapture vcap;
     //  VideoCapture vcap;
-    list <Mat> frame_list;
-    list <int> cur_ms_list;
+    vector <Mat> frame_list;
+    vector <int> cur_ms_list;
 
     int frame_wait_time;
     mutex lock;

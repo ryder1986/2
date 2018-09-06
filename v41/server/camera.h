@@ -134,6 +134,7 @@ public:
         for(JsonPacket p:private_data.DetectRegion){
             drs.push_back(new DetectRegion(p));
         }
+        prt(info,"start %s",private_data.Url.data());
         src=new VideoSource(private_data.Url);
         start();
     }

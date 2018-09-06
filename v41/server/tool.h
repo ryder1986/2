@@ -10,7 +10,7 @@
 #include <mutex>
 #include <thread>
 #include <bitset>
-#include <list>
+//#include <list>
 #include <iterator>
 
 //#include <ifaddrs.h>
@@ -86,7 +86,7 @@ inline void print_backstrace(void)
     strings = backtrace_symbols(buffer, nptrs);
     if (strings == NULL) {
         perror("backtrace_symbols");
-        exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
     }
     string str;
     char   *realname;

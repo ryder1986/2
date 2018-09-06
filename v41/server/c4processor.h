@@ -14,62 +14,63 @@
 #define config_file "res/config.json"
 
 
-class DummyProcessorOutputData:public JsonData{
+//class DummyProcessorOutputData:public JsonData{
 
-public:
-    vector<VdPoint> Points;
-    int Radii;
-    DummyProcessorOutputData()
-    {
-    }
-    DummyProcessorOutputData(JsonPacket str):JsonData(str)
-    {
-        decode();
-    }
-    DummyProcessorOutputData(vector<VdPoint> o,int r):Radii(r)
-    {
-        Points.assign(o.begin(),o.end());
-        encode();
-    }
-    void decode()
-    {
-        DECODE_JSONDATA_ARRAY_MEM(Points);
-        DECODE_INT_MEM(Radii);
-    }
-    void encode()
-    {
-        ENCODE_JSONDATA_ARRAY_MEM(Points);
-        ENCODE_INT_MEM(Radii);
-    }
-};
-class DummyProcessorInputData:public JsonData{
+//public:
+//    vector<VdPoint> Points;
+//    int Radii;
+//    DummyProcessorOutputData()
+//    {
+//    }
+//    DummyProcessorOutputData(JsonPacket str):JsonData(str)
+//    {
+//        decode();
+//    }
+//    DummyProcessorOutputData(vector<VdPoint> o,int r):Radii(r)
+//    {
+//        Points.assign(o.begin(),o.end());
+//        encode();
+//    }
+//    void decode()
+//    {
+//        DECODE_JSONDATA_ARRAY_MEM(Points);
+//        DECODE_INT_MEM(Radii);
+//    }
+//    void encode()
+//    {
+//        ENCODE_JSONDATA_ARRAY_MEM(Points);
+//        ENCODE_INT_MEM(Radii);
+//    }
+//};
+//class DummyProcessorInputData:public JsonData{
 
-public:
-    bool Horizon;
-    bool Vertical;
-    int Radii;
-    DummyProcessorInputData(bool h,bool v,int r):Horizon(h),Vertical(v),Radii(r)
-    {
-        encode();
-    }
-    DummyProcessorInputData(JsonPacket pkt):JsonData(pkt)
-    {
-        decode();
-    }
+//public:
+//    bool Horizon;
+//    bool Vertical;
+//    int Radii;
+//    DummyProcessorInputData(bool h,bool v,int r):Horizon(h),Vertical(v),Radii(r)
+//    {
+//        encode();
+//    }
+//    DummyProcessorInputData(JsonPacket pkt):JsonData(pkt)
+//    {
+//        decode();
+//    }
 
-    void decode()
-    {
-        DECODE_BOOL_MEM(Horizon);
-        DECODE_BOOL_MEM(Vertical);
-        DECODE_INT_MEM(Radii);
-    }
-    void encode()
-    {
-        ENCODE_BOOL_MEM(Horizon);
-        ENCODE_BOOL_MEM(Vertical);
-        ENCODE_INT_MEM(Radii);
-    }
-};
+//    void decode()
+//    {
+//        DECODE_BOOL_MEM(Horizon);
+//        DECODE_BOOL_MEM(Vertical);
+//        DECODE_INT_MEM(Radii);
+//    }
+//    void encode()
+//    {
+//        ENCODE_BOOL_MEM(Horizon);
+//        ENCODE_BOOL_MEM(Vertical);
+//        ENCODE_INT_MEM(Radii);
+//    }
+//};
+
 class DummyProcessor:public VideoProcessor
 {
     int loopx;
@@ -116,57 +117,59 @@ public:
 };
 
 
-class C4ProcessorOutputData:public JsonData{
+//class C4ProcessorOutputData:public JsonData{
 
-public:
-    vector <VdRect> Rects;
-    C4ProcessorOutputData()
-    {
-    }
-    C4ProcessorOutputData(JsonPacket str):JsonData(str)
-    {
-        decode();
-    }
-    C4ProcessorOutputData(vector <VdRect> o):Rects(o)
-    {
-        encode();
-    }
-    void decode()
-    {
-        DECODE_JSONDATA_ARRAY_MEM(Rects);
-    }
-    void encode()
-    {
-        ENCODE_JSONDATA_ARRAY_MEM(Rects);
-    }
-};
-class C4ProcessorInputData:public JsonData{
+//public:
+//    vector <VdRect> Rects;
+//    C4ProcessorOutputData()
+//    {
+//    }
+//    C4ProcessorOutputData(JsonPacket str):JsonData(str)
+//    {
+//        decode();
+//    }
+//    C4ProcessorOutputData(vector <VdRect> o):Rects(o)
+//    {
+//        encode();
+//    }
+//    void decode()
+//    {
+//        DECODE_JSONDATA_ARRAY_MEM(Rects);
+//    }
+//    void encode()
+//    {
+//        ENCODE_JSONDATA_ARRAY_MEM(Rects);
+//    }
+//};
+//class C4ProcessorInputData:public JsonData{
 
-public:
-    double ratio;
-    int scan_step;
-    C4ProcessorInputData()
-    {
-    }
-    C4ProcessorInputData(JsonPacket str):JsonData(str)
-    {
-        decode();
-    }
-    C4ProcessorInputData(int st,double ra):scan_step(st),ratio(ra)
-    {
-        encode();
-    }
-    void decode()
-    {
-        DECODE_INT_MEM(scan_step);
-        DECODE_DOUBLE_MEM(ratio);
-    }
-    void encode()
-    {
-        ENCODE_INT_MEM(scan_step);
-        ENCODE_DOUBLE_MEM(ratio);
-    }
-};
+//public:
+//    double ratio;
+//    int scan_step;
+//    C4ProcessorInputData()
+//    {
+//    }
+//    C4ProcessorInputData(JsonPacket str):JsonData(str)
+//    {
+//        decode();
+//    }
+//    C4ProcessorInputData(int st,double ra):scan_step(st),ratio(ra)
+//    {
+//        encode();
+//    }
+//    void decode()
+//    {
+//        DECODE_INT_MEM(scan_step);
+//        DECODE_DOUBLE_MEM(ratio);
+//    }
+//    void encode()
+//    {
+//        ENCODE_INT_MEM(scan_step);
+//        ENCODE_DOUBLE_MEM(ratio);
+//    }
+//};
+
+
 class PvdC4Processor : public VideoProcessor
 {
     typedef struct process_result{
