@@ -1,0 +1,30 @@
+{
+    "DeviceConfig":{
+        "DeviceName":"test pvd",
+        "CameraData":
+            [
+            {
+                "DetectRegion":
+                    [
+                    {
+                        "ExpectedAreaVers":[{"x":119,"y":332},{"x":324,"y":312},{"x":628,"y":462},{"x":225,"y":474}],
+                        "C4":{"ratio":"0.8","scan_step":2},
+                        "DUMMY":{"Horizon":true,"Vertical":true,"Radii":10},
+                        "ProcessorData":
+                        {
+                            "DetectLine":
+                            [
+                                {"x":119,"y":332},{"x":324,"y":312}
+                            ]
+                        },
+                        "SelectedProcessor":"Pvd",
+                        "Comment":"C4/Dummy/Pvd/Fvd"
+                    }
+                ],
+                "Url1":"rtsp://192.1623238.1.211:8554/live/test1",
+                "Url":"rtsp://192.168.1.95:554/av0_1"
+            }
+        ]
+
+    }
+}
