@@ -256,6 +256,12 @@ public:
     {
         decode();
     }
+    PvdProcessorInputData(VdPoint p1,VdPoint p2)
+    {
+        DetectLine.push_back(p1);
+        DetectLine.push_back(p2);
+        encode();
+    }
     void decode()
     {
         DECODE_JSONDATA_ARRAY_MEM(DetectLine);

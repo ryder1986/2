@@ -68,16 +68,15 @@ public:
         menu.addMenu(&menu_processor);
         processor_c4.setText(LABLE_PROCESSOR_C4);
         processor_dummy.setText(LABLE_PROCESSOR_DUMMY);
-        //        processor_c4.setCheckable(true);
-        //        processor_c4.setChecked(false);
-        //        processor_dummy.setCheckable(true);
-        //        processor_dummy.setChecked(false);
+        processor_pvd.setText(LABLE_PROCESSOR_PVD);
 
         connect(&processor_dummy,SIGNAL(triggered(bool)),this,SLOT(set_processor_dummy(bool)));
-                connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
+        connect(&processor_pvd,SIGNAL(triggered(bool)),this,SLOT(set_processor_pvd(bool)));
+        connect(&processor_c4,SIGNAL(triggered(bool)),this,SLOT(set_processor_c4(bool)));
         menu_processor.addAction(&processor_c4);
         menu_processor.addAction(&processor_dummy);
-        menu.addAction(&action_change_url);
+        menu_processor.addAction(&processor_pvd);
+         menu.addAction(&action_change_url);
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void set_title(QString t)
@@ -270,9 +269,9 @@ protected:
         }
         QPainter img_painter(&img);
         img_painter.setPen(blue_pen1());
-//        for(QRect r:rects){
-//            img_painter.drawRect(r);
-//        }
+        //        for(QRect r:rects){
+        //            img_painter.drawRect(r);
+        //        }
         //rects.clear();
         img_painter.setPen(red_pen1());
         cnt=0;
@@ -309,6 +308,8 @@ public slots:
         processor_c4.setChecked(false);
         processor_dummy.setCheckable(false);
         processor_dummy.setChecked(false);
+        processor_pvd.setCheckable(false);
+        processor_pvd.setChecked(false);
     }
     void right_click(QPoint pos)
     {
@@ -350,14 +351,48 @@ public slots:
         RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
         signal_camera(this,Camera::OP::CHANGE_URL,pkt.data());
     }
-    void set_processor(bool checked)
+    void set_processor(string processor_label)
     {
+
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
+
+        JsonPacket processor_pkt;
+        if(processor_label==LABLE_PROCESSOR_DUMMY){
+            DummyProcessorInputData did(true,false,17);
+            processor_pkt=did.data();
+
+        }
+
+        if(processor_label==LABLE_PROCESSOR_C4){
+            C4ProcessorInputData did(8,0.7);
+            processor_pkt=did.data();
+        }
+
+        if(processor_label==LABLE_PROCESSOR_PVD){
+            PvdProcessorInputData did(VdPoint(100,200),VdPoint(400,200));
+            processor_pkt=did.data();
+        }
+
+        ProcessorDataJsonData pd(processor_label,processor_pkt);
+
+        RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
+        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
+        signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
+//////////
+        DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
+        di.set_processor(processor_label,processor_pkt);
+        cfg.set_region(di.data(),selected_region_index);
 
     }
     void set_processor_dummy(bool checked)
     {
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
+        #if 1
+        set_processor(LABLE_PROCESSOR_DUMMY);
+#else
+
         prt(info,"checked %d",checked);
         DummyProcessorInputData did(true,false,17);
         ProcessorDataJsonData pd(LABLE_PROCESSOR_DUMMY,did.data());
@@ -368,11 +403,26 @@ public slots:
         di.set_processor(LABLE_PROCESSOR_DUMMY,did.data());
         cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
+        #endif
     }
+
+
+
+    void set_processor_pvd(bool checked)
+    {
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
+
+        set_processor(LABLE_PROCESSOR_PVD);
+    }
+
     void set_processor_c4(bool checked)
     {
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
+#if 1
+set_processor(LABLE_PROCESSOR_C4);
+#else
         prt(info,"checked %d",checked);
         C4ProcessorInputData did(8,0.7);
         ProcessorDataJsonData pd(LABLE_PROCESSOR_C4,did.data());
@@ -383,6 +433,8 @@ public slots:
         di.set_processor(LABLE_PROCESSOR_C4,did.data());
         cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
+#endif
+
     }
     void set_region(bool)
     {
@@ -461,18 +513,26 @@ public slots:
                 processor_c4.setChecked(false);
                 processor_dummy.setCheckable(true);
                 processor_dummy.setChecked(false);
+                processor_pvd.setCheckable(true);
+                processor_pvd.setChecked(false);
 
                 int index=selected_region_index;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
+
                 if(input.SelectedProcessor==LABLE_PROCESSOR_C4)
                     processor_c4.setChecked(true);
                 else
                     processor_c4.setChecked(false);
+
                 if(input.SelectedProcessor==LABLE_PROCESSOR_DUMMY)
                     processor_dummy.setChecked(true);
                 else
                     processor_dummy.setChecked(false);
 
+                if(input.SelectedProcessor==LABLE_PROCESSOR_PVD)
+                    processor_pvd.setChecked(true);
+                else
+                    processor_pvd.setChecked(false);
                 return;
             }
 
@@ -512,6 +572,8 @@ public slots:
             processor_c4.setChecked(false);
             processor_dummy.setCheckable(false);
             processor_dummy.setChecked(false);
+            processor_pvd.setCheckable(false);
+            processor_pvd.setChecked(false);
         }
         if(line_picked){
             emit cam_data_change(cfg,this);
@@ -599,6 +661,7 @@ private:
     QMenu menu_processor;
     QAction action_change_url;
     QAction processor_c4;
+    QAction processor_pvd;
     QAction processor_dummy;
     vector <QAction> actions;
     int screen_state;
