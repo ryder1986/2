@@ -13,22 +13,64 @@
 #include "videosource.h"
 #include "detectregion.h"
 #define POLY_VER_NUM 4
-/*
+
 class PlayerWidgetMenu:public QObject
 {
-    enum CMD{
-        ADD_REGION,
-        DEL_REGION
+    Q_OBJECT
+public:
+    enum CMD_LAYER1{
+        CAMERA_ADD_REGION=1,
+        CAMERA_DEL_REGION,
+        CAMERA_RESET_URL,
+        HIDE_MENU
+    };
+    enum CMD_LAYER2{
+        MOD_REGION_PROCESSOR_TO_C4=1,
+        MOD_REGION_PROCESSOR_TO_FVD,
+        MOD_REGION_PROCESSOR_TO_PVD,
+        MOD_REGION_PROCESSOR_TO_DUMMY
     };
     QWidget *wgt;
-    QAction processor_fvd;
-    QMenu menu_processor;
+    QAction add_region;
+    QAction del_region;
+    QAction reset_url;
+    QMenu menu;
+
+    QMenu mod_processor;
+    QAction choose_c4;
+    QAction choose_fvd;
+    QAction choose_pvd;
+    QAction choose_dummy;
 public:
-    PlayerWidgetMenu(QWidget *w):wgt(w),menu_processor(wgt)
+    PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor")
     {
-        processor_fvd.setText(LABLE_PROCESSOR_FVD);
-        connect(&processor_fvd,SIGNAL(triggered(bool)),this,SLOT(set_processor_fvd(bool)));
-        menu_processor.addAction(&processor_fvd);
+        menu.addMenu(&mod_processor);
+        add_region.setText("add_region");
+        del_region.setText("del_region");
+        reset_url.setText("reset_url");
+        menu.addAction(&add_region);
+        menu.addAction(&del_region);
+        menu.addAction(&reset_url);
+        connect(&add_region,SIGNAL(triggered(bool)),this,SLOT(camera_op_add_region(bool)));
+        connect(&del_region,SIGNAL(triggered(bool)),this,SLOT(camera_op_del_region(bool)));
+        connect(&reset_url,SIGNAL(triggered(bool)),this,SLOT(camera_op_reset_url(bool)));
+
+        choose_c4.setText("c4");
+        mod_processor.addAction(&choose_c4);
+        choose_fvd.setText("fvd");
+        mod_processor.addAction(&choose_fvd);
+        choose_pvd.setText("pvd");
+        mod_processor.addAction(&choose_pvd);
+        choose_dummy.setText("dummy");
+        mod_processor.addAction(&choose_dummy);
+
+        connect(&choose_c4,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_c4(bool)));
+        connect(&choose_fvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_fvd(bool)));
+        connect(&choose_pvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_pvd(bool)));
+        connect(&choose_dummy,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_dummy(bool)));
+
+
+        connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void reset()
     {
@@ -36,18 +78,74 @@ public:
     }
     void show(QPoint p)
     {
-        menu_processor.exec(p);
+        menu.exec(p);
     }
-    void set_processor_fvd(bool)
+    void set_checkable(bool ca)
+    {
+        choose_pvd.setCheckable(ca);
+        choose_fvd.setCheckable(ca);
+        choose_dummy.setCheckable(ca);
+        choose_c4.setCheckable(ca);
+//        if(ca){
+
+//        }else{
+
+//        }
+    }
+    void set_checked_processor(string label)
     {
 
+        choose_pvd.setChecked(false);
+        choose_fvd.setChecked(false);
+        choose_dummy.setChecked(false);
+        choose_c4.setChecked(false);
+
+        if(label==LABLE_PROCESSOR_C4) choose_c4.setChecked(true);
+        if(label==LABLE_PROCESSOR_DUMMY) choose_dummy.setChecked(true);
+        if(label==LABLE_PROCESSOR_FVD) choose_fvd.setChecked(true);
+        if(label==LABLE_PROCESSOR_PVD) choose_pvd.setChecked(true);
+      }
+public slots:
+    void hide_menu()
+    {
+        emit action_done(HIDE_MENU,0);
     }
+    void camera_op_add_region(bool)
+    {
+        emit action_done(CAMERA_ADD_REGION,0);
+    }
+    void camera_op_del_region(bool)
+    {
+        emit action_done(CAMERA_DEL_REGION,0);
+    }
+    void camera_op_reset_url(bool)
+    {
+        emit action_done(CAMERA_RESET_URL,0);
+    }
+    void processor_op_choose_c4(bool)
+    {
+        emit action_done(0,MOD_REGION_PROCESSOR_TO_C4);
+    }
+    void processor_op_choose_pvd(bool)
+    {
+        emit action_done(0,MOD_REGION_PROCESSOR_TO_PVD);
+    }
+    void processor_op_choose_fvd(bool)
+    {
+        emit action_done(0,MOD_REGION_PROCESSOR_TO_FVD);
+    }
+    void processor_op_choose_dummy(bool)
+    {
+        emit action_done(0,MOD_REGION_PROCESSOR_TO_DUMMY);
+    }
+signals:
+    void action_done(int level1,int level2);
 };
-*/
+
 class PlayerWidget : public QOpenGLWidget
 {
     Q_OBJECT
-   // PlayerWidgetMenu mn;
+    PlayerWidgetMenu mn;
 public:
     enum Operation{
         FULL_SCREEN,
@@ -65,8 +163,9 @@ public:
         delete src;
     }
 
-    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this),menu_processor("processor")//,mn(this)
+    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this),menu_processor("processor"),mn(this)
     {
+        connect(&mn,SIGNAL(action_done(int,int)),this,SLOT(handle_menu(int,int)));
         //rects.clear();
         loop=0;
         ver_picked=false;
@@ -107,7 +206,7 @@ public:
         menu_processor.addAction(&processor_c4);
         menu_processor.addAction(&processor_dummy);
         menu_processor.addAction(&processor_pvd);
-         menu.addAction(&action_change_url);
+        menu.addAction(&action_change_url);
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void set_title(QString t)
@@ -329,6 +428,43 @@ protected:
     }
 
 public slots:
+    void handle_menu(int level1 ,int level2)
+    {
+        if(level1){
+            switch(level1){
+            case PlayerWidgetMenu::CAMERA_ADD_REGION:
+                add_region(true);
+            case PlayerWidgetMenu::CAMERA_DEL_REGION:
+                del_region(true);
+            case PlayerWidgetMenu::CAMERA_RESET_URL:
+                set_url(true);
+            case PlayerWidgetMenu::HIDE_MENU:
+                hide_menu();
+                //add_region(true);
+                break;
+            default:break;
+            }
+            return;
+        }
+        if(level2){
+            switch(level2){
+            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_C4:
+                set_processor(LABLE_PROCESSOR_C4);
+                break;
+            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_FVD:
+                set_processor(LABLE_PROCESSOR_FVD);
+                break;
+            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_PVD:
+                set_processor(LABLE_PROCESSOR_PVD);
+                break;
+            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_DUMMY:
+                set_processor(LABLE_PROCESSOR_DUMMY);
+                break;
+            default:break;
+            }
+            return;
+        }
+    }
     void hide_menu()
     {
         //prt(info,"hide menu");
@@ -341,13 +477,15 @@ public slots:
         processor_dummy.setChecked(false);
         processor_pvd.setCheckable(false);
         processor_pvd.setChecked(false);
+
+        mn.set_checkable(false);
     }
     void right_click(QPoint pos)
     {
         //prt(info,"right click at %d %d",pos.x(),pos.y());
         //prt(info,"pos at %d %d",this->x(),this->y());
-       menu.exec(QCursor::pos());
-   //     mn.show(QCursor::pos());
+        //     menu.exec(QCursor::pos());
+        mn.show(QCursor::pos());
 
     }
     void add_region(bool)
@@ -411,7 +549,7 @@ public slots:
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
-//////////
+        //////////
         DetectRegionInputData di= cfg.DetectRegion[selected_region_index-1];
         di.set_processor(processor_label,processor_pkt);
         cfg.set_region(di.data(),selected_region_index);
@@ -421,7 +559,7 @@ public slots:
     {
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
-        #if 1
+#if 1
         set_processor(LABLE_PROCESSOR_DUMMY);
 #else
 
@@ -435,7 +573,7 @@ public slots:
         di.set_processor(LABLE_PROCESSOR_DUMMY,did.data());
         cfg.set_region(di.data(),selected_region_index);
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
-        #endif
+#endif
     }
 
 
@@ -453,7 +591,7 @@ public slots:
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
 #if 1
-set_processor(LABLE_PROCESSOR_C4);
+        set_processor(LABLE_PROCESSOR_C4);
 #else
         prt(info,"checked %d",checked);
         C4ProcessorInputData did(8,0.7);
@@ -548,6 +686,7 @@ set_processor(LABLE_PROCESSOR_C4);
                 processor_pvd.setCheckable(true);
                 processor_pvd.setChecked(false);
 
+                mn.set_checkable(true);
                 int index=selected_region_index;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
 
@@ -565,6 +704,12 @@ set_processor(LABLE_PROCESSOR_C4);
                     processor_pvd.setChecked(true);
                 else
                     processor_pvd.setChecked(false);
+
+
+                   //if(input.SelectedProcessor==LABLE_PROCESSOR_C4)
+                       mn.set_checked_processor(input.SelectedProcessor);
+
+
                 return;
             }
 
@@ -606,6 +751,8 @@ set_processor(LABLE_PROCESSOR_C4);
             processor_dummy.setChecked(false);
             processor_pvd.setCheckable(false);
             processor_pvd.setChecked(false);
+
+            mn.set_checkable(false);
         }
         if(line_picked){
             emit cam_data_change(cfg,this);
