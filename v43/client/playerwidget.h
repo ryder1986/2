@@ -13,10 +13,41 @@
 #include "videosource.h"
 #include "detectregion.h"
 #define POLY_VER_NUM 4
+/*
+class PlayerWidgetMenu:public QObject
+{
+    enum CMD{
+        ADD_REGION,
+        DEL_REGION
+    };
+    QWidget *wgt;
+    QAction processor_fvd;
+    QMenu menu_processor;
+public:
+    PlayerWidgetMenu(QWidget *w):wgt(w),menu_processor(wgt)
+    {
+        processor_fvd.setText(LABLE_PROCESSOR_FVD);
+        connect(&processor_fvd,SIGNAL(triggered(bool)),this,SLOT(set_processor_fvd(bool)));
+        menu_processor.addAction(&processor_fvd);
+    }
+    void reset()
+    {
+
+    }
+    void show(QPoint p)
+    {
+        menu_processor.exec(p);
+    }
+    void set_processor_fvd(bool)
+    {
+
+    }
+};
+*/
 class PlayerWidget : public QOpenGLWidget
 {
     Q_OBJECT
-
+   // PlayerWidgetMenu mn;
 public:
     enum Operation{
         FULL_SCREEN,
@@ -34,7 +65,7 @@ public:
         delete src;
     }
 
-    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this),menu_processor("processor")
+    PlayerWidget(CameraInputData data):action_add_region(this),action_del_region(this),menu(this),menu_processor("processor")//,mn(this)
     {
         //rects.clear();
         loop=0;
@@ -315,7 +346,8 @@ public slots:
     {
         //prt(info,"right click at %d %d",pos.x(),pos.y());
         //prt(info,"pos at %d %d",this->x(),this->y());
-        menu.exec(QCursor::pos());
+       menu.exec(QCursor::pos());
+   //     mn.show(QCursor::pos());
 
     }
     void add_region(bool)

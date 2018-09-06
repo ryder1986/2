@@ -14,6 +14,7 @@ using namespace cv;
 #define LABLE_PROCESSOR_C4 "C4"
 #define LABLE_PROCESSOR_DUMMY "Dummy"
 #define LABLE_PROCESSOR_PVD "Pvd"
+#define LABLE_PROCESSOR_FVD "Fvd"
 class DetectRegionInputData:public JsonData
 {
 
