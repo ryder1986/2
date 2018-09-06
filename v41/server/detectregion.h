@@ -231,7 +231,7 @@ public:
             }
 
             if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
-            {   p=new PvdProcessor(sp.ProcessorData);valid=true;
+            {   p=new PvdProcessor(sp.ProcessorData);
              private_data.set_processor(pro,sp.ProcessorData);
             }
 

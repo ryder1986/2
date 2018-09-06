@@ -1,7 +1,7 @@
 #include "c4common.h"
 
 // find the intersection of "this" and "rect2", and put into "result"
-bool CRect::Intersect(CRect& result,const CRect& rect2) const
+bool C4Rect::Intersect(C4Rect& result,const C4Rect& rect2) const
 {
     if( Empty() || rect2.Empty() ||
         left >= rect2.right || rect2.left >= right ||
@@ -18,7 +18,7 @@ bool CRect::Intersect(CRect& result,const CRect& rect2) const
 }
 
 // find the union of "this" and "rect2", and put into "result"
-bool CRect::Union(CRect& result,const CRect& rect2) const
+bool C4Rect::Union(C4Rect& result,const C4Rect& rect2) const
 {
     if(Empty())
     {
@@ -177,7 +177,7 @@ void DetectionScanner::ResizeImage()
 }
 
 // The function that does the real detection
-int DetectionScanner::FastScan(IntImage<double>& original,std::vector<CRect>& results,const int stepsize)
+int DetectionScanner::FastScan(IntImage<double>& original,std::vector<C4Rect>& results,const int stepsize)
 {
     if(original.nrow<height+5 || original.ncol<width+5) return 0;
     const int hd = height/xdiv;
@@ -190,7 +190,7 @@ int DetectionScanner::FastScan(IntImage<double>& original,std::vector<CRect>& re
     NodeDetector* node = cascade->nodes[1];
     double** pc = node->classifier.p;
     int oheight = original.nrow, owidth = original.ncol;
-    CRect rect;
+    C4Rect rect;
     while(image.nrow>=height && image.ncol>=width)
     {
         InitIntegralImages(stepsize);

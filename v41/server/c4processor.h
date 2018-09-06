@@ -283,28 +283,28 @@ private:
     // "result" -- rectangles before merging
     //          -- after this function it contains rectangles after NMS
     // "combine_min" -- threshold of how many detection are needed to survive
-    void PostProcess(std::vector<CRect>& result,const int combine_min)
+    void PostProcess(std::vector<C4Rect>& result,const int combine_min)
     {
-        std::vector<CRect> res1;
-        std::vector<CRect> resmax;
+        std::vector<C4Rect> res1;
+        std::vector<C4Rect> resmax;
         std::vector<int> res2;
         bool yet;
-        CRect rectInter;
+        C4Rect rectInter;
 
         for(unsigned int i=0,size_i=result.size(); i<size_i; i++)
         {
             yet = false;
-            CRect& result_i = result[i];
+            C4Rect& result_i = result[i];
             for(unsigned int j=0,size_r=res1.size(); j<size_r; j++)
             {
-                CRect& resmax_j = resmax[j];
+                C4Rect& resmax_j = resmax[j];
                 if(result_i.Intersect(rectInter,resmax_j))
                 {
                     if(  rectInter.Size()>0.6*result_i.Size()
                          && rectInter.Size()>0.6*resmax_j.Size()
                          )
                     {
-                        CRect& res1_j = res1[j];
+                        C4Rect& res1_j = res1[j];
                         resmax_j.Union(resmax_j,result_i);
                         res1_j.bottom += result_i.bottom;
                         res1_j.top += result_i.top;
@@ -326,7 +326,7 @@ private:
         for(unsigned int i=0,size=res1.size(); i<size; i++)
         {
             const int count = res2[i];
-            CRect& res1_i = res1[i];
+            C4Rect& res1_i = res1[i];
             res1_i.top /= count;
             res1_i.bottom /= count;
             res1_i.left /= count;
@@ -340,12 +340,12 @@ private:
     }
 
     // If one detection (after NMS) is inside another, remove the inside one
-    void RemoveCoveredRectangles(std::vector<CRect>& result)
+    void RemoveCoveredRectangles(std::vector<C4Rect>& result)
     {
         std::vector<bool> covered;
         covered.resize(result.size());
         std::fill(covered.begin(),covered.end(),false);
-        CRect inter;
+        C4Rect inter;
         for(unsigned int i=0; i<result.size(); i++)
         {
             for(unsigned int j=i+1; j<result.size(); j++)
@@ -358,7 +358,7 @@ private:
                     covered[j] = true;
             }
         }
-        std::vector<CRect> newresult;
+        std::vector<C4Rect> newresult;
         for(unsigned int i=0; i<result.size(); i++)
             if(covered[i]==false)
                 newresult.push_back(result[i]);
@@ -438,7 +438,7 @@ private:
         cv::Mat detect_region = src_image;
 
         original.Load( detect_region );
-        std::vector<CRect> results;
+        std::vector<C4Rect> results;
         p_scanner->FastScan(original, results, step_size);
 
         if(rect_organization)

@@ -465,7 +465,7 @@ void IntImage<T>::Sobel(IntImage<REAL>& result,const bool useSqrt,const bool nor
 /*****************************************/
 
 // my replacement for the CRect class in MS MFC -- only provides a limited number of functions
-class CRect
+class C4Rect
 {
 public:
     double left;
@@ -473,11 +473,11 @@ public:
     double right;
     double bottom;
 public:
-    CRect()
+    C4Rect()
     {
         Clear();
     }
-    ~CRect()
+    ~C4Rect()
     {
         Clear();
     }
@@ -498,8 +498,8 @@ public:
             return (bottom-top)*(right-left);
     }
     // Intersect and Union of two rectangles, both function should be able to run when &result==this
-    bool Intersect(CRect& result,const CRect& rect2) const;
-    bool Union(CRect& result,const CRect& rect2) const;
+    bool Intersect(C4Rect& result,const C4Rect& rect2) const;
+    bool Union(C4Rect& result,const C4Rect& rect2) const;
 };
 
 class NodeDetector
@@ -709,8 +709,8 @@ private:
     void InitIntegralImages(const int stepsize);
     void ResizeImage();
 public:
-    int Scan(IntImage<double>& original,std::vector<CRect>& results,const int stepsize,const int round,std::ofstream* out,const int upper_bound);
-    int FastScan(IntImage<double>& original,std::vector<CRect>& results,const int stepsize);
+    int Scan(IntImage<double>& original,std::vector<C4Rect>& results,const int stepsize,const int round,std::ofstream* out,const int upper_bound);
+    int FastScan(IntImage<double>& original,std::vector<C4Rect>& results,const int stepsize);
     int FeatureLength() const
     {
         return (xdiv-1)*(ydiv-1)*baseflength;
