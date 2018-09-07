@@ -2,7 +2,7 @@
 
 #include "c4processor.h"
 #include "pvdprocessor.h"
-
+#include "fvdprocessor.h"
 DetectRegion::DetectRegion(DetectRegionInputData pkt):VdData(pkt),p(NULL)
 {
     lock.lock();
@@ -14,6 +14,8 @@ DetectRegion::DetectRegion(DetectRegionInputData pkt):VdData(pkt),p(NULL)
     {   p=new DummyProcessor(private_data.ProcessorData);valid=true;}
     if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
     {   p=new PvdProcessor(private_data.ProcessorData);valid=true;}
+    if(private_data.SelectedProcessor==LABLE_PROCESSOR_FVD)
+    {   p=new FvdProcessor(private_data.ProcessorData);valid=true;}
     if(!valid){
         prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());
         //  exit(0);
@@ -53,10 +55,14 @@ void DetectRegion::modify(RequestPkt pkt)
             private_data.set_processor(pro,sp.ProcessorData);
         }
 
-     //   if(private_data.SelectedProcessor==LABLE_PROCESSOR_PVD)
-            if(pro==LABLE_PROCESSOR_PVD)
+        if(pro==LABLE_PROCESSOR_PVD)
         {
             p=new PvdProcessor(sp.ProcessorData);
+            private_data.set_processor(pro,sp.ProcessorData);
+        }
+        if(pro==LABLE_PROCESSOR_FVD)
+        {
+            p=new FvdProcessor(sp.ProcessorData);
             private_data.set_processor(pro,sp.ProcessorData);
         }
 

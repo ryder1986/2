@@ -105,68 +105,63 @@ typedef struct{
 ///////////////////////////////////////////////////////////////////////////////////////////检测参数
 typedef struct
 {
-	Uint16				LaneNo; //车道号
+	Uint16			LaneNo; //车道号
 	//detect region
-	CPoint              FarArea[4];//远线圈
-	CPoint              NearArea[4];//流量线圈
-	CPoint              LaneArea[4];//车道线圈
+	CPoint          FarArea[4];//远线圈
+	CPoint          NearArea[4];//流量线圈
+	CPoint          LaneArea[4];//车道线圈
 
 }LANECFG;
 
 typedef struct
 {
-	Uint16				uLaneTotalNum;//车道总数
-	LANECFG 			EachLaneCfg[MAX_LANE];
-	CPoint			   BasicCoil[4];//标定点	
-	CPoint             BaseLine[2];//基准线上的点
-	float base_length;//基准线长
-	float near_point_length;//进距点
-	float far_point_length;//远距点
+	Uint16			uLaneTotalNum;//车道总数
+	LANECFG 		EachLaneCfg[MAX_LANE];
+	CPoint			BasicCoil[4];//标定点	
+	CPoint          BaseLine[2];//基准线上的点
+	float           base_length;//基准线长
+	float           near_point_length;//进距点
+	float           far_point_length;//远距点
 }FVDDETECTCFG;
 
 typedef struct
 {
-	CPoint			   ptDetectLine[2];//检测线
-	CRect1              detectROI;//检测区域
+	CPoint		    ptDetectLine[2];//检测线
+	CRect1          detectROI;//检测区域
 }PVDDETECTCFG;
 
 typedef struct
 {
-	FVDDETECTCFG FvdDetectCfg;
-	PVDDETECTCFG PvdDetectCfg;
+	FVDDETECTCFG    FvdDetectCfg;
+	PVDDETECTCFG    PvdDetectCfg;
 
 }DETECTCFGSEG;
 
 //////////////////////////////////////////////////检测结果输出
-typedef struct
-{
-
-}LaneDetectInfo;
-
 
 typedef struct
 {
-	Uint16			LaneNo;	           //车道ID
-	BOOL		bInfoValid;				//检测器结果有效
-	Uint16	    bVehicleSta;		    //车入车出状态
-	Uint32      uVehicleFlow;          //车流量
-	Uint16      uRegionVehicleNumber;  //区域车辆数
-	Uint16	    calarflag;	           //车占有线圈状态
-	Uint16      uVehicleDirection;     //车辆运行方向
-	Uint16	    uVehicleSpeed;		   //车速
-	Uint16	    uVehicleType;		   //车类型
-	Uint16      uVehicleQueueLength;   //排队长度
-	CPoint      QueLine[2];            //排队长度线
-	Uint16      uLastVehicleLength;    //最后一辆车的位置
-	CPoint	    LastVehiclePos[2];     //最后一辆车的位置
-	Uint16	    uVehicleHeadtime;	  //车头时距
-	bool        IsCarInTailFlag;      //尾部区域占有标志
-	Uint16	    uReserved[20];			//预留		
+	Uint16		   LaneNo;	           //车道ID
+	BOOL		   bInfoValid;				//检测器结果有效
+	Uint16	       bVehicleSta;		    //车入车出状态
+	Uint32         uVehicleFlow;          //车流量
+	Uint16         uRegionVehicleNumber;  //区域车辆数
+	Uint16	       calarflag;	           //车占有线圈状态
+	Uint16         uVehicleDirection;     //车辆运行方向
+	Uint16	       uVehicleSpeed;		   //车速
+	Uint16	       uVehicleType;		   //车类型
+	Uint16         uVehicleQueueLength;   //排队长度
+	CPoint         QueLine[2];            //排队长度线
+	Uint16         uLastVehicleLength;    //最后一辆车的位置
+	CPoint	       LastVehiclePos[2];     //最后一辆车的位置
+	Uint16	       uVehicleHeadtime;	  //车头时距
+	bool           IsCarInTailFlag;      //尾部区域占有标志
+	Uint16	       uReserved[20];			//预留		
 }LANERESULTDATA;
 
 typedef struct
 {
-	Uint16 		     LaneSum;                      
+	Uint16 		    LaneSum;                      
 	bool            VideoException;                     //能见度状态
 	bool            Visbility;                          //视频状态
 	CDetBox         udetPersonBox[100];               //行人检测框
@@ -178,39 +173,39 @@ typedef struct
 
 typedef struct
 {
-    Uint16 uPersonNum[MAX_DIRECTION_NUM];      //分方向的行人总数
-	CDetBox udetPersonBox[100];                  //行人检测框
-	Uint16 udetPersonNum;                      //检测框数
+    Uint16          uPersonNum[MAX_DIRECTION_NUM];      //分方向的行人总数
+	CDetBox         udetPersonBox[100];                  //行人检测框
+	Uint16          udetPersonNum;                      //检测框数
 } PVDRESULTINFO;
 
 typedef struct
 {
-	FVDRESULTINFO FvdResultInfo;
-	PVDRESULTINFO PvdResultInfo;
+	FVDRESULTINFO   FvdResultInfo;
+	PVDRESULTINFO   PvdResultInfo;
 }RESULTMSG;
 ////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct{
-	Uint16	    LaneNo;                //车道号
-	Uint32      uVehicleFlow;          //车流量
-	Uint16      uRegionVehicleNumber;  //区域车辆数
-	Uint16	    bFlowRegionState;	   //车入车出状态
-	Uint16      uVehicleDirection;     //车辆运行方向
-	Uint16	    uVehicleSpeed;		   //车速
-	Uint16	    uVehicleType;		   //车类型
-
-    Uint16      uVehicleQueueLength;   //排队长度
-    CPoint      QueLine[2];            //排队长度线
-	Uint16	    uVehicleHeadtime;	   //车头时距
-	Uint16      uLastVehicleLength;    //最后一辆车的位置
-	CPoint	    LastVehiclePos[2];
-	bool        IsCarInTailFlag;      //尾部区域占有标志
-	Uint16	    uReserved[20];			  //预留
+	Uint16	       LaneNo;                //车道号
+	Uint32         uVehicleFlow;          //车流量
+	Uint16         uRegionVehicleNumber;  //区域车辆数
+	Uint16	       bFlowRegionState;	   //车入车出状态
+	Uint16         uVehicleDirection;     //车辆运行方向
+	Uint16	       uVehicleSpeed;		   //车速
+	Uint16	       uVehicleType;		   //车类型
+    Uint16         uVehicleQueueLength;   //排队长度
+    CPoint         QueLine[2];            //排队长度线
+	Uint16	       uVehicleHeadtime;	   //车头时距
+	Uint16         uLastVehicleLength;    //最后一辆车的位置
+	CPoint	       LastVehiclePos[2];
+	bool           IsCarInTailFlag;      //尾部区域占有标志
+	Uint16	       uReserved[20];			  //预留
 }LANEDETECTRESULT;
 
 
 typedef struct{
 	LANEDETECTRESULT uEachLaneData[MAX_LANE];//每个车道数据
+	Uint16           uLaneNum;               //车道数量
 	bool             VideoException;                //视频状态
 	bool             Visbility;               //能见度
 	Uint16           uActualDetectLength[MAX_LANE];//流量区域的实际长度
@@ -221,14 +216,14 @@ typedef struct{
 }FVDOUTBUF;
 
 typedef struct{
-	Uint32 uPersonSum[MAX_DIRECTION_NUM];//各个方向的行人数
-	CDetBox detPerson[100];//检测行人框
-	Uint32 uPersonTotalSum;//当前帧人总数
+	Uint32       uPersonSum[MAX_DIRECTION_NUM];//各个方向的行人数
+	CDetBox      detPerson[100];//检测行人框
+	Uint32       uPersonTotalSum;//当前帧人总数
 }PVDOUTBUF;
 
 typedef struct{
-	PVDOUTBUF PVDoutbuf;
-	FVDOUTBUF FVDoutbuf;
+	PVDOUTBUF    PVDoutbuf;
+	FVDOUTBUF    FVDoutbuf;
 }OUTBUF;
 
 typedef struct cSpeedDetectStruct
@@ -250,7 +245,7 @@ typedef struct cSpeedDetectStruct
 
 struct	cSpeedStructIndex
 {
-	Uint16	SpeedId;
+	Uint16	   SpeedId;
 	struct cSpeedDetectStruct	*ExtStorageAddr;
 };
 
@@ -259,8 +254,8 @@ typedef	struct	tagCameraParamaters
 	struct	cSpeedStructIndex		dSpeedIdIndex[8];							                                    	  
 
 	//extended by david 20130422:
-	Uint8		 	*CameraCfgEntry;
-	Uint8		 	*ImageStorageEntry;
+	Uint8		*CameraCfgEntry;
+	Uint8		*ImageStorageEntry;
 }CAMERA_PARAMETERS;
 
 typedef struct tagCfgs
@@ -316,9 +311,6 @@ typedef struct tagCfgs
 	struct timeval time_start;
 	struct timeval time_end;
 
-	bool    bNight;
-	Uint16  bAuto;
-
 	Uint32 	gThisFrameTime;
 
 
@@ -368,10 +360,6 @@ typedef struct args{
 
 }m_args;
 
-extern  DETECTCFGSEG    pDetectCfg;
-extern  ALGCFGS        pCfgs;
-extern  ALGPARAMS      pParams;
-
 
 #ifdef __cplusplus
 extern "C"{
@@ -399,6 +387,10 @@ int alg_mem_free(m_args *arg_arg);
 	Uint16 PvdArithDetect(IplImage* img, ALGCFGS* pCfgs,float* result);//行人检测
 	void PvdProcessBox(float* result, int nboxes, ALGCFGS* pCfgs);//对检测框进行处理
 	Uint16 PvdArithProc(IplImage* img, ALGCFGS *pCfgs, PVDOUTBUF* outbuf);
+
+	bool ArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine, FVDDETECTCFG *pDownDetectCfg, ALGPARAMS *pParams);//算法初始化
+	bool RestParams(ALGCFGS *pCfgs, CPoint* ptDetLine, FVDDETECTCFG *pDownDetectCfg, ALGPARAMS *pParams);//重置参数
+	Uint16 ArithProc(IplImage* imgFVD, IplImage* imgPVD, OUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//算法执行
 
 #ifdef __cplusplus
 }

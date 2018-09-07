@@ -524,7 +524,34 @@ public slots:
     }
     FvdProcessorInputData get_fvd_test_data()
     {
-        FvdProcessorInputData d;
+        vector <VdPoint> BasicCoil;// standard rect
+        BasicCoil.push_back(VdPoint(0,0));
+        BasicCoil.push_back(VdPoint(400,0));
+        BasicCoil.push_back(VdPoint(400,400));
+        BasicCoil.push_back(VdPoint(0,400));
+        BaseLineJsonData BaseLine(VdPoint(0,0),VdPoint(50,50),5);// a line can adjust car real length
+        int NearPointDistance=20;//distance to camera
+        int FarPointDistance=100;
+        vector <LaneDataJsonData> LineData; // lane info
+        vector <VdPoint> FarArea1; // far rect
+        FarArea1.push_back(VdPoint(0,0));
+        FarArea1.push_back(VdPoint(100,0));
+        FarArea1.push_back(VdPoint(100,100));
+        FarArea1.push_back(VdPoint(0,100));
+        vector <VdPoint> NearArea1; // near rect
+        NearArea1.push_back(VdPoint(0,0+100));
+        NearArea1.push_back(VdPoint(100,0+100));
+        NearArea1.push_back(VdPoint(100,200));
+        NearArea1.push_back(VdPoint(0,0+200));
+        vector <VdPoint> LaneArea1; // whole rect
+        LaneArea1.push_back(VdPoint(0,0));
+        LaneArea1.push_back(VdPoint(100,0));
+        LaneArea1.push_back(VdPoint(100,400));
+        LaneArea1.push_back(VdPoint(0,400));
+        int lane_no=18;
+        LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
+        LineData.push_back(d1);
+        FvdProcessorInputData d(BasicCoil,BaseLine,NearPointDistance,FarPointDistance,LineData);
         return d;
     }
     void set_processor(string processor_label)
@@ -551,8 +578,8 @@ public slots:
         }
 
         if(processor_label==LABLE_PROCESSOR_FVD){
-        processor_pkt=   get_fvd_test_data().data();
-          //  processor_pkt=did.data();
+            processor_pkt=   get_fvd_test_data().data();
+            //  processor_pkt=did.data();
         }
 
         ProcessorDataJsonData pd(processor_label,processor_pkt);

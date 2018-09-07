@@ -38,6 +38,6 @@ LIBS+=-lopencv_core -lopencv_highgui -lopencv_objdetect \
 -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video -lopencv_videostab  -lpthread# -lopencv_videoio
 LIBS+=-lavformat -lavcodec  -lavutil -lswresample
 
-
-LIBS += -L$$PWD/ -ldarknet
-PRE_TARGETDEPS += $$PWD/libdarknet.so
+LIBS+=-L/lib -ldarknet
+#LIBS += -L$$PWD/ -ldarknet
+#PRE_TARGETDEPS += $$PWD/libdarknet.so

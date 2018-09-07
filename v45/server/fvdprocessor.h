@@ -286,7 +286,7 @@ public:
         IplImage img = IplImage(img_src);
         FvdArithProc(&img, &p_cfg->p_outbuf->FVDoutbuf, p_cfg->pCfgs, p_cfg->pParams);
         vector <ObjectRect> FvdDetectedObjects;
-        for( i = 0; i < p_cfg->p_outbuf->PVDoutbuf.uPersonTotalSum; i++)
+        for( i = 0; i <p_cfg->p_outbuf->FVDoutbuf.uObjNum; i++)
         {
             x = p_cfg->p_outbuf->FVDoutbuf.detObj[i].box.x;
             y = p_cfg->p_outbuf->FVDoutbuf.detObj[i].box.y;
@@ -304,8 +304,9 @@ public:
         int VideoState = p_cfg->p_outbuf->FVDoutbuf.VideoException;
 
         vector <LaneOutputJsonData> LaneOutputData;
-        for( i = 0; i < p_cfg->p_outbuf->PVDoutbuf.uPersonTotalSum; i++)
-        {
+         //   for( i = 0; i < 1; i++)
+        for( i = 0;  i <p_cfg->p_outbuf->FVDoutbuf.uLaneNum; i++)
+         {
             int laneNo, queLen, vehiNum, flow, speed;
             VdPoint pt1, pt2;
             laneNo = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].LaneNo;
