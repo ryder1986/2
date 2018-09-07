@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "videosource.h"
 #include "detectregion.h"
+#include "videoprocessor.h"
 #define POLY_VER_NUM 4
 
 class PlayerWidgetMenu:public QObject
@@ -86,11 +87,11 @@ public:
         choose_fvd.setCheckable(ca);
         choose_dummy.setCheckable(ca);
         choose_c4.setCheckable(ca);
-//        if(ca){
+        //        if(ca){
 
-//        }else{
+        //        }else{
 
-//        }
+        //        }
     }
     void set_checked_processor(string label)
     {
@@ -104,7 +105,7 @@ public:
         if(label==LABLE_PROCESSOR_DUMMY) choose_dummy.setChecked(true);
         if(label==LABLE_PROCESSOR_FVD) choose_fvd.setChecked(true);
         if(label==LABLE_PROCESSOR_PVD) choose_pvd.setChecked(true);
-      }
+    }
 public slots:
     void hide_menu()
     {
@@ -521,6 +522,11 @@ public slots:
         RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
         signal_camera(this,Camera::OP::CHANGE_URL,pkt.data());
     }
+    FvdProcessorInputData get_fvd_test_data()
+    {
+        FvdProcessorInputData d;
+        return d;
+    }
     void set_processor(string processor_label)
     {
 
@@ -542,6 +548,11 @@ public slots:
         if(processor_label==LABLE_PROCESSOR_PVD){
             PvdProcessorInputData did(VdPoint(100,200),VdPoint(400,200));
             processor_pkt=did.data();
+        }
+
+        if(processor_label==LABLE_PROCESSOR_FVD){
+        processor_pkt=   get_fvd_test_data().data();
+          //  processor_pkt=did.data();
         }
 
         ProcessorDataJsonData pd(processor_label,processor_pkt);
@@ -706,8 +717,8 @@ public slots:
                     processor_pvd.setChecked(false);
 
 
-                   //if(input.SelectedProcessor==LABLE_PROCESSOR_C4)
-                       mn.set_checked_processor(input.SelectedProcessor);
+                //if(input.SelectedProcessor==LABLE_PROCESSOR_C4)
+                mn.set_checked_processor(input.SelectedProcessor);
 
 
                 return;

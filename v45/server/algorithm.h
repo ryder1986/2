@@ -1,12 +1,6 @@
 ﻿#ifndef __ALG_H__
 #define __ALG_H__
-#ifdef __cplusplus
-extern "C"{
-#endif
 #include "darknet.h"
-#ifdef __cplusplus
-}
-#endif
 #include <stdbool.h>
 #include<sys/time.h>
 #ifndef __cplusplus
@@ -64,7 +58,7 @@ typedef struct{
 	int y;
 	int width;
 	int height;
-}CRect;
+}CRect1;
 
 typedef struct{
 	int x;
@@ -72,23 +66,24 @@ typedef struct{
 }CPoint;
 
 typedef struct{
-	CRect box;
+	CRect1 box;
 	int class_id;
 	int prob;
 	char names[50];
 }CDetBox;
 
+
 typedef struct{
 	int class_id;
 	float prob[100];
-	CRect box[100];
+	CRect1 box[100];
 	char names[50];
 	int classes_num;
 	int lane_id[100];//框所在的车道
 }CDetClass;
 
 typedef struct{
-	CRect box;	
+	CRect1 box;	
 	float prob;
 	int class_id;
 	char names[50];
@@ -107,18 +102,14 @@ typedef struct{
 	bool cal_flow;
 }CTarget;
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////检测参数
 typedef struct
 {
-	Uint16				uLaneID; //车道号
+	Uint16				LaneNo; //车道号
 	//detect region
-	CPoint				ptFourCorner[4];//四个点的坐标
-	CPoint				ptCornerQ[2];//排队前置线
-	CPoint				ptCornerQA[2];//警戒线
-	CPoint				ptCornerLB[2];//车道线左边两点
-	CPoint				ptCornerRB[2];//车道线右边两点
-	Uint16				uDetectDerection;//方向
+	CPoint              FarArea[4];//远线圈
+	CPoint              NearArea[4];//流量线圈
+	CPoint              LaneArea[4];//车道线圈
 
 }LANECFG;
 
@@ -126,16 +117,17 @@ typedef struct
 {
 	Uint16				uLaneTotalNum;//车道总数
 	LANECFG 			EachLaneCfg[MAX_LANE];
-	CPoint			   ptimage[4];//标定点	
-	CPoint             ptBaseLine[2];//基准线上的点
+	CPoint			   BasicCoil[4];//标定点	
+	CPoint             BaseLine[2];//基准线上的点
 	float base_length;//基准线长
-	float near_point_length;//最近点距离 
+	float near_point_length;//进距点
+	float far_point_length;//远距点
 }FVDDETECTCFG;
 
 typedef struct
 {
 	CPoint			   ptDetectLine[2];//检测线
-	CRect              detectROI;//检测区域
+	CRect1              detectROI;//检测区域
 }PVDDETECTCFG;
 
 typedef struct
@@ -148,52 +140,46 @@ typedef struct
 //////////////////////////////////////////////////检测结果输出
 typedef struct
 {
-	BOOL		bInfoValid;				//检测器结果有效
-	Uint16	bVehicleSta;			    //车入车出状态
-	CPoint		ptVehicleCoordinate;	//车辆位置
-	Uint16	uVehicleSpeed;			    //车速
-	Uint16	uVehicleLength;			   //车长
-	Uint16	uVehicleType;			   //车类型
-	Uint16  uVehicleDirection;         //车辆运行方向
-	Uint16	uVehicleHeight;			   //车高
-	Uint16	uVehicleHeadtime;		  //车头时距
-	Uint16 uVehicleQueueLength;      //排队长度
-	unsigned int calarflag;
-	unsigned int car_in;
-	unsigned int car_out;
-	CPoint	LineUp[2];
-	int AlarmLineflag;
-	bool     IsCarInTailFlag;    //尾部区域占有标志
-	bool     getQueback_flag;	//txl,20160104
-	Uint16 uDetectRegionVehiSum; //区域车辆数
-	Uint16 uVehicleQueueLength1; //排队长度
-	CPoint QueLine[2];   //排队长度线
-	Uint16	uReserved[20];			//预留
+
 }LaneDetectInfo;
+
 
 typedef struct
 {
-	Uint16			uLaneID;	    //车道ID
-	LaneDetectInfo	LaneDetectResult;//各车道检测结果
-	Uint16			uReserved[95];			//预留 
+	Uint16			LaneNo;	           //车道ID
+	BOOL		bInfoValid;				//检测器结果有效
+	Uint16	    bVehicleSta;		    //车入车出状态
+	Uint32      uVehicleFlow;          //车流量
+	Uint16      uRegionVehicleNumber;  //区域车辆数
+	Uint16	    calarflag;	           //车占有线圈状态
+	Uint16      uVehicleDirection;     //车辆运行方向
+	Uint16	    uVehicleSpeed;		   //车速
+	Uint16	    uVehicleType;		   //车类型
+	Uint16      uVehicleQueueLength;   //排队长度
+	CPoint      QueLine[2];            //排队长度线
+	Uint16      uLastVehicleLength;    //最后一辆车的位置
+	CPoint	    LastVehiclePos[2];     //最后一辆车的位置
+	Uint16	    uVehicleHeadtime;	  //车头时距
+	bool        IsCarInTailFlag;      //尾部区域占有标志
+	Uint16	    uReserved[20];			//预留		
 }LANERESULTDATA;
 
 typedef struct
 {
-	Uint16 		LaneSum;                      //
-	bool fuzzyflag;                           //能见度状态
-	bool visibility;                          //视频状态
-	CRect udetPersonBox[100];                  //行人检测框
-	Uint16 udetPersonNum;                      //检测框数
-	CRect udetVehicleBox[100];                 //车检测框
-	Uint16 udetVehicleNum;                    //检测框数
-	LANERESULTDATA			uEachLaneData[MAX_LANE]; //包含8个车道所有的检测信息
+	Uint16 		     LaneSum;                      
+	bool            VideoException;                     //能见度状态
+	bool            Visbility;                          //视频状态
+	CDetBox         udetPersonBox[100];               //行人检测框
+	Uint16          udetPersonNum;                    //检测框数
+	CDetBox         udetVehicleBox[100];              //车检测框
+	Uint16          udetVehicleNum;                   //检测框数
+	LANERESULTDATA	uEachLaneData[MAX_LANE]; //包含8个车道所有的检测信息
 } FVDRESULTINFO;
 
 typedef struct
 {
     Uint16 uPersonNum[MAX_DIRECTION_NUM];      //分方向的行人总数
-	CRect udetPersonBox[100];                  //行人检测框
+	CDetBox udetPersonBox[100];                  //行人检测框
 	Uint16 udetPersonNum;                      //检测框数
 } PVDRESULTINFO;
 
@@ -205,39 +191,33 @@ typedef struct
 ////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct{
-	Uint16	LaneID;//车道号
-	bool	bInfoValid;				//检测器结果有效
-	Uint16	bVehicleSta;			//车入车出状态
-	Uint16	uVehicleSpeed;			//车速
-	Uint16	uVehicleLength;			//车长
-	Uint16	uVehicleType;			//车类型
-	Uint16  uVehicleDirection;       //车辆运行方向
-	//Uint16	uVehicleHeight;			//车高
-	Uint16	uVehicleHeadtime;		//车头时距
-	Uint16  uLastVehicleLength;    //最后一辆车的位置
-	unsigned int calarflag;
-	unsigned int car_in;
-	unsigned int car_out;
-	CPoint	LastVehiclePos[2];
-	int     AlarmLineflag;
-	bool    IsCarInTailFlag;    //尾部区域占有标志
-	bool    getQueback_flag;	//txl,20160104
-	Uint16 uDetectRegionVehiSum; //区域车辆数
-	Uint16 uVehicleQueueLength; //排队长度
-	CPoint QueLine[2]; //排队长度线
-	Uint16 uReserved[20];			//预留
+	Uint16	    LaneNo;                //车道号
+	Uint32      uVehicleFlow;          //车流量
+	Uint16      uRegionVehicleNumber;  //区域车辆数
+	Uint16	    bFlowRegionState;	   //车入车出状态
+	Uint16      uVehicleDirection;     //车辆运行方向
+	Uint16	    uVehicleSpeed;		   //车速
+	Uint16	    uVehicleType;		   //车类型
+
+    Uint16      uVehicleQueueLength;   //排队长度
+    CPoint      QueLine[2];            //排队长度线
+	Uint16	    uVehicleHeadtime;	   //车头时距
+	Uint16      uLastVehicleLength;    //最后一辆车的位置
+	CPoint	    LastVehiclePos[2];
+	bool        IsCarInTailFlag;      //尾部区域占有标志
+	Uint16	    uReserved[20];			  //预留
 }LANEDETECTRESULT;
 
 
 typedef struct{
 	LANEDETECTRESULT uEachLaneData[MAX_LANE];//每个车道数据
-	bool fuzzyflag;                //视频状态
-	bool visibility;               //能见度
-	Uint16 uActualDetectLength[MAX_LANE];//流量区域的实际长度
-	Uint16 uActualTailLength[MAX_LANE];  //占有区域的实际长度
-	Uint16 uDegreePoint[20][2];   //刻度点
-	CDetBox detObj[100];//	检测框
-	Uint16 uboxes;//检测框个数
+	bool             VideoException;                //视频状态
+	bool             Visbility;               //能见度
+	Uint16           uActualDetectLength[MAX_LANE];//流量区域的实际长度
+	Uint16           uActualTailLength[MAX_LANE];  //占有区域的实际长度
+	Uint16           uDegreePoint[20][2];   //刻度点
+	CDetBox          detObj[100];//	检测框
+	Uint16           uObjNum;//检测框个数
 }FVDOUTBUF;
 
 typedef struct{
@@ -287,7 +267,7 @@ typedef struct tagCfgs
 {
 	CAMERA_PARAMETERS		CameraLocalPara;
 	RESULTMSG				ResultMsg;			
-	DETECTCFGSEG	            DownDetectCfg;		
+	DETECTCFGSEG	        DownDetectCfg;		
 
 	//yolo检测参数
 	network* net;
@@ -297,7 +277,7 @@ typedef struct tagCfgs
 	//mobileNet检测参数
 
 	//行人检测参数
-	CRect  detectROI;//行人检测区域
+	CRect1  detectROI;//行人检测区域
 	CPoint detLine[2];//检测线
 	int detLeft;//根据检测线计算出来的跟踪区域
 	int detRight;
@@ -324,7 +304,7 @@ typedef struct tagCfgs
 	Uint16 jgtime[MAX_LANE];
 	Uint16 Headposition[MAX_LANE];
 	Uint16 Tailposition[MAX_LANE];
-	CRect detBoxes[MAX_LANE][20];
+	CRect1 detBoxes[MAX_LANE][20];
 	Uint16 detNum[MAX_LANE];
 	Uint16	m_iWidth, m_iHeight;
 	Uint16	team_width;
@@ -360,10 +340,10 @@ typedef struct tagCfgs
 	Uint16 degreepoint[20][2];//20个标定点
 
 	Uint16 fuzzydegree;
-	bool visibility;//能见度
+	bool Visbility;//能见度
 	int up_visib_value;//统计能见度
 	Uint16 visib_value[VISIB_LENGTH];
-	bool fuzzyflag;//视频异常
+	bool VideoException;//视频异常
 	Uint32  abnormal_time;
 
 }ALGCFGS;
@@ -381,27 +361,29 @@ typedef struct tagParams
 
 
 typedef struct args{
-	ALGCFGS *pCfgs;
-	ALGPARAMS *pParams;
-	OUTBUF *p_outbuf;
-	DETECTCFGSEG    pDetectCfgSeg;
+	ALGCFGS    *pCfgs;
+	ALGPARAMS  *pParams;
+	OUTBUF     *p_outbuf;
+	DETECTCFGSEG    *pDetectCfg;
 
 }m_args;
 
-extern  DETECTCFGSEG    pDetectCfgSeg;
+extern  DETECTCFGSEG    pDetectCfg;
 extern  ALGCFGS        pCfgs;
 extern  ALGPARAMS      pParams;
 
-int alg_mem_free(m_args *);
+
 #ifdef __cplusplus
 extern "C"{
 #endif
-m_args* alg_mem_malloc( );
-	bool CfgStructParse(FVDDETECTCFG *pDetectCfgSeg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//配置参数
-	bool FvdArithInit(FVDDETECTCFG *pDetectCfgSeg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//算法初始化
+m_args* alg_mem_malloc();
+int alg_mem_free(m_args *arg_arg);
+	bool CfgStructParse(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//配置参数
+	bool FvdArithInit(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//算法初始化
+	bool FvdRestParams(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//重置参数
 	void FvdProcessBox(float* result, int nboxes, ALGCFGS *pCfgs, int laneNum);//对检测框进行处理
 	Uint16 FvdArithDetect(IplImage* img, ALGCFGS *pCfgs, float* result);//yolo检测
-    Uint16 FvdArithProc(IplImage* img, FVDOUTBUF* outBuf, Int32 outSize, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//FVD
+    Uint16 FvdArithProc(IplImage* img, FVDOUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//FVD
 	void QueLengthCaculate(Uint16 LaneID, ALGCFGS *pCfgs, ALGPARAMS	*pParams, CPoint m_ptend[]);//排队长度
 	void iSubStractImage(Uint8 *puSourceImage,Uint8 *puTargetImage, Uint32 nThreshold, Int16 nFromLine, Int16 nToLine, Int16 width, Int16 height);//帧差
 	CPoint ptGetDot(CPoint* ptUpLeft, CPoint* ptUpRight, CPoint* ptDownRight, CPoint* ptDownLeft, Int16 nColNum, Uint32 * ptStorePlace);//图像框矫正
@@ -411,8 +393,9 @@ m_args* alg_mem_malloc( );
 	bool Color_deviate(unsigned char* uImage, unsigned char* vImage, int width, int height);//视频图像状态计算
 
 	int SetLine(ALGCFGS* pCfgs, CPoint* ptDetLine);//设置行人检测线
-	//bool PvdArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine, CRect detROI);//行人检测初始化
+	//bool PvdArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine, CRect1 detROI);//行人检测初始化
 	bool PvdArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine);//行人检测初始化
+	bool PvdRestParams(ALGCFGS *pCfgs, CPoint* ptDetLine);//重置参数
 	Uint16 PvdArithDetect(IplImage* img, ALGCFGS* pCfgs,float* result);//行人检测
 	void PvdProcessBox(float* result, int nboxes, ALGCFGS* pCfgs);//对检测框进行处理
 	Uint16 PvdArithProc(IplImage* img, ALGCFGS *pCfgs, PVDOUTBUF* outbuf);

@@ -169,6 +169,24 @@ public:
         check_type(val[name]);
 #endif
     }
+    template <typename T>
+    void add(string name,vector<T> va)
+    {
+        if(!name_exist(name,"add")){
+            val[name].clear();
+        }
+        else{
+            //   prt(info,"adding exist key: %s ,already exist",name.data());
+            //print_backstrace();
+        }
+        for(T t:va)
+            val[name].append(t);
+
+
+#if 0
+        check_type(val[name]);
+#endif
+    }
     //    void add(string name,JsonPacket p)
     //    {
     //        if(!name_exist(name,"add"))
@@ -198,6 +216,20 @@ public:
         }
         return val.asInt();
     }
+    vector <int> to_int_array()
+    {
+        if(val.empty()){
+            prt(info,"to int error :no content");
+            print_backstrace();
+            return  vector <int>();
+        }
+        int sz=val.size();
+        vector <int> rt;
+        for(int i=0;i<sz;i++){
+            rt.push_back(val[i].asInt());
+        }
+        return rt;
+    }
     double to_double()
     {
         if(val.empty()){
@@ -210,7 +242,19 @@ public:
         }
         return val.asDouble();
     }
-
+    vector <double>to_double_array()
+    {
+        if(val.empty()){
+            prt(info,"to  double :no content");
+            return  vector <double>();
+        }
+        int sz=val.size();
+        vector <double> rt;
+        for(int i=0;i<sz;i++){
+            rt.push_back(val[i].asDouble());
+        }
+        return rt;
+    }
     bool to_bool()
     {
         if(val.empty()){
@@ -223,7 +267,19 @@ public:
         }
         return val.asBool();
     }
-
+    vector<  bool >to_bool_array()
+    {
+        if(val.empty()){
+            prt(info,"to  bool :no content");
+            return  vector<  bool >();
+        }
+        vector <bool> rt;
+      int  sz=val.size();
+        for(int i=0;i<sz;i++){
+            rt.push_back(val[i].asBool());
+        }
+        return rt;
+    }
     string to_string()
     {
         if(val.empty()){
@@ -235,6 +291,19 @@ public:
             return string();
         }
         return val.asString();
+    }
+   vector<  string> to_string_array()
+    {
+        if(val.empty()){
+            prt(info,"to  string :no content");
+            return  vector<  string> ();
+        }
+        int sz=val.size();
+        vector <string> rt;
+        for(int i=0;i<sz;i++){
+            rt.push_back(val[i].asString());
+        }
+        return rt;
     }
     void show_value_type(JsonValue val)
     {
@@ -375,6 +444,13 @@ public:
 #define DECODE_STRING_MEM(mem) {this->mem=config.get(#mem).to_string();}
 #define DECODE_DOUBLE_MEM(mem) {this->mem=config.get(#mem).to_double();}
 #define DECODE_BOOL_MEM(mem) {this->mem=config.get(#mem).to_bool();}
+
+#define DECODE_INT_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_int_array();}
+#define DECODE_STRING_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_string_array();}
+#define DECODE_DOUBLE_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_double_array();}
+#define DECODE_BOOL_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_bool_array();}
+
+
 #define DECODE_PKT_MEM(mem) {this->mem=config.get(#mem);}
 #define DECODE_PKT_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
 #define DECODE_JSONDATA_MEM(mem) {this->mem=config.get(#mem);}
@@ -386,6 +462,14 @@ public:
 #define ENCODE_STRING_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_DOUBLE_MEM(mem) {ENCODE_MEM(mem);}
 #define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
+
+
+#define ENCODE_INT_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_STRING_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_DOUBLE_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
+#define ENCODE_BOOL_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
+
+
 #define ENCODE_PKT_MEM(mem) {config.add(#mem,this->mem);}
 #define ENCODE_PKT_ARRAY_MEM(mem) {config.add(#mem,mem);}
 #define ENCODE_JSONDATA_MEM(mem) {config.add(#mem,this->mem.data());}
