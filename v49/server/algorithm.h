@@ -370,8 +370,8 @@ extern "C"{
 	bool CfgStructParse(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//配置参数
 	bool FvdArithInit(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//算法初始化
 	bool FvdRestParams(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//重置参数
-	void FvdProcessBox(float* result, int nboxes, ALGCFGS *pCfgs, int laneNum);//对检测框进行处理
-	Uint16 FvdArithDetect(IplImage* img, ALGCFGS *pCfgs, float* result);//yolo检测
+	void FvdProcessBox(ALGCFGS *pCfgs, int laneNum);//对检测框进行处理
+	Uint16 FvdArithDetect(IplImage* img, ALGCFGS *pCfgs);//yolo检测
 	bool CorrectImage(IplImage * img, ALGCFGS *pCfgs);//根据车道线对车道图像进行校正
     Uint16 FvdArithProc(IplImage* img, FVDOUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//FVD
 	void QueLengthCaculate(Uint16 LaneID, ALGCFGS *pCfgs, ALGPARAMS	*pParams, CPoint m_ptend[]);//排队长度
@@ -386,13 +386,14 @@ extern "C"{
 	//bool PvdArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine, CRect1 detROI);//行人检测初始化
 	bool PvdArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine);//行人检测初始化
 	bool PvdRestParams(ALGCFGS *pCfgs, CPoint* ptDetLine);//重置参数
-	Uint16 PvdArithDetect(IplImage* img, ALGCFGS* pCfgs,float* result);//行人检测
-	void PvdProcessBox(float* result, int nboxes, ALGCFGS* pCfgs);//对检测框进行处理
+	Uint16 PvdArithDetect(IplImage* img, ALGCFGS* pCfgs);//行人检测
+	void PvdProcessBox(ALGCFGS* pCfgs);//对检测框进行处理
 	Uint16 PvdArithProc(IplImage* img, ALGCFGS *pCfgs, PVDOUTBUF* outbuf);
 
 	bool ArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine, FVDDETECTCFG *pDownDetectCfg, ALGPARAMS *pParams);//算法初始化
 	bool RestParams(ALGCFGS *pCfgs, CPoint* ptDetLine, FVDDETECTCFG *pDownDetectCfg, ALGPARAMS *pParams);//重置参数
-	Uint16 ArithProc(IplImage* imgFVD, IplImage* imgPVD, OUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//算法执行
+	Uint16 ArithDetect(IplImage* img, ALGCFGS *pCfgs);
+	Uint16 ArithProc(IplImage* img, OUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//算法执行
 
 #ifdef __cplusplus
 }
