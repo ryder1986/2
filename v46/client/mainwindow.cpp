@@ -84,7 +84,12 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     }
     case Camera::OP::CHANGE_URL:
     {
-        RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,RequestPkt(data).data());
+        JsonPacket p;
+       // p.add("Url","rtsp://192.168.1.95:554/av0_1");
+        p.add("Url",ui->lineEdit_default_url->text().toStdString());
+        RequestPkt pkt_url(Camera::OP::CHANGE_URL,0,p);
+
+        RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,pkt_url.data());
         clt.send_cmd(pkt.data());
         clt.get_config();
         break;

@@ -248,8 +248,12 @@ public:
         }
         return ret;
     }
-    void draw_points(const vector <VdPoint> points,QPainter &pt)
+    void draw_points(const vector <VdPoint> points,QPainter &pt,int selected_region)
     {
+        if(selected_region)
+            pt.setPen(blue_pen2());
+        else
+            pt.setPen(green_pen2());
 
         if(points.size()<1)
             return;
@@ -264,7 +268,7 @@ public:
         pt.drawLine(p1,p2);
 
 
-        pt.setPen(red_pen2());
+        pt.setPen(blue_pen2());
         for(int i=0;i<points.size();i++){
             QPoint p_center(points[i].x,points[i].y);
             pt.drawEllipse(p_center,10,10);
@@ -327,6 +331,7 @@ public:
     }
     void draw_processor(QPainter &pt,string processor,JsonPacket out)
     {
+        pt.setPen(red_pen1());
         DetectRegionOutputData ro(out);
         if(processor==LABLE_PROCESSOR_C4){
             C4ProcessorOutputData d(ro.Result);
@@ -374,18 +379,19 @@ protected:
         //            img_painter.drawRect(r);
         //        }
         //rects.clear();
-        img_painter.setPen(red_pen1());
+//        img_painter.setPen(red_pen1());
         cnt=0;
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
             if(output_data.DetectionResult.size()!=cfg.DetectRegion.size())
                 break;
             draw_processor( img_painter,p.SelectedProcessor, output_data.DetectionResult[i]);
+            int selected_r=0;
             if(ver_picked&&i==selected_region_index-1)
-                img_painter.setPen(blue_pen2());
+                selected_r=1;
             else
-                img_painter.setPen(green_pen2());
-            draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter);
+                selected_r=0;
+            draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter,selected_r);
         }
 
         if(!img.isNull()){
@@ -487,10 +493,12 @@ public slots:
     }
     void set_url(bool)
     {
-        JsonPacket p;
-        p.add("Url","rtsp://192.168.1.95:554/av0_1");
-        RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
-        signal_camera(this,Camera::OP::CHANGE_URL,pkt.data());
+//        JsonPacket p;
+//        p.add("Url","rtsp://192.168.1.95:554/av0_1");
+//        RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
+
+          JsonPacket p;
+        signal_camera(this,Camera::OP::CHANGE_URL,p);
     }
     FvdProcessorInputData get_fvd_test_data()
     {

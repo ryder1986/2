@@ -27,19 +27,43 @@
        <string>text_box</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="4" column="1">
+        <widget class="QPushButton" name="pushButton_getconfig">
+         <property name="text">
+          <string>get config</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QComboBox" name="comboBox_cameras"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLineEdit" name="lineEdit_getconfig"/>
+       </item>
        <item row="3" column="0">
         <widget class="QPlainTextEdit" name="plainTextEdit_recive"/>
        </item>
-       <item row="2" column="0">
-        <widget class="QPlainTextEdit" name="plainTextEdit_send"/>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="pushButton_send">
+         <property name="text">
+          <string>send</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="pushButton_setconfig">
+         <property name="text">
+          <string>set config</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="0">
         <widget class="QComboBox" name="comboBox_search"/>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="pushButton_search">
+       <item row="6" column="0">
+        <widget class="QLineEdit" name="lineEdit_addcam">
          <property name="text">
-          <string>search</string>
+          <string>rtsp://192.168.1.95:554/av0_1</string>
          </property>
         </widget>
        </item>
@@ -50,40 +74,27 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="pushButton_send">
-         <property name="text">
-          <string>send</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QComboBox" name="comboBox_cameras"/>
-       </item>
-       <item row="5" column="1">
-        <widget class="QPushButton" name="pushButton_setconfig">
-         <property name="text">
-          <string>set config</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QPushButton" name="pushButton_getconfig">
-         <property name="text">
-          <string>get config</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLineEdit" name="lineEdit_getconfig"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLineEdit" name="lineEdit_setconfig"/>
+       <item row="2" column="0">
+        <widget class="QPlainTextEdit" name="plainTextEdit_send"/>
        </item>
        <item row="8" column="1">
         <widget class="QPushButton" name="pushButton_delcam">
          <property name="text">
           <string>del cam</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="pushButton_search">
+         <property name="text">
+          <string>search</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLineEdit" name="lineEdit_delcam">
+         <property name="text">
+          <string>1</string>
          </property>
         </widget>
        </item>
@@ -94,17 +105,26 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLineEdit" name="lineEdit_addcam">
+       <item row="5" column="0">
+        <widget class="QLineEdit" name="lineEdit_setconfig"/>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLineEdit" name="lineEdit_default_url">
          <property name="text">
           <string>rtsp://192.168.1.95:554/av0_1</string>
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QLineEdit" name="lineEdit_delcam">
+       <item row="11" column="1">
+        <widget class="QLabel" name="labe_default_url">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>1</string>
+          <string>default url</string>
          </property>
         </widget>
        </item>
@@ -117,10 +137,10 @@
        <string>video_box</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton_start">
+       <item row="2" column="0">
+        <widget class="QPushButton" name="pushButton_stop">
          <property name="text">
-          <string>start all</string>
+          <string>stop all</string>
          </property>
         </widget>
        </item>
@@ -133,10 +153,10 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="pushButton_stop">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButton_start">
          <property name="text">
-          <string>stop all</string>
+          <string>start all</string>
          </property>
         </widget>
        </item>
