@@ -13,6 +13,7 @@
 #include "videosource.h"
 #include "detectregion.h"
 #include "videoprocessor.h"
+#include <QTimer>
 #define POLY_VER_NUM 4
 
 class PlayerWidgetMenu:public QObject
@@ -161,8 +162,8 @@ public:
     {
         connect(&mn,SIGNAL(action_done(int,int)),this,SLOT(handle_menu(int,int)));
         loop=0;
-        ver_picked=false;
-        line_picked=false;
+        region_ver_picked=false;
+        region_line_picked=false;
         cfg=data;
         frame_rate=0;
         tick_timer=new QTimer();
@@ -171,6 +172,8 @@ public:
         tick_timer->start(100);
         src=new VideoSource(data.Url);
         setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(&tmr,SIGNAL(timeout()),this,SLOT(timeout_check()));
+        tmr.start(1000);
         connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(right_click(QPoint)));
     }
     void set_title(QString t)
@@ -189,6 +192,7 @@ public:
     {
         lock.lock();
         output_data=cam_out;
+        output_data_fps++;
         lock.unlock();
     }
     bool  get_img()
@@ -228,7 +232,7 @@ public:
             pt.drawEllipse(p_center,10,10);
         }
     }
-    int match_point_on_ver(const vector <VdPoint> points,QPoint p,int distance=20)
+    int is_match_region_ver(const vector <VdPoint> points,QPoint p,int distance=20)
     {
         for(int i=0;i<points.size();i++){
             if(abs(points[i].x-p.x())<distance&&(abs(points[i].y-p.y()))<distance){
@@ -247,7 +251,7 @@ public:
         else
             return false;
     }
-    bool match_point_on_line(const vector <VdPoint> line,QPoint p,int distance=20)
+    bool is_match_region_line(const vector <VdPoint> line,QPoint p,int distance=20)
     {
         vector<QPoint> pns;
         for(VdPoint p:line){
@@ -266,14 +270,57 @@ public:
         return false;
 
     }
+    bool is_match_region_data_ver(const vector <VdPoint> points,QPoint p,int distance=20)
+    {
+        // is_match_region_ver(points,p);
+    }
     QPoint map_point(QPoint p)
     {
         return QPoint(p.x()*img.width()/this->width(),p.y()*img.height()/this->height());
     }
-    void draw_process_result(QPainter &pt,string processor,JsonPacket out)
+    void draw_process_input(QPainter &pt,string processor,JsonPacket out,int &offset_x,int &offset_y)
+    {
+        pt.setPen(blue_pen1());
+
+        if(processor==LABLE_PROCESSOR_C4){
+        }
+        if(processor==LABLE_PROCESSOR_DUMMY){
+
+        }
+
+        if(processor==LABLE_PROCESSOR_PVD){
+
+        }
+
+        if(processor==LABLE_PROCESSOR_FVD){
+
+            FvdProcessorInputData data(out);
+
+#if 0
+            for(LaneDataJsonData r: data.LineData)
+            {
+                QVector<QPoint> ps;
+                for(VdPoint v:r.FarArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                pt.drawPolyline(QPolygon(ps));
+                ps.clear();
+                for(VdPoint v:r.NearArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                pt.drawPolyline(QPolygon(ps));
+                ps.clear();
+                for(VdPoint v:r.LaneArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                pt.drawPolyline(QPolygon(ps));
+            }
+#endif
+        }
+    }
+
+    void draw_process_output(QPainter &pt,string processor,JsonPacket out,int &offset_x,int &offset_y)
     {
         pt.setPen(red_pen1());
         DetectRegionOutputData ro(out);
+        int rect_x=ro.DetectionRect.x;
+        int rect_y=ro.DetectionRect.y;
+        offset_x=rect_x;
+        offset_y=rect_y;
         if(processor==LABLE_PROCESSOR_C4){
             C4ProcessorOutputData d(ro.Result);
             for(VdRect r:d.Rects){
@@ -296,12 +343,21 @@ public:
 
         if(processor==LABLE_PROCESSOR_FVD){
             FvdProcessorOutputData d(ro.Result);
+
             for(ObjectRect r:d.FvdDetectedObjects){
                 int x=r.x+ro.DetectionRect.x;
                 int y=r.y+ro.DetectionRect.y;
                 pt.drawRect(QRect(x,y,r.w,r.h));
                 pt.drawText(x,y,QString(r.label.data()).append("(").append(QString::number(r.confidence_rate)).append(")"));
             }
+            #if 0
+            for(LaneOutputJsonData dat: d.LaneOutputData)
+            {
+                VdPoint s_p=dat.StartQueuePoint;
+                VdPoint e_p=dat.EndQueuePoint;
+                pt.drawLine(QPoint(s_p.x+rect_x,s_p.y+rect_y),QPoint(e_p.x+rect_x,e_p.y+rect_y));
+            }
+            #endif
         }
 
     }
@@ -316,14 +372,18 @@ protected:
         }
         QPainter img_painter(&img);
         img_painter.setPen(blue_pen1());
+        img_painter.drawText(0,img.height(),QString::number(output_data_fps_result));
         cnt=0;
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
             if(output_data.DetectionResult.size()!=cfg.DetectRegion.size())
                 break;
-            draw_process_result( img_painter,p.SelectedProcessor, output_data.DetectionResult[i]);
+            int tmpx,tmpy;
+
+            draw_process_output( img_painter,p.SelectedProcessor, output_data.DetectionResult[i],tmpx,tmpy);
+            draw_process_input( img_painter,p.SelectedProcessor, p.ProcessorData,tmpx,tmpy);
             int selected_r=0;
-            if(ver_picked&&i==selected_region_index-1)
+            if(region_ver_picked&&i==selected_region_index-1)
                 selected_r=1;
             else
                 selected_r=0;
@@ -341,6 +401,12 @@ protected:
     }
 
 public slots:
+    void timeout_check()
+    {
+        output_data_fps_result=output_data_fps;
+        //prt(info,"fps: %d",output_data_fps);
+        output_data_fps=0;
+    }
     void handle_menu(int level1 ,int level2)
     {
         if(level1){
@@ -379,7 +445,7 @@ public slots:
     }
     void hide_menu()
     {
-        ver_picked=false;
+        region_ver_picked=false;
         mn.set_checkable(false);
     }
     void right_click(QPoint pos)
@@ -530,7 +596,7 @@ public slots:
     void mouseMoveEvent(QMouseEvent *e)
     {
         QPoint p1=map_point(e->pos());
-        if(ver_picked){
+        if(region_ver_picked){
             if(selected_region_index>0&&selected_point_index>0&&\
                     selected_region_index<=cfg.DetectRegion.size()){
                 DetectRegionInputData r=cfg.DetectRegion[selected_region_index-1];
@@ -541,7 +607,7 @@ public slots:
             // cfg.encode();
         }
 
-        if(line_picked){
+        if(region_line_picked){
             DetectRegionInputData r=cfg.DetectRegion[selected_region_index-1];
             vector <VdPoint> ps;
             QPoint end_p= map_point(e->pos());
@@ -561,9 +627,9 @@ public slots:
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         for(int i=0;i<detect_regions.size();i++){
             vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
-            int point_index=match_point_on_ver(pnts,map_point(e->pos()));
+            int point_index=is_match_region_ver(pnts,map_point(e->pos()));
             if(point_index>0){
-                ver_picked=true;
+                region_ver_picked=true;
                 selected_point_index=point_index;
                 selected_region_index=i+1;
                 mn.set_checkable(true);
@@ -573,9 +639,9 @@ public slots:
                 return;
             }
 
-            bool online=match_point_on_line(pnts,map_point(e->pos()));
+            bool online=is_match_region_line(pnts,map_point(e->pos()));
             if(online){
-                line_picked=true;
+                region_line_picked=true;
                 ori_point=QPoint(e->pos());
                 selected_region_index=i+1;
                 return;
@@ -586,16 +652,16 @@ public slots:
     }
     void mouseReleaseEvent(QMouseEvent *e)
     {
-        if(ver_picked){
+        if(region_ver_picked){
             emit cam_data_change(cfg,this);
             set_region(true);
-            ver_picked=false;
+            region_ver_picked=false;
             mn.set_checkable(false);
         }
-        if(line_picked){
+        if(region_line_picked){
             emit cam_data_change(cfg,this);
             set_region(true);
-            line_picked=false;
+            region_line_picked=false;
         }
     }
     void mouseDoubleClickEvent(QMouseEvent *event)
@@ -660,8 +726,9 @@ private:
 
     int loop;
     VideoSource *src;
-    bool ver_picked;
-    bool line_picked;
+    bool region_ver_picked;
+    bool region_line_picked;
+    bool region_data_picked;
 
     QPoint ori_point;
     QPoint maped_point;
@@ -676,6 +743,9 @@ private:
 
     CameraInputData cfg;
     CameraOutputData output_data;
+    QTimer tmr;
+    int output_data_fps;
+    int output_data_fps_result;
 };
 
 #endif // PLAYERWIDGET_H

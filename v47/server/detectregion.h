@@ -165,16 +165,11 @@ public:
         JsonPacket rst_r;
         if(detect_rect.width%2)detect_rect.width--;
         if(detect_rect.height%2)detect_rect.height--;
-         valid_rect(detect_rect,frame.cols,frame.rows);
-//        if(frame.cols%2)frame.cols--;
-//        if(frame.rows%2)frame.rows--;
-
-
-
+        valid_rect(detect_rect,frame.cols,frame.rows);
         Mat tmp=frame(detect_rect);
         p->process(tmp,rst_r);
       //  p->process(frame,rst_r);
-                VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
+        VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
         JsonPacket dct_rct=r.data();
         DetectRegionOutputData rst(rst_r,dct_rct);
         lock.unlock();
