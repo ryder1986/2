@@ -44,6 +44,11 @@ public:
 
     }
 #endif
+    virtual ~VideoProcessor()
+    {
+
+    }
+
     int get_id()
     {
         return channel_id;

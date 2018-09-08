@@ -57,9 +57,9 @@ public:
     }
     ~FvdProcessor()
     {
-          prt(info,"free start");
+        prt(info,"############free start");
         alg_mem_free(p_cfg);
-        prt(info,"free done");
+        prt(info,"############free done");
     }
 
     bool process(Mat img_src,JsonPacket &pkt)

@@ -157,7 +157,15 @@ public:
         CHANGE_PROCESSOR
     };
 
+
     DetectRegion(DetectRegionInputData pkt);
+
+    ~DetectRegion()
+    {
+      if(p)
+          delete p;
+      p=NULL;
+    }
 
     JsonPacket work(Mat frame)
     {

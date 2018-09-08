@@ -434,6 +434,11 @@ public:
     VdData(TP d):private_data(d)
     {
     }
+    virtual ~VdData()
+    {
+
+    }
+
     TP get_data()
     {
         return private_data;

@@ -291,7 +291,6 @@ typedef struct tagCfgs
 	//车辆检测参数
 	int LaneAmount;//车道数
 	CTarget targets[MAX_TARGET_NUM];//目标
-	CDetClass detClasses[MAX_CLASSES];//检测类别
 	int target_id;
 	int targets_size;
 	Uint16 current_target_id[MAX_LANE];
@@ -305,6 +304,8 @@ typedef struct tagCfgs
 	Uint16	team_width;
 	Uint16  team_height;
 	bool    IsCarInTail[MAX_LANE];
+	//混合检测
+	CDetClass detClasses[MAX_CLASSES];//检测类别
 
 	//计算车速参数
 	double currIime;//用于计算车辆速度
@@ -364,17 +365,18 @@ typedef struct args{
 #ifdef __cplusplus
 extern "C"{
 #endif
-m_args* alg_mem_malloc();
-int alg_mem_free(m_args *arg_arg);
+	m_args* alg_mem_malloc();
+	int alg_mem_free(m_args *arg_arg);
 	bool CfgStructParse(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//配置参数
 	bool FvdArithInit(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//算法初始化
 	bool FvdRestParams(FVDDETECTCFG *pDownDetectCfg, ALGCFGS *pCfgs, ALGPARAMS *pParams);//重置参数
 	void FvdProcessBox(float* result, int nboxes, ALGCFGS *pCfgs, int laneNum);//对检测框进行处理
 	Uint16 FvdArithDetect(IplImage* img, ALGCFGS *pCfgs, float* result);//yolo检测
+	bool CorrectImage(IplImage * img, ALGCFGS *pCfgs);//根据车道线对车道图像进行校正
     Uint16 FvdArithProc(IplImage* img, FVDOUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//FVD
 	void QueLengthCaculate(Uint16 LaneID, ALGCFGS *pCfgs, ALGPARAMS	*pParams, CPoint m_ptend[]);//排队长度
 	void iSubStractImage(Uint8 *puSourceImage,Uint8 *puTargetImage, Uint32 nThreshold, Int16 nFromLine, Int16 nToLine, Int16 width, Int16 height);//帧差
-	CPoint ptGetDot(CPoint* ptUpLeft, CPoint* ptUpRight, CPoint* ptDownRight, CPoint* ptDownLeft, Int16 nColNum, Uint32 * ptStorePlace);//图像框矫正
+	CPoint ptGetDot(CPoint* ptUpLeft, CPoint* ptUpRight, CPoint* ptDownRight, CPoint* ptDownLeft, Int16 width, Int16 height, Int16 nColNum, Uint32 * ptStorePlace);//图像框矫正
 	static void camera_calibration(int base_line[][2], float base_length, int calibration_point[][2], float near_point_length, int laneNum, ALGCFGS *pCfgs);//标定
 	float fuzzy(unsigned char* puNewImage, int width, int height);//能见度计算
 	bool visible_judge(Uint16 *a, int visib_length, int threshold);//统计能见度
