@@ -322,7 +322,7 @@ public slots:
     void handle_server_msg1()
     {
 
-        tmp_msg1.clear();
+        //tmp_msg1.clear();
         string  ret_str=tcp_socket->readAll().data();
         string valid_buf;
         valid_buf.clear();
@@ -331,7 +331,7 @@ public slots:
         //   while(get_valid_buf1(tmp_msg,valid_buf)) {
         while(JsonStr::get_valid_buf(tmp_msg1,valid_buf)) {
             DataPacket pkt(valid_buf);
-            //prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
+            prt(info,"get object(%d bytes)---->:%s(%d bytes left) ",valid_buf.size(),valid_buf.data(),tmp_msg.size());
             if(valid_buf.size()>0)
                 need_read=true;
             emit server_msg(pkt.data().data());

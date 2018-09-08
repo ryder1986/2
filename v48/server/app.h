@@ -143,6 +143,8 @@ public:
         REBOOT
     };
     App(ConfigManager *p);
+    ~App();
+
     void start()
     {
     }
@@ -319,6 +321,7 @@ private:
     ConfigManager *p_cm;
     vector <DestClient > dest_clients;
     string client_tmp_ip;
+    int udp_fd;
 };
 
 #endif // APP_H

@@ -2,7 +2,7 @@
 #include "configmanager.h"
 #include "datapacket.h"
 App::App(ConfigManager *p_config_manager):str_stream(""),
-    VdData(p_config_manager->get_config()),lservice(),p_cm(p_config_manager)
+    VdData(p_config_manager->get_config()),lservice(),p_cm(p_config_manager),udp_fd(0)
 {
     stream_cmd=NULL;
     restart_all();
@@ -14,6 +14,13 @@ App::App(ConfigManager *p_config_manager):str_stream(""),
                                      placeholders::_3
                                      )
                                 );
+
+}
+
+App::~App()
+{
+    if(udp_fd>0)
+        close(udp_fd);
 
 }
 //deal with clients command
@@ -50,17 +57,18 @@ void App::process_camera_data(Camera *camera, string data)
         prt(info,"process invalid camera index %d, sz %d",idx,cms.size());
         return;
     }
-    int fd=Socket::UdpCreateSocket(5000);
+    if(udp_fd<=0)
+        udp_fd=Socket::UdpCreateSocket(5000);
     AppOutputData rst(idx+1,JsonPacket(data));
     if(stream_cmd)
         for(Session *ss:*stream_cmd)
         {
             //prt(info,"send  %d bytes --> %s",rst.data().str().size(),rst.data().str().data());
-            Socket::UdpSendData(fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
+            Socket::UdpSendData(udp_fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
     //    for(DestClient dst:dest_clients){
     //          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
     //    }
-    close(fd);
+
 }
 
