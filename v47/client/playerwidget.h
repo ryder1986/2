@@ -211,7 +211,6 @@ public:
             pt.setPen(blue_pen2());
         else
             pt.setPen(green_pen2());
-
         if(points.size()<1)
             return;
         for(int i=1;i<points.size();i++){
@@ -219,11 +218,9 @@ public:
             QPoint p2( QPoint(points[i].x,points[i].y));
             pt.drawLine(p1,p2);
         }
-
         QPoint p1(QPoint(points.front().x,points.front().y));
         QPoint p2(QPoint(points.back().x,points.back().y));
         pt.drawLine(p1,p2);
-
 
         pt.setPen(blue_pen2());
         for(int i=0;i<points.size();i++){
@@ -651,6 +648,7 @@ signals:
 private:
     int pic_w;
     int pic_h;
+
     QString title;
     QMutex lock;
     int frame_rate;
@@ -659,21 +657,24 @@ private:
     bool show_info;
     int channel_num;
     int poly_num;
-    CameraInputData cfg;
+
     int loop;
     VideoSource *src;
     bool ver_picked;
     bool line_picked;
 
+    QPoint ori_point;
     QPoint maped_point;
+
     int selected_region_index;
     int selected_point_index;
-    QPoint ori_point;
+
     int cnt;
     QTimer *tick_timer;
     int timestamp;
     int screen_state;
 
+    CameraInputData cfg;
     CameraOutputData output_data;
 };
 
