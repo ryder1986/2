@@ -222,56 +222,16 @@ public:
         show_info=flg;
     }
 
-    void set_overlay(vector<QRect> rs,int ts)
-    {
-        lock.lock();
-        //rects.assign(rs.begin(),rs.end());
-        timestamp=ts;
-        lock.unlock();
-    }
+    //    void set_overlay(vector<QRect> rs,int ts)
+    //    {
+    //        lock.lock();
+    //        timestamp=ts;
+    //        lock.unlock();
+    //    }
     void set_overlay(JsonPacket cam_out)
     {
         lock.lock();
-        //    prt(info,"get cam rst %s ##### cfg %s",cam_out.str().data(),cfg.data().str().data());
-
         output_data=cam_out;
-        CameraOutputData  out=cam_out;
-
-        //        if(out.DetectionResult.size()!=cfg.DetectRegion.size()){
-        //            lock.unlock();
-        //            prt(info,"cfg dont match: output size %d , now size %d",out.DetectionResult.size(),cfg.DetectRegion.size());
-        //            return;
-        //        }
-        //        //       prt(info,"sz %d",out.DetectionResult.size());
-        //        for(int i=0;i<out.DetectionResult.size();i++){
-        //            DetectRegionInputData d=  cfg.DetectRegion[i];
-        //            DetectRegionOutputData  o= out.DetectionResult[i];
-        //            //         prt(info,"processor %s",d.SelectedProcessor.data());
-        //            if(d.SelectedProcessor==LABLE_PROCESSOR_C4){
-        //                C4ProcessorOutputData c4o=o.Result;
-        //                //rects.assign(c4o.Rects.begin(),c4o.Rects.end());
-        //                //   rects.clear();
-        //                for(VdRect v:c4o.Rects){
-        //                    QRect r(v.x+o.DetectionRect.x,v.y+o.DetectionRect.y,v.w,v.h);
-        //                    rects.push_back(r);
-        //                }
-        //                // QRect rrr=rects.at(rects.size()-1);
-        //                //  prt(info,"process c4 %d results (%d,%d,%d,%d) ",c4o.Rects.size(),rrr.x(),rrr.y(),rrr.width(),rrr.height());
-
-        //            }
-        //            if(d.SelectedProcessor==LABLE_PROCESSOR_DUMMY){
-        //                DummyProcessorOutputData dummyo=o.Result;
-
-        //                for(VdPoint v:dummyo.Points){
-        //                    QRect rct(objectrect.x+o.DetectionRect.x,objectrect.y+o.DetectionRect.y,objectrect.w,objectrect.h);
-        //                    rects.push_back(rct);
-        //                }
-        //            }
-        //            if(d.SelectedProcessor=="Pvd"){}
-        //            if(d.SelectedProcessor=="Fvd"){}
-        //        }
-        //      rects.assign(rs.begin(),rs.end());
-        //      timestamp=ts;
         lock.unlock();
     }
     bool  get_img()
@@ -385,6 +345,16 @@ public:
             PvdProcessorOutputData d(ro.Result);
             for(ObjectRect r:d.PvdDetectedObjects){
                 pt.drawRect(QRect(r.x+ro.DetectionRect.x,r.y+ro.DetectionRect.y,r.w,r.h));
+            }
+        }
+
+        if(processor==LABLE_PROCESSOR_FVD){
+            FvdProcessorOutputData d(ro.Result);
+            for(ObjectRect r:d.FvdDetectedObjects){
+                int x=r.x+ro.DetectionRect.x;
+                int y=r.y+ro.DetectionRect.y;
+                pt.drawRect(QRect(x,y,r.w,r.h));
+                pt.drawText(x,y,QString(r.label.data()).append("(").append(QString::number(r.confidence_rate)).append(")"));
             }
         }
 
