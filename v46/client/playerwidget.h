@@ -248,7 +248,7 @@ public:
         }
         return ret;
     }
-    void draw_points(const vector <VdPoint> points,QPainter &pt,int selected_region)
+    void draw_detect_area(const vector <VdPoint> points,QPainter &pt,int selected_region)
     {
         if(selected_region)
             pt.setPen(blue_pen2());
@@ -329,7 +329,7 @@ public:
     {
         return QPoint(p.x()*img.width()/this->width(),p.y()*img.height()/this->height());
     }
-    void draw_processor(QPainter &pt,string processor,JsonPacket out)
+    void draw_process_result(QPainter &pt,string processor,JsonPacket out)
     {
         pt.setPen(red_pen1());
         DetectRegionOutputData ro(out);
@@ -375,23 +375,18 @@ protected:
         }
         QPainter img_painter(&img);
         img_painter.setPen(blue_pen1());
-        //        for(QRect r:rects){
-        //            img_painter.drawRect(r);
-        //        }
-        //rects.clear();
-//        img_painter.setPen(red_pen1());
         cnt=0;
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
             if(output_data.DetectionResult.size()!=cfg.DetectRegion.size())
                 break;
-            draw_processor( img_painter,p.SelectedProcessor, output_data.DetectionResult[i]);
+            draw_process_result( img_painter,p.SelectedProcessor, output_data.DetectionResult[i]);
             int selected_r=0;
             if(ver_picked&&i==selected_region_index-1)
                 selected_r=1;
             else
                 selected_r=0;
-            draw_points(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter,selected_r);
+            draw_detect_area(vector<VdPoint>(p.ExpectedAreaVers.begin(),p.ExpectedAreaVers.end()),img_painter,selected_r);
         }
 
         if(!img.isNull()){
@@ -468,17 +463,12 @@ public slots:
     void add_region(bool)
     {
         string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
-        //string SelectedProcessor="C4";
         vector <VdPoint>ExpectedAreaVers;
         ExpectedAreaVers.push_back(VdPoint(0,0));
         ExpectedAreaVers.push_back(VdPoint(640,0));
         ExpectedAreaVers.push_back(VdPoint(640,480));
         ExpectedAreaVers.push_back(VdPoint(0,480));
-        //        C4ProcessorInputData c4d(6,"0.6");
-        //        JsonPacket ProcessorData=c4d.data();
-
         DummyProcessorInputData dp(true,false,15);
-
 
         DetectRegionInputData rd(dp.data(),SelectedProcessor,ExpectedAreaVers);
         RequestPkt pkt(Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),rd.data());
@@ -493,11 +483,7 @@ public slots:
     }
     void set_url(bool)
     {
-//        JsonPacket p;
-//        p.add("Url","rtsp://192.168.1.95:554/av0_1");
-//        RequestPkt pkt(Camera::OP::CHANGE_URL,0,p);
-
-          JsonPacket p;
+        JsonPacket p;
         signal_camera(this,Camera::OP::CHANGE_URL,p);
     }
     FvdProcessorInputData get_fvd_test_data()
@@ -531,6 +517,19 @@ public slots:
         LineData.push_back(d1);
         FvdProcessorInputData d(BasicCoil,BaseLine,NearPointDistance,FarPointDistance,LineData);
         return d;
+    }
+    PvdProcessorInputData get_pvd_test_data()
+    {
+        PvdProcessorInputData d; return d;
+
+    }
+    DummyProcessorInputData get_dummy_test_data()
+    {
+        DummyProcessorInputData d;      return d;
+    }
+    C4ProcessorInputData get_c4_test_data()
+    {
+        C4ProcessorInputData d;      return d;
     }
     void set_processor(string processor_label)
     {
@@ -734,20 +733,6 @@ public slots:
                 line_picked=true;
                 ori_point=QPoint(e->pos());
                 selected_region_index=i+1;
-
-
-
-                //                int index=selected_region_index;
-                //                DetectRegionInputData input= cfg.DetectRegion[index-1];
-                //                if(input.SelectedProcessor=="C4")
-                //                    processor_c4.setChecked(true);
-                //                else
-                //                    processor_c4.setChecked(false);
-                //                if(input.SelectedProcessor=="Dummy")
-                //                    processor_dummy.setChecked(true);
-                //                else
-                //                    processor_dummy.setChecked(false);
-
                 return;
             }
         }

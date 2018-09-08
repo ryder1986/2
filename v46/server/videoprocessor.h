@@ -181,7 +181,10 @@ public:
     {
         decode();
     }
+    DummyProcessorInputData()
+    {
 
+    }
     void decode()
     {
         DECODE_BOOL_MEM(Horizon);
@@ -261,6 +264,10 @@ public:
         DetectLine.push_back(p1);
         DetectLine.push_back(p2);
         encode();
+    }
+    PvdProcessorInputData()
+    {
+
     }
     void decode()
     {
