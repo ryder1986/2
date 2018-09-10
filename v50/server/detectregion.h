@@ -177,7 +177,16 @@ public:
         if(detect_rect.height%2)detect_rect.height--;
         valid_rect(detect_rect,frame.cols,frame.rows);
         Mat tmp=frame(detect_rect);
+        if(p &&detect_rect.x>0&&detect_rect.x<10000
+                &&detect_rect.y>0&&detect_rect.y<10000
+                &&detect_rect.width>0&&detect_rect.width<10000
+                &&detect_rect.height>0&&detect_rect.height<10000
+                &&frame.cols>0&&frame.rows>0
+                ){
         p->process(tmp,rst_r);
+        }else{
+            prt(info,"err arg");
+        }
         //  p->process(frame,rst_r);
         VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
         JsonPacket dct_rct=r.data();

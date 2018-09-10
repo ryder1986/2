@@ -32,7 +32,8 @@ public:
 #ifdef WITH_CUDA
         ,
         MOD_REGION_PROCESSOR_TO_FVD,
-        MOD_REGION_PROCESSOR_TO_PVD
+        MOD_REGION_PROCESSOR_TO_PVD,
+        MOD_REGION_PROCESSOR_TO_MVD
 #endif
     };
     QWidget *wgt;
@@ -46,6 +47,7 @@ public:
 #ifdef WITH_CUDA
     QAction choose_fvd;
     QAction choose_pvd;
+    QAction choose_mvd;
 #endif
 public:
     PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor")
@@ -70,6 +72,8 @@ public:
         mod_processor.addAction(&choose_fvd);
         choose_pvd.setText("pvd");
         mod_processor.addAction(&choose_pvd);
+        choose_mvd.setText("mvd");
+        mod_processor.addAction(&choose_mvd);
 #endif
 
         connect(&choose_c4,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_c4(bool)));
@@ -77,6 +81,7 @@ public:
 #ifdef WITH_CUDA
         connect(&choose_fvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_fvd(bool)));
         connect(&choose_pvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_pvd(bool)));
+        connect(&choose_mvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_mvd(bool)));
 #endif
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
@@ -94,6 +99,7 @@ public:
 #ifdef WITH_CUDA
         choose_pvd.setCheckable(ca);
         choose_fvd.setCheckable(ca);
+        choose_mvd.setCheckable(ca);
 #endif
         choose_dummy.setCheckable(ca);
         choose_c4.setCheckable(ca);
@@ -103,6 +109,7 @@ public:
 #ifdef WITH_CUDA
         choose_pvd.setChecked(false);
         choose_fvd.setChecked(false);
+        choose_mvd.setChecked(false);
 #endif
         choose_dummy.setChecked(false);
         choose_c4.setChecked(false);
@@ -112,6 +119,7 @@ public:
 #ifdef WITH_CUDA
         if(label==LABLE_PROCESSOR_FVD) choose_fvd.setChecked(true);
         if(label==LABLE_PROCESSOR_PVD) choose_pvd.setChecked(true);
+        if(label==LABLE_PROCESSOR_MVD) choose_mvd.setChecked(true);
 #endif
     }
 public slots:
@@ -148,6 +156,10 @@ public slots:
     void processor_op_choose_fvd(bool)
     {
         emit action_done(0,MOD_REGION_PROCESSOR_TO_FVD);
+    }
+    void processor_op_choose_mvd(bool)
+    {
+        emit action_done(0,MOD_REGION_PROCESSOR_TO_MVD);
     }
 #endif
 signals:
@@ -322,7 +334,9 @@ public:
         if(processor==LABLE_PROCESSOR_PVD){
 
         }
+        if(processor==LABLE_PROCESSOR_MVD){
 
+        }
         if(processor==LABLE_PROCESSOR_FVD){
 
             FvdProcessorInputData data(out);
@@ -370,6 +384,16 @@ public:
             PvdProcessorOutputData d(ro.Result);
             for(ObjectRect r:d.PvdDetectedObjects){
                 pt.drawRect(QRect(r.x+ro.DetectionRect.x,r.y+ro.DetectionRect.y,r.w,r.h));
+            }
+        }
+
+        if(processor==LABLE_PROCESSOR_MVD){
+            MvdProcessorOutputData d(ro.Result);
+            for(ObjectRect r:d.MvdDetectedObjects){
+                int x=r.x+ro.DetectionRect.x;
+                int y=r.y+ro.DetectionRect.y;
+                pt.drawRect(QRect(x,y,r.w,r.h));
+                pt.drawText(x,y,QString(r.label.data()).append("(").append(QString::number(r.confidence_rate)).append(")"));
             }
         }
 
@@ -480,6 +504,9 @@ public slots:
             case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_PVD:
                 set_processor(LABLE_PROCESSOR_PVD);
                 break;
+            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_MVD:
+                set_processor(LABLE_PROCESSOR_MVD);
+                break;
 #endif
             default:break;
             }
@@ -563,6 +590,48 @@ public slots:
         PvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
 
     }
+    MvdProcessorInputData get_mvd_test_data()
+    {
+        // MvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
+        vector <VdPoint> BasicCoil;// standard rect
+        BasicCoil.push_back(VdPoint(0,0));
+        BasicCoil.push_back(VdPoint(400,0));
+        BasicCoil.push_back(VdPoint(400,400));
+        BasicCoil.push_back(VdPoint(0,400));
+        BaseLineJsonData BaseLine(VdPoint(0,0),VdPoint(50,50),5);// a line can adjust car real length
+        int NearPointDistance=20;//distance to camera
+        int FarPointDistance=100;
+        vector <LaneDataJsonData> LineData; // lane info
+        vector <VdPoint> FarArea1; // far rect
+        FarArea1.push_back(VdPoint(0,0));
+        FarArea1.push_back(VdPoint(100,0));
+        FarArea1.push_back(VdPoint(100,100));
+        FarArea1.push_back(VdPoint(0,100));
+        vector <VdPoint> NearArea1; // near rect
+        NearArea1.push_back(VdPoint(0,0+100));
+        NearArea1.push_back(VdPoint(100,0+100));
+        NearArea1.push_back(VdPoint(100,200));
+        NearArea1.push_back(VdPoint(0,0+200));
+        vector <VdPoint> LaneArea1; // whole rect
+        LaneArea1.push_back(VdPoint(0,0));
+        LaneArea1.push_back(VdPoint(100,0));
+        LaneArea1.push_back(VdPoint(100,400));
+        LaneArea1.push_back(VdPoint(0,400));
+        int lane_no=18;
+        LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
+        LineData.push_back(d1);
+
+
+        vector <VdPoint> detect_line;
+        VdPoint p1(100,200);
+        VdPoint p2(400,200);
+        detect_line.push_back(p1);
+        detect_line.push_back(p2);
+
+        MvdProcessorInputData dt(BasicCoil,BaseLine,NearPointDistance,FarPointDistance,LineData,detect_line);
+
+        return dt;
+    }
 #endif
     DetectRegionInputData get_region_test_data(JsonPacket pkt,string SelectedProcessor)
     {
@@ -608,6 +677,10 @@ public slots:
         if(processor_label==LABLE_PROCESSOR_FVD){
             processor_pkt=get_fvd_test_data().data();
         }
+
+        if(processor_label==LABLE_PROCESSOR_MVD){
+            processor_pkt=get_mvd_test_data().data();
+        }
 #endif
         ProcessorDataJsonData pd(processor_label,processor_pkt);
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
@@ -638,6 +711,18 @@ public slots:
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
         set_processor(LABLE_PROCESSOR_PVD);
+    }
+    void set_processor_fvd(bool checked)
+    {
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
+        set_processor(LABLE_PROCESSOR_FVD);
+    }
+    void set_processor_mvd(bool checked)
+    {
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
+        set_processor(LABLE_PROCESSOR_MVD);
     }
 #endif
     void set_region(bool)

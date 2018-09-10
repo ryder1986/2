@@ -73,6 +73,11 @@ void DetectRegion::modify(RequestPkt pkt)
             p=new FvdProcessor(sp.ProcessorData);
             private_data.set_processor(pro,sp.ProcessorData);
         }
+        if(pro==LABLE_PROCESSOR_MVD)
+        {
+            p=new MvdProcessor(sp.ProcessorData);
+            private_data.set_processor(pro,sp.ProcessorData);
+        }
 
 #endif
         break;

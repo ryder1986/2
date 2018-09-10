@@ -8,7 +8,7 @@
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-#CONFIG+=WITH_CUDA
+CONFIG+=WITH_CUDA
 WITH_CUDA{
     DEFINES+=WITH_CUDA
 }

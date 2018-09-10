@@ -557,8 +557,8 @@ public:
     {
         decode();
     }
-    MvdProcessorInputData(  vector <VdPoint> bl,BaseLineJsonData be,int i1, int i2, vector <LaneDataJsonData>  ld):
-        BasicCoil(bl), BaseLine(be), NearPointDistance(i1), FarPointDistance(i2), LineData(ld)
+    MvdProcessorInputData(  vector <VdPoint> bl,BaseLineJsonData be,int i1, int i2, vector <LaneDataJsonData>  ld, vector <VdPoint>de):
+        BasicCoil(bl), BaseLine(be), NearPointDistance(i1), FarPointDistance(i2), LineData(ld),DetectLine(de)
 
     {
         encode();
