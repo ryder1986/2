@@ -31,24 +31,24 @@ public:
         p_cfg->pDetectCfg->FvdDetectCfg.near_point_length = da.NearPointDistance;
         p_cfg->pDetectCfg->FvdDetectCfg.far_point_length = da.FarPointDistance;
 
-        p_cfg->pDetectCfg->FvdDetectCfg.uLaneTotalNum = da.LineData.size();
-        for(i = 0; i < da.LineData.size(); i++)
+        p_cfg->pDetectCfg->FvdDetectCfg.uLaneTotalNum = da.LaneData.size();
+        for(i = 0; i < da.LaneData.size(); i++)
         {
-            p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].LaneNo = da.LineData[i].LaneNo;
-            for(j = 0; j < da.LineData[i].FarArea.size(); j++)
+            p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].LaneNo = da.LaneData[i].LaneNo;
+            for(j = 0; j < da.LaneData[i].FarArea.size(); j++)
             {
-                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].FarArea[j].x = da.LineData[i].FarArea[j].x;
-                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].FarArea[j].y = da.LineData[i].FarArea[j].y;
+                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].FarArea[j].x = da.LaneData[i].FarArea[j].x;
+                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].FarArea[j].y = da.LaneData[i].FarArea[j].y;
             }
-            for(j = 0; j < da.LineData[i].NearArea.size(); j++)
+            for(j = 0; j < da.LaneData[i].NearArea.size(); j++)
             {
-                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].NearArea[j].x = da.LineData[i].NearArea[j].x;
-                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].NearArea[j].y = da.LineData[i].NearArea[j].y;
+                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].NearArea[j].x = da.LaneData[i].NearArea[j].x;
+                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].NearArea[j].y = da.LaneData[i].NearArea[j].y;
             }
-            for(j = 0; j < da.LineData[i].LaneArea.size(); j++)
+            for(j = 0; j < da.LaneData[i].LaneArea.size(); j++)
             {
-                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].LaneArea[j].x = da.LineData[i].LaneArea[j].x;
-                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].LaneArea[j].y = da.LineData[i].LaneArea[j].y;
+                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].LaneArea[j].x = da.LaneData[i].LaneArea[j].x;
+                p_cfg->pDetectCfg->FvdDetectCfg.EachLaneCfg[i].LaneArea[j].y = da.LaneData[i].LaneArea[j].y;
             }
 
         }
