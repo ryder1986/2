@@ -539,9 +539,11 @@ public slots:
     void del_region(bool)
     {
         prt(info,"del region %d ",selected_region_index);
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
         RequestPkt pkt(Camera::OP::DELETE_REGION,selected_region_index,JsonPacket());
         vector <JsonPacket >::iterator begin=cfg.DetectRegion.begin();
-        cfg.DetectRegion.erase(begin+selected_region_index);
+        cfg.DetectRegion.erase(begin+selected_region_index-1);
 
         signal_camera(this,Camera::OP::DELETE_REGION,pkt.data());
     }
