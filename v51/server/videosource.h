@@ -226,8 +226,22 @@ public:
         }
         return ret;
     }
+    bool end_with_str(string str,string end_str)
+    {
+        bool ret=false;
+        if(str.size()>end_str.size()){
+            string st= str.substr(str.size()-end_str.size(),end_str.size());
+            return st==end_str;
+        }
+        return ret;
+    }
     bool get_frame(Mat &frame)
     {
+        if(is_pic)
+        {   png_frame.copyTo(frame);
+               this_thread::sleep_for(chrono::milliseconds(100));
+            return true;
+        }
         int ret=false;
         lock.lock();
         if(frame_list.size()>0){
@@ -252,7 +266,14 @@ public:
 
     bool get_frame(Mat &frame, int &timestamp)
     {
-        int ret=false;
+        if(is_pic)
+        {   png_frame.copyTo(frame);
+         this_thread::sleep_for(chrono::milliseconds(100));
+            return true;
+        }
+
+
+        bool ret=false;
         lock.lock();
 
         if(frame_list.size()>0){
@@ -303,6 +324,8 @@ private:
     Timer1 t1;
 
     thread *src_trd;
+    Mat png_frame;
+    bool is_pic;
 };
 #endif
 #endif // VIDEOSOURCE_H

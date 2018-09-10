@@ -2,7 +2,7 @@
 #include <thread>
 #include <functional>
 
-VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),frame_rate(0),vcap(path)
+VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),frame_rate(0),vcap(path),is_pic(false)
 {
     //  Timer1 t1(bind(&VideoSource::check_point,this));
     t1.start(1000);
@@ -11,7 +11,13 @@ VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),f
     quit_flg=false;
     //  thread(bind(&VideoSource::run,this)).detach();
     // _start_async(bind(&VideoSource::run,this));
-    src_trd=new thread(bind(&VideoSource::run,this));
+
+    if(end_with_str(url,"png")){
+        imread("/root/test.png").copyTo(png_frame);
+        prt(info,"read png");
+        is_pic=true;
+    }else
+         src_trd=new thread(bind(&VideoSource::run,this));
 }
 VideoSource::~VideoSource()
 {

@@ -45,7 +45,7 @@ QMAKE_CXXFLAGS +=-g -w
 #INCLUDEPATH+=$$CV_PATH/include
 ##LIBS+= -L/root/source/opencv-3.2.0/build/__install/lib
 LIBS+=-lopencv_core -lopencv_highgui -lopencv_objdetect \
--lopencv_imgproc -lopencv_ml -lopencv_highgui \
+-lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_imgcodecs\
 -lopencv_video -lopencv_videostab  -lpthread# -lopencv_videoio
 LIBS+=-lavformat -lavcodec  -lavutil -lswresample
 
