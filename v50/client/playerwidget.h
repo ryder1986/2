@@ -65,7 +65,7 @@ public:
         mod_processor.addAction(&choose_c4);
         choose_dummy.setText("dummy");
         mod_processor.addAction(&choose_dummy);
-            #ifdef WITH_CUDA
+#ifdef WITH_CUDA
         choose_fvd.setText("fvd");
         mod_processor.addAction(&choose_fvd);
         choose_pvd.setText("pvd");
@@ -84,6 +84,7 @@ public:
     {
 
     }
+
     void show(QPoint p)
     {
         menu.exec(p);
@@ -129,6 +130,7 @@ public slots:
     void camera_op_reset_url(bool)
     {
         emit action_done(CAMERA_RESET_URL,0);
+
     }
     void processor_op_choose_c4(bool)
     {
@@ -197,7 +199,20 @@ public:
         title=t;
         lock.unlock();
     }
+    void reset_url(string url)
+    {
+        lock.lock();
 
+        cfg.change_url(url);
+
+        if(src){
+            delete src;
+            src=NULL;
+        }
+
+        src=new VideoSource(url);
+        lock.unlock();
+    }
     void set_show(bool flg)
     {
         show_info=flg;
@@ -395,7 +410,12 @@ protected:
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
             if(output_data.DetectionResult.size()!=cfg.DetectRegion.size())
+            {
+                prt(info,"server region sz %d",output_data.DetectionResult.size());
+                prt(info,"client region sz %d",cfg.DetectRegion.size());
                 break;
+
+            }
             int tmpx,tmpy;
 
             draw_process_output( img_painter,p.SelectedProcessor, output_data.DetectionResult[i],tmpx,tmpy);
@@ -431,10 +451,13 @@ public slots:
             switch(level1){
             case PlayerWidgetMenu::CAMERA_ADD_REGION:
                 add_region(true);
+                break;
             case PlayerWidgetMenu::CAMERA_DEL_REGION:
                 del_region(true);
+                break;
             case PlayerWidgetMenu::CAMERA_RESET_URL:
                 set_url(true);
+                break;
             case PlayerWidgetMenu::HIDE_MENU:
                 hide_menu();
                 break;
@@ -474,29 +497,33 @@ public slots:
     }
     void add_region(bool)
     {
-        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
-        vector <VdPoint>ExpectedAreaVers;
-        ExpectedAreaVers.push_back(VdPoint(0,0));
-        ExpectedAreaVers.push_back(VdPoint(640,0));
-        ExpectedAreaVers.push_back(VdPoint(640,480));
-        ExpectedAreaVers.push_back(VdPoint(0,480));
-        DummyProcessorInputData dp(true,false,15);
+        DetectRegionInputData drid( get_region_test_data(get_dummy_test_data().data(),LABLE_PROCESSOR_DUMMY));
+        vector <JsonPacket >::iterator begin=cfg.DetectRegion.begin();
 
-        DetectRegionInputData rd(dp.data(),SelectedProcessor,ExpectedAreaVers);
-        RequestPkt pkt(Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),rd.data());
+        RequestPkt pkt(
+                    Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),
+                    drid.data()
+                    );
+        cfg.DetectRegion.insert(begin+cfg.DetectRegion.size(),drid.data());
+
         signal_camera(this,Camera::OP::INSERT_REGION,pkt.data());
         prt(info,"add region");
     }
     void del_region(bool)
     {
-        prt(info,"del region ");
+        prt(info,"del region %d ",selected_region_index);
         RequestPkt pkt(Camera::OP::DELETE_REGION,selected_region_index,JsonPacket());
+        vector <JsonPacket >::iterator begin=cfg.DetectRegion.begin();
+        cfg.DetectRegion.erase(begin+selected_region_index);
+
         signal_camera(this,Camera::OP::DELETE_REGION,pkt.data());
     }
+
     void set_url(bool)
     {
         JsonPacket p;
         signal_camera(this,Camera::OP::CHANGE_URL,p);
+
     }
 #ifdef WITH_CUDA
     FvdProcessorInputData get_fvd_test_data()
@@ -537,6 +564,18 @@ public slots:
 
     }
 #endif
+    DetectRegionInputData get_region_test_data(JsonPacket pkt,string SelectedProcessor)
+    {
+
+        vector <VdPoint>ExpectedAreaVers;
+        ExpectedAreaVers.push_back(VdPoint(0,0));
+        ExpectedAreaVers.push_back(VdPoint(640,0));
+        ExpectedAreaVers.push_back(VdPoint(640,480));
+        ExpectedAreaVers.push_back(VdPoint(0,480));
+
+        DetectRegionInputData rd(pkt,SelectedProcessor,ExpectedAreaVers);
+        return rd;
+    }
     DummyProcessorInputData get_dummy_test_data()
     {
         DummyProcessorInputData d(true,false,17);

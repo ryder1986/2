@@ -32,7 +32,7 @@ void MainWindow::recv_server_output()
         //prt(info,"rget udp len %d",ret);
         string str(buf);
         JsonPacket p(str);
-       prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
+     //  prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
         AppOutputData rst(p);
 
         int cam_index=rst.CameraIndex;
@@ -92,6 +92,7 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
         RequestPkt pkt(App::Operation::MODIFY_CAMERA,index,pkt_url.data());
         clt.send_cmd(pkt.data());
         clt.get_config();
+        w->reset_url(string(ui->lineEdit_default_url->text().toStdString()));
         break;
     }
     default:break;
