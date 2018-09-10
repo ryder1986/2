@@ -28,9 +28,12 @@ public:
     };
     enum CMD_LAYER2{
         MOD_REGION_PROCESSOR_TO_C4=1,
-        MOD_REGION_PROCESSOR_TO_FVD,
-        MOD_REGION_PROCESSOR_TO_PVD,
         MOD_REGION_PROCESSOR_TO_DUMMY
+#ifdef WITH_CUDA
+        ,
+        MOD_REGION_PROCESSOR_TO_FVD,
+        MOD_REGION_PROCESSOR_TO_PVD
+#endif
     };
     QWidget *wgt;
     QAction add_region;
@@ -39,10 +42,11 @@ public:
     QMenu menu;
 
     QMenu mod_processor;
-    QAction choose_c4;
+    QAction choose_c4;    QAction choose_dummy;
+#ifdef WITH_CUDA
     QAction choose_fvd;
     QAction choose_pvd;
-    QAction choose_dummy;
+#endif
 public:
     PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor")
     {
@@ -59,17 +63,21 @@ public:
 
         choose_c4.setText("c4");
         mod_processor.addAction(&choose_c4);
+        choose_dummy.setText("dummy");
+        mod_processor.addAction(&choose_dummy);
+            #ifdef WITH_CUDA
         choose_fvd.setText("fvd");
         mod_processor.addAction(&choose_fvd);
         choose_pvd.setText("pvd");
         mod_processor.addAction(&choose_pvd);
-        choose_dummy.setText("dummy");
-        mod_processor.addAction(&choose_dummy);
+#endif
 
         connect(&choose_c4,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_c4(bool)));
+        connect(&choose_dummy,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_dummy(bool)));
+#ifdef WITH_CUDA
         connect(&choose_fvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_fvd(bool)));
         connect(&choose_pvd,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_pvd(bool)));
-        connect(&choose_dummy,SIGNAL(triggered(bool)),this,SLOT(processor_op_choose_dummy(bool)));
+#endif
         connect(&menu,SIGNAL(aboutToHide()),this,SLOT(hide_menu()));
     }
     void reset()
@@ -82,23 +90,28 @@ public:
     }
     void set_checkable(bool ca)
     {
+#ifdef WITH_CUDA
         choose_pvd.setCheckable(ca);
         choose_fvd.setCheckable(ca);
+#endif
         choose_dummy.setCheckable(ca);
         choose_c4.setCheckable(ca);
     }
     void set_checked_processor(string label)
     {
-
+#ifdef WITH_CUDA
         choose_pvd.setChecked(false);
         choose_fvd.setChecked(false);
+#endif
         choose_dummy.setChecked(false);
         choose_c4.setChecked(false);
 
         if(label==LABLE_PROCESSOR_C4) choose_c4.setChecked(true);
         if(label==LABLE_PROCESSOR_DUMMY) choose_dummy.setChecked(true);
+#ifdef WITH_CUDA
         if(label==LABLE_PROCESSOR_FVD) choose_fvd.setChecked(true);
         if(label==LABLE_PROCESSOR_PVD) choose_pvd.setChecked(true);
+#endif
     }
 public slots:
     void hide_menu()
@@ -121,6 +134,11 @@ public slots:
     {
         emit action_done(0,MOD_REGION_PROCESSOR_TO_C4);
     }
+    void processor_op_choose_dummy(bool)
+    {
+        emit action_done(0,MOD_REGION_PROCESSOR_TO_DUMMY);
+    }
+#ifdef WITH_CUDA
     void processor_op_choose_pvd(bool)
     {
         emit action_done(0,MOD_REGION_PROCESSOR_TO_PVD);
@@ -129,10 +147,7 @@ public slots:
     {
         emit action_done(0,MOD_REGION_PROCESSOR_TO_FVD);
     }
-    void processor_op_choose_dummy(bool)
-    {
-        emit action_done(0,MOD_REGION_PROCESSOR_TO_DUMMY);
-    }
+#endif
 signals:
     void action_done(int level1,int level2);
 };
@@ -288,6 +303,7 @@ public:
 
         }
 
+#ifdef WITH_CUDA
         if(processor==LABLE_PROCESSOR_PVD){
 
         }
@@ -311,6 +327,7 @@ public:
             }
 #endif
         }
+#endif
     }
 
     void draw_process_output(QPainter &pt,string processor,JsonPacket out,int &offset_x,int &offset_y)
@@ -333,7 +350,7 @@ public:
                 pt.drawEllipse(QPoint(p.x+ro.DetectionRect.x,p.y+ro.DetectionRect.y),d.Radii,d.Radii);
             }
         }
-
+#ifdef WITH_CUDA
         if(processor==LABLE_PROCESSOR_PVD){
             PvdProcessorOutputData d(ro.Result);
             for(ObjectRect r:d.PvdDetectedObjects){
@@ -350,15 +367,16 @@ public:
                 pt.drawRect(QRect(x,y,r.w,r.h));
                 pt.drawText(x,y,QString(r.label.data()).append("(").append(QString::number(r.confidence_rate)).append(")"));
             }
-            #if 0
+#if 0
             for(LaneOutputJsonData dat: d.LaneOutputData)
             {
                 VdPoint s_p=dat.StartQueuePoint;
                 VdPoint e_p=dat.EndQueuePoint;
                 pt.drawLine(QPoint(s_p.x+rect_x,s_p.y+rect_y),QPoint(e_p.x+rect_x,e_p.y+rect_y));
             }
-            #endif
+#endif
         }
+#endif
 
     }
 protected:
@@ -429,15 +447,17 @@ public slots:
             case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_C4:
                 set_processor(LABLE_PROCESSOR_C4);
                 break;
+            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_DUMMY:
+                set_processor(LABLE_PROCESSOR_DUMMY);
+                break;
+#ifdef WITH_CUDA
             case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_FVD:
                 set_processor(LABLE_PROCESSOR_FVD);
                 break;
             case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_PVD:
                 set_processor(LABLE_PROCESSOR_PVD);
                 break;
-            case PlayerWidgetMenu::MOD_REGION_PROCESSOR_TO_DUMMY:
-                set_processor(LABLE_PROCESSOR_DUMMY);
-                break;
+#endif
             default:break;
             }
             return;
@@ -478,6 +498,7 @@ public slots:
         JsonPacket p;
         signal_camera(this,Camera::OP::CHANGE_URL,p);
     }
+#ifdef WITH_CUDA
     FvdProcessorInputData get_fvd_test_data()
     {
         vector <VdPoint> BasicCoil;// standard rect
@@ -515,6 +536,7 @@ public slots:
         PvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
 
     }
+#endif
     DummyProcessorInputData get_dummy_test_data()
     {
         DummyProcessorInputData d(true,false,17);
@@ -539,6 +561,7 @@ public slots:
             processor_pkt=get_c4_test_data().data();
         }
 
+#ifdef WITH_CUDA
         if(processor_label==LABLE_PROCESSOR_PVD){
             processor_pkt=get_pvd_test_data().data();
         }
@@ -546,7 +569,7 @@ public slots:
         if(processor_label==LABLE_PROCESSOR_FVD){
             processor_pkt=get_fvd_test_data().data();
         }
-
+#endif
         ProcessorDataJsonData pd(processor_label,processor_pkt);
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
@@ -564,19 +587,20 @@ public slots:
 
         set_processor(LABLE_PROCESSOR_DUMMY);
     }
-    void set_processor_pvd(bool checked)
-    {
-        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
-            return;
-        set_processor(LABLE_PROCESSOR_PVD);
-    }
-
     void set_processor_c4(bool checked)
     {
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
         set_processor(LABLE_PROCESSOR_C4);
     }
+#ifdef WITH_CUDA
+    void set_processor_pvd(bool checked)
+    {
+        if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
+            return;
+        set_processor(LABLE_PROCESSOR_PVD);
+    }
+#endif
     void set_region(bool)
     {
         prt(info,"mod region ");

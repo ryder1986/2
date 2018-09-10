@@ -7,6 +7,12 @@
 #QT       += core  network
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+#CONFIG+=WITH_CUDA
+WITH_CUDA{
+    DEFINES+=WITH_CUDA
+}
+
 QT += widgets network
 TARGET = client
 TEMPLATE = app
@@ -18,18 +24,15 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     playerwidget.h
-
 FORMS    += mainwindow.ui
-#SRC_PATH=../..
-#INCLUDEPATH +=$$SRC_PATH
 
 CONFIG +=c++11
 DEFINES+=IS_UNIX
+
 SRC_PATH =../server
 HEADERS  += $$SRC_PATH/tool.h
 INCLUDEPATH +=$$SRC_PATH/cppjson/include
 INCLUDEPATH +=$$SRC_PATH/
-
 
 HEADERS +=$$SRC_PATH/cppjson/include/json/reader.h $$SRC_PATH/cppjson/include/json/writer.h $$SRC_PATH/cppjson/include/json/value.h
 
@@ -37,23 +40,7 @@ SOURCES += $$SRC_PATH/tool.cpp
 SOURCES += $$SRC_PATH/cppjson/json_reader.cpp $$SRC_PATH/cppjson/json_writer.cpp  $$SRC_PATH/cppjson/json_value.cpp
 SOURCES += $$SRC_PATH/videosource.cpp
 
-
 LIBS+= -L/root/source/opencv-3.2.0/build/__install/lib -lopencv_core -lopencv_highgui -lopencv_objdetect \
 -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video -lopencv_videostab  -lopencv_videoio -lpthread  -lX11
 LIBS+=-lavformat -lavcodec  -lavutil -lswresample
 
-#LIBS+=-L/root/build/2/build-libjson-Unnamed-Debug -ljson
-#LIBS+=-L/root/build/2/build-libsocket-Unnamed-Debug -lsocket
-#LIBS+=-L/root/build/2/build-libtool-Unnamed-Debug -ltool
-
-
-
-#LIBS+= -lopencv_core -lopencv_highgui -lopencv_objdetect -lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video   -lpthread
-#LIBS+= -L/root/opencv249/build/__install/lib -lopencv_core -lopencv_highgui -lopencv_objdetect \
-#-lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video      -lpthread
-#LIBS+=-lavcodec -lavformat -lavutil -lswresample
-
-#INCLUDEPATH+=/usr/include/python2.7
-#LIBS+=  -lpython2.7
-#QMAKE_CXXFLAGS+=-w
-#LIBS+=-L/root/source/ffmpeg-2.8.14/__install/lib/ -lavformat

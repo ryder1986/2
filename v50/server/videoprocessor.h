@@ -393,7 +393,7 @@ public:
     int NearPointDistance;//distance to camera
     int FarPointDistance;
     vector <LaneDataJsonData> LineData; // lane info
-FvdProcessorInputData(){}
+    FvdProcessorInputData(){}
     FvdProcessorInputData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
@@ -539,6 +539,101 @@ public:
         ENCODE_INT_MEM(VideoState);
         ENCODE_JSONDATA_ARRAY_MEM(LaneOutputData);
         ENCODE_JSONDATA_ARRAY_MEM(DegreeData);
+    }
+};
+
+
+class MvdProcessorInputData:public JsonData{
+public:
+    vector <VdPoint> BasicCoil;// standard rect
+    BaseLineJsonData BaseLine;// a line can adjust car real length
+    int NearPointDistance;//distance to camera
+    int FarPointDistance;
+    vector <LaneDataJsonData> LineData; // lane info
+
+    vector <VdPoint> DetectLine;
+    MvdProcessorInputData(){}
+    MvdProcessorInputData(JsonPacket pkt):JsonData(pkt)
+    {
+        decode();
+    }
+    MvdProcessorInputData(  vector <VdPoint> bl,BaseLineJsonData be,int i1, int i2, vector <LaneDataJsonData>  ld):
+        BasicCoil(bl), BaseLine(be), NearPointDistance(i1), FarPointDistance(i2), LineData(ld)
+
+    {
+        encode();
+    }
+    void decode()
+    {
+        DECODE_JSONDATA_ARRAY_MEM(BasicCoil);
+        DECODE_JSONDATA_MEM(BaseLine);
+        DECODE_INT_MEM(NearPointDistance);
+        DECODE_INT_MEM(FarPointDistance);
+        DECODE_JSONDATA_ARRAY_MEM(LineData);
+        DECODE_JSONDATA_ARRAY_MEM(DetectLine);
+    }
+    void encode()
+    {
+        ENCODE_JSONDATA_ARRAY_MEM(BasicCoil);
+        ENCODE_JSONDATA_MEM(BaseLine);
+        ENCODE_INT_MEM(NearPointDistance);
+        ENCODE_INT_MEM(FarPointDistance);
+        ENCODE_JSONDATA_ARRAY_MEM(LineData);
+        ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
+    }
+};
+class MvdProcessorOutputData:public JsonData{
+public:
+    vector <ObjectRect> MvdDetectedObjects;//all rects of car
+    int CurrentVehicleNumber; // cars number count on screen now;
+    int Visibility;// visiable or not
+    int VideoState;// video state
+    vector <LaneOutputJsonData> LaneOutputData;// output
+    vector <DegreeJsonData> DegreeData; // on  lane points
+    int PersonFlow1;
+    int PersonFlow2;
+    int CurrentPersionCount;
+    MvdProcessorOutputData(JsonPacket p):JsonData(p)
+    {
+        decode();
+    }
+    MvdProcessorOutputData(vector <ObjectRect> fs, int cr, int vy, int ve,
+                           vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,int ct):
+        MvdDetectedObjects(fs),
+        CurrentVehicleNumber(cr),
+        Visibility(vy),
+        VideoState(ve),
+        LaneOutputData(la),
+        DegreeData(da),PersonFlow1(p1),PersonFlow2(p2),CurrentPersionCount(ct)
+    {
+        encode();
+    }
+    void decode()
+    {
+        DECODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+        DECODE_INT_MEM(CurrentVehicleNumber);
+        DECODE_INT_MEM(Visibility);
+        DECODE_INT_MEM(VideoState);
+        DECODE_JSONDATA_ARRAY_MEM(LaneOutputData);
+        DECODE_JSONDATA_ARRAY_MEM(DegreeData);
+
+        DECODE_INT_MEM(PersonFlow1);
+        DECODE_INT_MEM(PersonFlow2);
+        DECODE_INT_MEM(CurrentPersionCount);
+
+    }
+    void encode()
+    {
+        ENCODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+        ENCODE_INT_MEM(CurrentVehicleNumber);
+        ENCODE_INT_MEM(Visibility);
+        ENCODE_INT_MEM(VideoState);
+        ENCODE_JSONDATA_ARRAY_MEM(LaneOutputData);
+        ENCODE_JSONDATA_ARRAY_MEM(DegreeData);
+
+        ENCODE_INT_MEM(PersonFlow1);
+        ENCODE_INT_MEM(PersonFlow2);
+        ENCODE_INT_MEM(CurrentPersionCount);
     }
 };
 #endif // VIDEOPROCESSOR_H

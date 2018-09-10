@@ -19,7 +19,7 @@
                             ]
                         },
                         "SelectedProcessor":"Dummy",
-                        "Comment":"C4/Dummy/Pvd/Fvd"
+                        "Comment":"C4/Dummy/Pvd/Fvd/Mvd"
                     }
                 ],
                 "Url1":"rtsp://192.1623238.1.211:8554/live/test1",

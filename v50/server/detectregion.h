@@ -7,14 +7,16 @@
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include "videoprocessor.h"
-//#include "c4processor.h"
-//#include "pvdprocessor.h"
 using namespace std;
 using namespace cv;
 #define LABLE_PROCESSOR_C4 "C4"
 #define LABLE_PROCESSOR_DUMMY "Dummy"
+
+#ifdef WITH_CUDA
 #define LABLE_PROCESSOR_PVD "Pvd"
 #define LABLE_PROCESSOR_FVD "Fvd"
+#define LABLE_PROCESSOR_MVD "Mvd"
+#endif
 class DetectRegionInputData:public JsonData
 {
 
@@ -162,9 +164,9 @@ public:
 
     ~DetectRegion()
     {
-      if(p)
-          delete p;
-      p=NULL;
+        if(p)
+            delete p;
+        p=NULL;
     }
 
     JsonPacket work(Mat frame)
@@ -176,7 +178,7 @@ public:
         valid_rect(detect_rect,frame.cols,frame.rows);
         Mat tmp=frame(detect_rect);
         p->process(tmp,rst_r);
-      //  p->process(frame,rst_r);
+        //  p->process(frame,rst_r);
         VdRect r(detect_rect.x,detect_rect.y,detect_rect.width,detect_rect.height);
         JsonPacket dct_rct=r.data();
         DetectRegionOutputData rst(rst_r,dct_rct);
