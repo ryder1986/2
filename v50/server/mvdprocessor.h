@@ -81,24 +81,8 @@ public:
 		int PersonFlow1 = p_cfg->p_outbuf->PVDoutbuf.uPersonSum[0];
 		int PersonFlow2 = p_cfg->p_outbuf->PVDoutbuf.uPersonSum[1];
 		int CurrentPersionCount = p_cfg->p_outbuf->PVDoutbuf.uPersonTotalSum;
-		vector <ObjectRect> PvdDetectedObjects;
-		for( i = 0; i < p_cfg->p_outbuf->PVDoutbuf.uPersonTotalSum; i++) 
-		{
-			x = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.x;
-			y = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.y;
-			w = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.width;
-			h = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].box.height;
-			c = p_cfg->p_outbuf->PVDoutbuf.detPerson[i].prob;
-			char name_tmp[50];memset(name_tmp,0,50);
-			strcpy(name_tmp,(char*)p_cfg->p_outbuf->PVDoutbuf.detPerson[i].names);
-			names.assign(name_tmp);
-			ObjectRect  obj = ObjectRect(x, y, w, h, names, c);
-			PvdDetectedObjects.push_back(obj);
-
-		}
-
 		//fvd
-        vector <ObjectRect> FvdDetectedObjects;
+        vector <ObjectRect> MvdDetectedObjects;
         for( i = 0; i <p_cfg->p_outbuf->FVDoutbuf.uObjNum; i++)
         {
             x = p_cfg->p_outbuf->FVDoutbuf.detObj[i].box.x;
@@ -110,9 +94,9 @@ public:
             strcpy(names_tmp, p_cfg->p_outbuf->FVDoutbuf.detObj[i].names);
             names=string(names_tmp);
             ObjectRect  obj = ObjectRect(x, y, w, h, names, c);
-            FvdDetectedObjects.push_back(obj);
+            MvdDetectedObjects.push_back(obj);
         }
-        int CurrentVehicleNumber = p_cfg->p_outbuf->FVDoutbuf.uObjNum;
+        int CurrentVehicleNumber = p_cfg->p_outbuf->FVDoutbuf.uObjNum - p_cfg->p_outbuf->PVDoutbuf.uPersonTotalSum;
         int Visibility = p_cfg->p_outbuf->FVDoutbuf.Visbility;
         int VideoState = p_cfg->p_outbuf->FVDoutbuf.VideoException;
 
@@ -140,11 +124,18 @@ public:
         {
             DegreeJsonData d(p_cfg->p_outbuf->FVDoutbuf.uDegreePoint[i][0],p_cfg->p_outbuf->FVDoutbuf.uDegreePoint[i][1]);
             DegreeData.push_back(d);
+
         }
 
-        MvdProcessorOutputData out(PvdDetectedObjects,PersonFlow1,
-                                   PersonFlow2,CurrentPersionCount,
-                                   CurrentVehicleNumber,Visibility,VideoState,LaneOutputData,DegreeData);
+        MvdProcessorOutputData out(MvdDetectedObjects,
+                                   CurrentVehicleNumber,
+                                   Visibility,
+                                   VideoState,
+                                   LaneOutputData,
+                                   DegreeData,
+                                   PersonFlow1,
+                                   PersonFlow2,
+                                   CurrentPersionCount);
         pkt=out.data();
     }
 };

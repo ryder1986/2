@@ -604,7 +604,10 @@ public:
         Visibility(vy),
         VideoState(ve),
         LaneOutputData(la),
-        DegreeData(da),PersonFlow1(p1),PersonFlow2(p2),CurrentPersionCount(ct)
+        DegreeData(da),
+        PersonFlow1(p1),
+        PersonFlow2(p2),
+        CurrentPersionCount(ct)
     {
         encode();
     }
