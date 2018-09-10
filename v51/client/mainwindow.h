@@ -599,18 +599,47 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
+    void widget_append_camera(CameraInputData d)
+    {
+        ui->comboBox_cameras->addItem(d.Url.data());
+        PlayerWidget *player=new PlayerWidget(d);
+        players.push_back(player);
+        ui->gridLayout_video->addWidget(player);
+        connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
+                this,SLOT(generate_current_config(CameraInputData,QWidget*)));
+
+        connect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
+                this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
+
+        connect(player,SIGNAL(click_event(PlayerWidget *,int)),\
+                this,SLOT(player_event(PlayerWidget*,int)));
+    }
+    void widget_del_camera(int index)
+    {
+        auto it=players.begin();
+      PlayerWidget  *player=*(it+index-1);
+        ui->gridLayout_video->removeWidget(player);
+        delete player;
+        players.erase(it+index-1);
+
+//        disconnect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
+//                this,SLOT(generate_current_config(CameraInputData,QWidget*)));
+
+//        disconnect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
+//                this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
+
+//        disconnect(player,SIGNAL(click_event(PlayerWidget *,int)),\
+//                this,SLOT(player_event(PlayerWidget*,int)));
+    }
     void start_config()
     {
         thread_lock.lock();
         for(CameraInputData d:cfg.CameraData)
         {
+#if 0
             ui->comboBox_cameras->addItem(d.Url.data());
             PlayerWidget *player=new PlayerWidget(d);
             players.push_back(player);
-            //ui->groupBox_video->layout()->addWidget(player);
-            //            prt(info,"ori %p", ui->widget_video->layout());
-            //            prt(info,"new %p", ui->gridLayout_video);
-            //             ui->widget_video->setLayout(ui->gridLayout_video);
             ui->gridLayout_video->addWidget(player);
             connect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
                     this,SLOT(generate_current_config(CameraInputData,QWidget*)));
@@ -620,10 +649,9 @@ private:
 
             connect(player,SIGNAL(click_event(PlayerWidget *,int)),\
                     this,SLOT(player_event(PlayerWidget*,int)));
-
-
-            //            connect(player,SIGNAL(signal_region(PlayerWidget*,int,int,JsonPacket)),\
-            //                    this,SLOT(slot_region(PlayerWidget*,int,int,JsonPacket)));
+#else
+            widget_append_camera(d);
+#endif
 
         }
         prt(info,"start config: %s",cfg.data().str().data());
@@ -643,7 +671,13 @@ private:
         players.clear();
         thread_lock.unlock();
     }
+    void insert_camera( CameraInputData d)
+    {
 
+        cfg.CameraData.insert(cfg.CameraData.begin()+cfg.CameraData.size(),d.data());
+        // players.push_back(new PlayerWidget(d));
+        widget_append_camera(d);
+    }
     void recv_server_output();
 private slots:
     void player_event(PlayerWidget *w,int t){

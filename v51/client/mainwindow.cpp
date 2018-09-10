@@ -32,7 +32,7 @@ void MainWindow::recv_server_output()
         //prt(info,"rget udp len %d",ret);
         string str(buf);
         JsonPacket p(str);
-        prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
+      //  prt(info,"recive output %d bytes --> %s",p.str().size(),p.str().data());
         AppOutputData rst(p);
 
         int cam_index=rst.CameraIndex;
@@ -42,6 +42,7 @@ void MainWindow::recv_server_output()
         //prt(info,"recving cam %d",cam_index);
         if(players.size()<cam_index)
         {
+            prt(info,"recving cam %d, our sz %d ",cam_index,players.size());
             thread_lock.unlock();
             continue;
         }
@@ -55,8 +56,8 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
 {
     //int index= ui->groupBox_video->layout()->indexOf(w);
     int index= ui->gridLayout_video->indexOf(w)+1;
-     prt(info,"handle player %d request",index);
-   //  thread_lock.lock();
+    prt(info,"handle player %d request",index);
+    //  thread_lock.lock();
     switch(op){
     case Camera::OP::INSERT_REGION:
     {
@@ -85,7 +86,7 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     case Camera::OP::CHANGE_URL:
     {
         JsonPacket p;
-       // p.add("Url","rtsp://192.168.1.95:554/av0_1");
+        // p.add("Url","rtsp://192.168.1.95:554/av0_1");
         p.add("Url",ui->lineEdit_default_url->text().toStdString());
         RequestPkt pkt_url(Camera::OP::CHANGE_URL,0,p);
 
@@ -97,7 +98,7 @@ void MainWindow::slot_camera(PlayerWidget *w, int op, JsonPacket data)
     }
     default:break;
     }
- //   thread_lock.unlock();
+    //   thread_lock.unlock();
 }
 
 void MainWindow::server_msg(QString msg)
@@ -169,8 +170,10 @@ void MainWindow::on_pushButton_addcam_clicked()
 {
     prt(info,"add camera");
     clt.add_camera(ui->lineEdit_addcam->text().toUtf8().data(),cfg.CameraData.size());
-    clt.get_config();
-    stop_config();
+    insert_camera(PlayerWidget::make_test_camera_data(ui->lineEdit_default_url->text().toStdString()));
+
+    //clt.get_config();
+    //stop_config();
 }
 
 void MainWindow::on_pushButton_delcam_clicked()
@@ -178,6 +181,7 @@ void MainWindow::on_pushButton_delcam_clicked()
     prt(info,"del camera");
     int index=ui->lineEdit_delcam->text().toInt();
     clt.del_camera(index);
-    clt.get_config();
-    stop_config();
+    widget_del_camera(index);
+   // clt.get_config();
+   // stop_config();
 }

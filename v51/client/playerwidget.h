@@ -205,6 +205,25 @@ public:
         tmr.start(1000);
         connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(right_click(QPoint)));
     }
+
+    static CameraInputData make_test_camera_data(string url)
+    {
+        //string SelectedProcessor="C4";
+        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
+        vector <VdPoint>ExpectedAreaVers;
+        ExpectedAreaVers.push_back(VdPoint(0,0));
+        ExpectedAreaVers.push_back(VdPoint(640,0));
+        ExpectedAreaVers.push_back(VdPoint(640,480));
+        ExpectedAreaVers.push_back(VdPoint(0,480));
+        //JsonPacket ProcessorData;
+        DummyProcessorInputData dd(true,true,5);
+        // DummyProcessor
+        DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
+        vector<JsonPacket> rs;
+        rs.push_back(rdata.data());
+        CameraInputData data(rs,url);
+        return data;
+    }
     void set_title(QString t)
     {
         lock.lock();
