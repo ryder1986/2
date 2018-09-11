@@ -621,7 +621,16 @@ private:
     void widget_del_camera(int index)
     {
         if(index<1)
+        {
+            prt(info,"index  0");
             return;
+        }
+
+        if(players.size()==0)
+        {
+            prt(info,"player size 0");
+            return;
+        }
         auto it=players.begin();
         PlayerWidget  *player=*(it+index-1);
         ui->gridLayout_video->removeWidget(player);

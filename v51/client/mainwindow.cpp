@@ -177,6 +177,8 @@ void MainWindow::on_pushButton_delcam_clicked()
 {
     prt(info,"del camera");
     int index=ui->lineEdit_delcam->text().toInt();
+    if(cfg.CameraData.size()<1)
+        return;
     clt.del_camera(index);
     delete_camera(index);
    // widget_del_camera(index);

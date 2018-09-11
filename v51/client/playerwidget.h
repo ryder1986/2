@@ -50,7 +50,12 @@ public:
     QAction choose_mvd;
 #endif
 public:
+    #ifdef WITH_CUDA
     PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor")
+  #else
+    PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor"),del_region(w),reset_url(w),choose_c4(w),choose_dummy(w),add_region(w)
+
+  #endif
     {
         menu.addMenu(&mod_processor);
         add_region.setText("add_region");

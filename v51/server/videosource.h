@@ -122,7 +122,7 @@ private:
         av_register_all();
         avformat_network_init();
         fmt = avformat_alloc_context();
-        if(avformat_open_input(&fmt, url.data(), NULL, 0) != 0) {
+        if(avformat_open_input(&fmt, url.data(), NULL, 0) != 0) {//TODO, rtsp will stuck here if no camera exist
             ret=false;
         } else if (avformat_find_stream_info(fmt, NULL) < 0) {
             ret=false;

@@ -10,7 +10,7 @@ WITH_CUDA{
     LIBS+=-lpython2.7
 }else{
     #message("no cuda")
-    LIBS+=-lopencv_imgcodecs
+   # LIBS+=-lopencv_imgcodecs
 }
 CONFIG += console c++11
 DEFINES+=IS_UNIX
