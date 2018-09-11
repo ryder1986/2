@@ -173,9 +173,9 @@ public:
     {
         lock.lock();
         JsonPacket rst_r;
+        valid_rect(detect_rect,frame.cols,frame.rows);
         if(detect_rect.width%2)detect_rect.width--;
         if(detect_rect.height%2)detect_rect.height--;
-        valid_rect(detect_rect,frame.cols,frame.rows);
         Mat tmp=frame(detect_rect);
         if(p &&detect_rect.x>=0&&detect_rect.x<10000
                 &&detect_rect.y>=0&&detect_rect.y<10000
