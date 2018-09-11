@@ -8,6 +8,9 @@ WITH_CUDA{
     pvdprocessor.cpp
     INCLUDEPATH+=/usr/include/python2.7
     LIBS+=-lpython2.7
+}else{
+    #message("no cuda")
+    LIBS+=-lopencv_imgcodecs
 }
 CONFIG += console c++11
 DEFINES+=IS_UNIX
