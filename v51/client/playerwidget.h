@@ -51,7 +51,7 @@ public:
 #endif
 public:
     #ifdef WITH_CUDA
-    PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor")
+    PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor"),del_region(w),reset_url(w),choose_c4(w),choose_dummy(w),add_region(w),choose_fvd(w),choose_pvd(w),choose_mvd(w)
   #else
     PlayerWidgetMenu(QWidget *w):wgt(w),menu(wgt),mod_processor("change processor"),del_region(w),reset_url(w),choose_c4(w),choose_dummy(w),add_region(w)
 
