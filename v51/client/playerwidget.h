@@ -461,13 +461,14 @@ protected:
         int r2_y=img.height()-r2_height;
         QRect r1(r1_x,r1_y,r1_width,r1_height);
         QRect r2(r2_x,r2_y,r2_width,r2_height);
-//        img_painter.drawRect(r1);
-//        img_painter.drawRect(r2);
-        img_painter.setFont( QFont( "Microsoft YaHei",30, 100));
-//        img_painter.drawText(r1,Qt::AlignLeft,fps);
-//        img_painter.drawText(r2_x,r2_y,url);
+        //        img_painter.drawRect(r1);
+        //        img_painter.drawRect(r2);
+        img_painter.setFont( QFont( "Microsoft YaHei",30, 30));
+        //        img_painter.drawText(r1,Qt::AlignLeft,fps);
+        //        img_painter.drawText(r2_x,r2_y,url);
 
         img_painter.drawText(r1_x,r1_y,QString("fps:").append(fps).append("   ").append("url:").append(url));
+        img_painter.setFont( QFont( "Microsoft YaHei",12, 30));
         //        img_painter.setFont( QFont( "Microsoft YaHei",30, 100));
         //        //  img_painter.drawText(0,img.height()-20,QString::number(output_data_fps_result));
         //        img_painter.drawText(r1,QString::number(output_data_fps_result));

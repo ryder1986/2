@@ -14,7 +14,7 @@ VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),
     // _start_async(bind(&VideoSource::run,this));
 
     if(end_with_str(url,"png")){
-        imread("/root/test.png").copyTo(png_frame);
+        imread(url).copyTo(png_frame);
         prt(info,"read png");
         is_pic=true;
     }else

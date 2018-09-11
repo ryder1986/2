@@ -237,11 +237,8 @@ public:
     }
     bool get_frame(Mat &frame)
     {
-        if(is_pic)
-        {   png_frame.copyTo(frame);
-               this_thread::sleep_for(chrono::milliseconds(50));
+        if(get_pic(frame))
             return true;
-        }
         int ret=false;
         lock.lock();
         if(frame_list.size()>0){
@@ -263,14 +260,25 @@ public:
     //          return tv.tv_sec*1000+tv.tv_usec/1000;
     //      }
 
+    inline  bool get_pic(Mat &frame)
+    {
+
+        bool ret=false;
+        if(is_pic)
+        {
+            png_frame.copyTo(frame);
+            this_thread::sleep_for(chrono::milliseconds(100));
+            if(png_frame.cols>0)
+                ret=true;
+        }
+        return ret;
+
+    }
 
     bool get_frame(Mat &frame, int &timestamp)
     {
-        if(is_pic)
-        {   png_frame.copyTo(frame);
-         this_thread::sleep_for(chrono::milliseconds(100));
+        if(get_pic(frame))
             return true;
-        }
 
 
         bool ret=false;
