@@ -53,23 +53,23 @@ public:
     void add_camera(string url,int index)
     {
         //string SelectedProcessor="C4";
-//        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
+        //        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
 
-//        vector <VdPoint>ExpectedAreaVers;
-//        ExpectedAreaVers.push_back(VdPoint(0,0));
-//        ExpectedAreaVers.push_back(VdPoint(640,0));
-//        ExpectedAreaVers.push_back(VdPoint(640,480));
-//        ExpectedAreaVers.push_back(VdPoint(0,480));
-//        //JsonPacket ProcessorData;
-//        DummyProcessorInputData dd(true,true,5);
-//        // DummyProcessor
-//        DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
-//        vector<JsonPacket> rs;
-//        rs.push_back(rdata.data());
+        //        vector <VdPoint>ExpectedAreaVers;
+        //        ExpectedAreaVers.push_back(VdPoint(0,0));
+        //        ExpectedAreaVers.push_back(VdPoint(640,0));
+        //        ExpectedAreaVers.push_back(VdPoint(640,480));
+        //        ExpectedAreaVers.push_back(VdPoint(0,480));
+        //        //JsonPacket ProcessorData;
+        //        DummyProcessorInputData dd(true,true,5);
+        //        // DummyProcessor
+        //        DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
+        //        vector<JsonPacket> rs;
+        //        rs.push_back(rdata.data());
 
 
 
-//        CameraInputData data(rs,url);
+        //        CameraInputData data(rs,url);
         RequestPkt pkt(App::Operation::INSERT_CAMERA,index,PlayerWidget::make_test_camera_data(url).data());
         bool ret= send(pkt.data().str());//talk to server
         if(!ret){
@@ -620,20 +620,22 @@ private:
     }
     void widget_del_camera(int index)
     {
+        if(index<1)
+            return;
         auto it=players.begin();
-      PlayerWidget  *player=*(it+index-1);
+        PlayerWidget  *player=*(it+index-1);
         ui->gridLayout_video->removeWidget(player);
         delete player;
         players.erase(it+index-1);
 
-//        disconnect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
-//                this,SLOT(generate_current_config(CameraInputData,QWidget*)));
+        //        disconnect(player,SIGNAL(cam_data_change(CameraInputData,QWidget*)),\
+        //                this,SLOT(generate_current_config(CameraInputData,QWidget*)));
 
-//        disconnect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
-//                this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
+        //        disconnect(player,SIGNAL(signal_camera(PlayerWidget*,int,JsonPacket)),\
+        //                this,SLOT(slot_camera(PlayerWidget*,int,JsonPacket)));
 
-//        disconnect(player,SIGNAL(click_event(PlayerWidget *,int)),\
-//                this,SLOT(player_event(PlayerWidget*,int)));
+        //        disconnect(player,SIGNAL(click_event(PlayerWidget *,int)),\
+        //                this,SLOT(player_event(PlayerWidget*,int)));
     }
     void start_config()
     {
@@ -681,6 +683,13 @@ private:
         cfg.CameraData.insert(cfg.CameraData.begin()+cfg.CameraData.size(),d.data());
         // players.push_back(new PlayerWidget(d));
         widget_append_camera(d);
+    }
+    void delete_camera( int  index)
+    {
+
+        cfg.CameraData.erase(cfg.CameraData.begin()+index-1);
+        // players.push_back(new PlayerWidget(d));
+        widget_del_camera(index);
     }
     void recv_server_output();
 private slots:
