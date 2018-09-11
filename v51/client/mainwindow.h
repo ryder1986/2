@@ -8,6 +8,8 @@
 #include <QThread>
 #include "datapacket.h"
 #include "app.h"
+#include "ui_mainwindow.h"
+#include     "playerwidget.h"
 class Client : public QObject
 {
     QByteArray tmp_msg;
@@ -51,21 +53,24 @@ public:
     void add_camera(string url,int index)
     {
         //string SelectedProcessor="C4";
-        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
+//        string SelectedProcessor=LABLE_PROCESSOR_DUMMY;
 
-        vector <VdPoint>ExpectedAreaVers;
-        ExpectedAreaVers.push_back(VdPoint(0,0));
-        ExpectedAreaVers.push_back(VdPoint(640,0));
-        ExpectedAreaVers.push_back(VdPoint(640,480));
-        ExpectedAreaVers.push_back(VdPoint(0,480));
-        //JsonPacket ProcessorData;
-        DummyProcessorInputData dd(true,true,5);
-        // DummyProcessor
-        DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
-        vector<JsonPacket> rs;
-        rs.push_back(rdata.data());
-        CameraInputData data(rs,url);
-        RequestPkt pkt(App::Operation::INSERT_CAMERA,index,data.data());
+//        vector <VdPoint>ExpectedAreaVers;
+//        ExpectedAreaVers.push_back(VdPoint(0,0));
+//        ExpectedAreaVers.push_back(VdPoint(640,0));
+//        ExpectedAreaVers.push_back(VdPoint(640,480));
+//        ExpectedAreaVers.push_back(VdPoint(0,480));
+//        //JsonPacket ProcessorData;
+//        DummyProcessorInputData dd(true,true,5);
+//        // DummyProcessor
+//        DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
+//        vector<JsonPacket> rs;
+//        rs.push_back(rdata.data());
+
+
+
+//        CameraInputData data(rs,url);
+        RequestPkt pkt(App::Operation::INSERT_CAMERA,index,PlayerWidget::make_test_camera_data(url).data());
         bool ret= send(pkt.data().str());//talk to server
         if(!ret){
             prt(info,"fail send");
@@ -586,8 +591,7 @@ private :
     QStringList ip_list;
 };
 
-#include "ui_mainwindow.h"
-#include     "playerwidget.h"
+
 namespace Ui {
 class MainWindow;
 }

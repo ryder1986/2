@@ -14,7 +14,7 @@
                     }
                 ],
                 "Url1":"rtsp://192.1623238.1.211:8554/live/test1",
-                "Url":"/root/test.png",
+                "Url":"res/test.png",
                 "Url2":"rtsp://192.168.1.95:554/av0_1"
             }
         ]

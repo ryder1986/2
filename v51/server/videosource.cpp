@@ -2,7 +2,8 @@
 #include <thread>
 #include <functional>
 
-VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),frame_rate(0),vcap(path),is_pic(false)
+VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),
+    frame_rate(0),vcap(path),is_pic(false),src_trd(NULL)
 {
     //  Timer1 t1(bind(&VideoSource::check_point,this));
     t1.start(1000);
@@ -21,17 +22,16 @@ VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),f
 }
 VideoSource::~VideoSource()
 {
-    prt(info,"quiting video: %s", url.data());
+    prt(info,"quiting video %s", url.data());
     quit_flg=true;
+    if(src_trd){
     if(src_trd->joinable())
         src_trd->join();
-    prt(info,"quiting video: %s", url.data());
-    delete src_trd;
+        delete src_trd;
+        prt(info,"quiting video thread %s", url.data());
+    }
     t1.stop();
-    prt(info,"quiting video: %s", url.data());
-
-    //  this_thread::sleep_for(chrono::seconds(1));
-    prt(info,"quit video: %s", url.data());
+    prt(info,"quit video: %s done", url.data());
 }
 void VideoSource::run()
 {

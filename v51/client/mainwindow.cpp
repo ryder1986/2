@@ -170,10 +170,7 @@ void MainWindow::on_pushButton_addcam_clicked()
 {
     prt(info,"add camera");
     clt.add_camera(ui->lineEdit_addcam->text().toUtf8().data(),cfg.CameraData.size());
-    insert_camera(PlayerWidget::make_test_camera_data(ui->lineEdit_default_url->text().toStdString()));
-
-    //clt.get_config();
-    //stop_config();
+    insert_camera(PlayerWidget::make_test_camera_data(ui->lineEdit_addcam->text().toStdString()));
 }
 
 void MainWindow::on_pushButton_delcam_clicked()
@@ -182,6 +179,4 @@ void MainWindow::on_pushButton_delcam_clicked()
     int index=ui->lineEdit_delcam->text().toInt();
     clt.del_camera(index);
     widget_del_camera(index);
-   // clt.get_config();
-   // stop_config();
 }

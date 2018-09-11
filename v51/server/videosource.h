@@ -239,7 +239,7 @@ public:
     {
         if(is_pic)
         {   png_frame.copyTo(frame);
-               this_thread::sleep_for(chrono::milliseconds(100));
+               this_thread::sleep_for(chrono::milliseconds(50));
             return true;
         }
         int ret=false;

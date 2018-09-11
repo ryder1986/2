@@ -447,8 +447,34 @@ protected:
             return;
         }
         QPainter img_painter(&img);
-        img_painter.setPen(blue_pen1());
-        img_painter.drawText(0,img.height(),QString::number(output_data_fps_result));
+        QString fps(QString::number(output_data_fps_result));
+        QString url(QString(cfg.Url.data()));
+        img_painter.setPen(blue_pen3());
+
+        int r1_height=50;
+        int r1_width=200;
+        int r1_x=0;
+        int r1_y=img.height()-r1_height;
+        int r2_height=50;
+        int r2_width=500;
+        int r2_x=r1_width;
+        int r2_y=img.height()-r2_height;
+        QRect r1(r1_x,r1_y,r1_width,r1_height);
+        QRect r2(r2_x,r2_y,r2_width,r2_height);
+//        img_painter.drawRect(r1);
+//        img_painter.drawRect(r2);
+        img_painter.setFont( QFont( "Microsoft YaHei",30, 100));
+//        img_painter.drawText(r1,Qt::AlignLeft,fps);
+//        img_painter.drawText(r2_x,r2_y,url);
+
+        img_painter.drawText(r1_x,r1_y,QString("fps:").append(fps).append("   ").append("url:").append(url));
+        //        img_painter.setFont( QFont( "Microsoft YaHei",30, 100));
+        //        //  img_painter.drawText(0,img.height()-20,QString::number(output_data_fps_result));
+        //        img_painter.drawText(r1,QString::number(output_data_fps_result));
+
+        //        img_painter.setFont( QFont( "Microsoft YaHei",30, 100));
+        //        img_painter.drawText(img.width()-300,img.height()-200,QString(cfg.Url.data()));
+        //        img_painter.setPen(blue_pen1());
         cnt=0;
         for(int i=0;i<cfg.DetectRegion.size();i++){
             DetectRegionInputData p=cfg.DetectRegion[i];
@@ -845,6 +871,10 @@ private:
     QPen blue_pen1()
     {
         return QPen (QBrush (QColor(0,0,222)),1);
+    }
+    QPen blue_pen3()
+    {
+        return QPen (QBrush (QColor(0,0,222)),10);
     }
 
     QPen blue_pen2()
