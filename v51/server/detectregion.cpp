@@ -22,7 +22,7 @@ DetectRegion::DetectRegion(DetectRegionInputData pkt):VdData(pkt),p(NULL)
     if(private_data.SelectedProcessor==LABLE_PROCESSOR_FVD)
     {   p=new FvdProcessor(private_data.ProcessorData);valid=true;}
     if(private_data.SelectedProcessor==LABLE_PROCESSOR_MVD)
-    {   p=new FvdProcessor(private_data.ProcessorData);valid=true;}
+    {   p=new MvdProcessor(private_data.ProcessorData);valid=true;}
 #endif
     if(!valid){
         prt(info,"processor %s error ,exit",private_data.SelectedProcessor.data());

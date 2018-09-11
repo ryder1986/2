@@ -549,7 +549,7 @@ public:
     BaseLineJsonData BaseLine;// a line can adjust car real length
     int NearPointDistance;//distance to camera
     int FarPointDistance;
-    vector <LaneDataJsonData> LineData; // lane info
+    vector <LaneDataJsonData> LaneData; // lane info
 
     vector <VdPoint> DetectLine;
     MvdProcessorInputData(){}
@@ -558,7 +558,7 @@ public:
         decode();
     }
     MvdProcessorInputData(  vector <VdPoint> bl,BaseLineJsonData be,int i1, int i2, vector <LaneDataJsonData>  ld, vector <VdPoint>de):
-        BasicCoil(bl), BaseLine(be), NearPointDistance(i1), FarPointDistance(i2), LineData(ld),DetectLine(de)
+        BasicCoil(bl), BaseLine(be), NearPointDistance(i1), FarPointDistance(i2), LaneData(ld),DetectLine(de)
 
     {
         encode();
@@ -569,7 +569,7 @@ public:
         DECODE_JSONDATA_MEM(BaseLine);
         DECODE_INT_MEM(NearPointDistance);
         DECODE_INT_MEM(FarPointDistance);
-        DECODE_JSONDATA_ARRAY_MEM(LineData);
+        DECODE_JSONDATA_ARRAY_MEM(LaneData);
         DECODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
     void encode()
@@ -578,7 +578,7 @@ public:
         ENCODE_JSONDATA_MEM(BaseLine);
         ENCODE_INT_MEM(NearPointDistance);
         ENCODE_INT_MEM(FarPointDistance);
-        ENCODE_JSONDATA_ARRAY_MEM(LineData);
+        ENCODE_JSONDATA_ARRAY_MEM(LaneData);
         ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
 };
