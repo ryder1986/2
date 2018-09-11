@@ -66,9 +66,9 @@ void App::process_camera_data(Camera *camera, string data)
             //prt(info,"send  %d bytes --> %s",rst.data().str().size(),rst.data().str().data());
             Socket::UdpSendData(udp_fd,ss->ip().data(),12349,rst.data().str().data(),rst.data().str().length());
         }
-    //    for(DestClient dst:dest_clients){
-    //          Socket::UdpSendData(fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
-    //    }
+        for(DestClient dst:dest_clients){
+              Socket::UdpSendData(udp_fd,dst.get_ip().data(),12349,rst.data().str().data(),rst.data().str().length());
+        }
 
 }
 

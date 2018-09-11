@@ -282,6 +282,8 @@ private:
             if(!exist)
                 dest_clients.push_back(DestClient(client_tmp_ip));
             ret=true;
+            ReplyPkt p(ret,App::Operation::OPEN_CAMERA_DATA,JsonPacket());
+            r=p;
             break;
         }
         case App::Operation::CLOSE_CAMERA_DATA:
@@ -294,6 +296,8 @@ private:
                     dest_clients.erase(bg+i);
             }
             ret=true;
+            ReplyPkt p(ret,App::Operation::CLOSE_CAMERA_DATA,JsonPacket());
+            r=p;
             break;
         }
         case App::Operation::HEART_PKT:
