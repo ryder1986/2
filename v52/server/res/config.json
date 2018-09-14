@@ -13,9 +13,9 @@
                         "Comment":"C4/Dummy"
                     }
                 ],
-                "Url1":"rtsp://192.1623238.1.211:8554/live/test1",
-                "Url":"rtsp://admin:admin12345@16.208.4.238:554/h264/ch1/sub/av_stream",
-                "Url2":"rtsp://192.168.1.95:554/av0_1"
+                "Url2":"rtsp://192.1623238.1.211:8554/live/test1",
+                "Url1":"rtsp://admin:admin12345@16.208.4.238:554/h264/ch1/sub/av_stream",
+                "Url":"rtsp://192.168.1.95:554/av0_1"
             },
             {
                 "DetectRegion":
@@ -28,8 +28,8 @@
                     }
                 ],
                 "Url1":"rtsp://192.1623238.1.211:8554/live/test1",
-                "Url":"rtsp://admin:admin12345@16.208.5.13:554/h264/ch1/sub/av_stream",
-                "Url2":"rtsp://192.168.1.95:554/av0_1"
+                "Url2":"rtsp://admin:admin12345@16.208.5.13:554/h264/ch1/sub/av_stream",
+                "Url":"rtsp://192.168.1.95:554/av0_1"
             },
             {
                 "DetectRegion":
@@ -42,8 +42,8 @@
                     }
                 ],
                 "Url1":"rtsp://192.1623238.1.211:8554/live/test1",
-                "Url":"rtsp://admin:admin12345@16.208.4.206:554/h264/ch1/sub/av_stream",
-                "Url2":"rtsp://192.168.1.95:554/av0_1"
+                "Url2":"rtsp://admin:admin12345@16.208.4.206:554/h264/ch1/sub/av_stream",
+                "Url":"rtsp://192.168.1.95:554/av0_1"
             }
         ]
 

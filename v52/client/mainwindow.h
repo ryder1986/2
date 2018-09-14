@@ -412,15 +412,22 @@ public slots:
         prt(info,"err when connecting to server");
         switch (socketError) {
         case QAbstractSocket::RemoteHostClosedError:
+        {
+            prt(info,"err when connecting to server");
             break;
+        }
         case QAbstractSocket::HostNotFoundError:
-            qDebug()<<"1";
+        {
+            prt(info,"err when connecting to server");
             break;
+        }
         case QAbstractSocket::ConnectionRefusedError:
-            qDebug()<<"1";
+        {
+            prt(info,"err when connecting to server");
             break;
+        }
         default:
-            qDebug()<<"1";
+            break;
         }
     }
 

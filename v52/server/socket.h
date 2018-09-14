@@ -532,7 +532,134 @@ public:
         free(tempBuf);
         return;
     }
+    static  void get_ipaddr_wlan(char *ipaddr,char *mac,char *mask,const char *lan_ip)
+    {
+        int tmp_fd;
+        int ifs;
+        char *ip_str;
+        char *mask_str;
+        char *mac_str;
+        struct ifconf ifconfig;
+        struct ifreq if_buf[16];
+        ifconfig.ifc_len = sizeof(if_buf);
+        ifconfig.ifc_buf = (caddr_t) if_buf;
 
+        if ((tmp_fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+            perror("socket(AF_INET, SOCK_DGRAM, 0)");
+        }
+        if (ioctl(tmp_fd, SIOCGIFCONF, (char *) &ifconfig) == -1) {
+            perror("SIOCGIFCONF ioctl");
+        }
+        ifs = ifconfig.ifc_len / sizeof(struct ifreq);
+        while (ifs-- > 0) {
+            //	printf("1");
+            if (!(ioctl(tmp_fd, SIOCGIFFLAGS, (char *) &if_buf[ifs]))) {
+                //	if (buf[if_len].ifr_flags & IFF_UP) {//check out whether network is down or not
+                if (1) {
+                    // printf("status: UP\n");
+
+                    if (!(ioctl(tmp_fd, SIOCGIFADDR, (char *) &if_buf[ifs]))) {
+                        ip_str =(char*) inet_ntoa(((struct sockaddr_in*) (&if_buf[ifs].ifr_addr))->sin_addr);
+                        //					printf("addr:%s\n",
+                        //							ip_str =
+                        //									(char*) inet_ntoa(
+                        //											((struct sockaddr_in*) (&buf[ifs].ifr_addr))->sin_addr));
+                    } else {
+                        char str[256];
+                        sprintf(str, "SIOCGIFADDR ioctl %s", if_buf[ifs].ifr_name);
+                        perror(str);
+                    }
+                    if (!strcmp(ip_str, "127.0.0.1")) {
+                        continue;
+                    }
+                    prt(info:"local ip %s\n", ip_str);
+                    memcpy(ipaddr,ip_str,16);
+
+
+                    if (!(ioctl(tmp_fd, SIOCGIFNETMASK, (char *) &if_buf[ifs]))) {
+                        mask_str=	(char*) inet_ntoa(
+                                    ((struct sockaddr_in*) (&if_buf[ifs].ifr_addr))->sin_addr);
+
+
+                        prt(info:"local mask %s\n", mask_str);
+                        memcpy(mask,mask_str,16);
+                    } else {
+                        char str[256];
+                        sprintf(str, "SIOCGIFADDR ioctl %s",
+                                if_buf[ifs].ifr_name);
+                        perror(str);
+                    }
+
+                    if (!(ioctl(tmp_fd, SIOCGIFBRDADDR, (char *) &if_buf[ifs]))) {
+                        printf("broadcast:%s\n",
+                               (char*) inet_ntoa(
+                                   ((struct sockaddr_in*) (&if_buf[ifs].ifr_addr))->sin_addr));
+                    } else {
+                        char str[256];
+                        sprintf(str, "SIOCGIFADDR ioctl %s", if_buf[ifs].ifr_name);
+                        perror(str);
+                    }
+                    if (!(ioctl(tmp_fd, SIOCGIFHWADDR, (char *) &if_buf[ifs]))) {
+                        printf("mac addr:%x:%x:%x:%x:%x:%x\n",
+                               (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[0],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[1],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[2],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[3],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[4],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[5]);
+
+
+                        mac_str=(char *)if_buf[ifs].ifr_hwaddr.sa_data;
+                        hex2str(mac,mac_str,6);
+                        sprintf(mac,"%02x:%02x:%02x:%02x:%02x:%02x",
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[0],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[1],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[2],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[3],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[4],
+                                (unsigned char) if_buf[ifs].ifr_hwaddr.sa_data[5]);
+                        //memcpy(mac,mac_str,14);
+                    } else {
+                        char str[256];
+                        sprintf(str, "SIOCGIFHWADDR ioctl %s",
+                                if_buf[ifs].ifr_name);
+                        perror(str);
+                    }
+
+                    if(ip_in_lan(ipaddr,lan_ip))
+                        break;
+                } else {
+                    printf("this interface is DOWN\n");
+                }
+            }
+        }
+    }
+    inline static string sub_same_string(string src,const string dst)
+    {
+        int i;
+        for( i=0;i<src.size()&&i<dst.size();i++){
+            if(src[i]!=dst[i])
+                break;
+        }
+        string sub=src.substr(0,i);
+        return sub;
+    }
+    static  bool ip_in_lan(char *src,const char *dst)
+    {
+        bool ret=false;
+        string s(src);
+        string d(dst);
+        string same=sub_same_string(d,s);
+        if(same.size()>0){
+            int flg=0;
+            for(int i=0;i<same.size();i++){
+                if(same[i]=='.')flg++;
+            }
+            if(flg==3)
+                ret=true;
+        }
+        return ret;
+    }
     static  void get_ipaddr(char *ipaddr,char *mac,char *mask)
     {
         int tmp_fd;

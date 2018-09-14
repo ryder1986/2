@@ -204,6 +204,7 @@ public:
     int height;
 };
 #define USE_CVCAP 1
+#undef USE_CVCAP
 //#include <list>
 
 class VideoSource

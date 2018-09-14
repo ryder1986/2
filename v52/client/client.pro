@@ -40,7 +40,7 @@ SOURCES += $$SRC_PATH/tool.cpp
 SOURCES += $$SRC_PATH/cppjson/json_reader.cpp $$SRC_PATH/cppjson/json_writer.cpp  $$SRC_PATH/cppjson/json_value.cpp
 SOURCES += $$SRC_PATH/videosource.cpp
 
-LIBS+= -L/root/source/opencv-3.2.0/build/__install/lib -lopencv_core -lopencv_highgui -lopencv_objdetect \
--lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video -lopencv_videostab -lpthread  -lX11 #-lopencv_imgcodecs  -lopencv_videoio
+LIBS+=  -lopencv_core -lopencv_highgui -lopencv_objdetect \
+-lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video -lopencv_videostab -lpthread  -lX11 -lopencv_imgcodecs  -lopencv_videoio #
 LIBS+=-lavformat -lavcodec  -lavutil -lswresample
 
