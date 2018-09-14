@@ -156,7 +156,8 @@ class DetectRegion : public VdData<DetectRegionInputData>
 public:
     enum OP{
         CHANGE_RECT,
-        CHANGE_PROCESSOR
+        CHANGE_PROCESSOR,
+        MODIFY_PROCESSOR
     };
 
 

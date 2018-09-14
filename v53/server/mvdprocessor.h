@@ -69,6 +69,12 @@ public:
         prt(info,"############free done");
     }
 
+    virtual bool modify_processor(JsonPacket p)
+    {
+        MvdProcessorInputData data(p);
+        return true;
+    }
+
     bool process(Mat img_src,JsonPacket &pkt)
     {
         int i = 0;

@@ -65,7 +65,10 @@ public:
         //        private_data.area.height=480;
     }
 
-
+    virtual bool modify_processor(JsonPacket p)
+    {
+        return true;
+    }
 
     DataPacket get_config()
     {
