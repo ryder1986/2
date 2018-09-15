@@ -1,4 +1,4 @@
-#ifndef VIDEOSOURCE_H
+﻿#ifndef VIDEOSOURCE_H
 #define VIDEOSOURCE_H
 
 #include "tool.h"
@@ -94,6 +94,7 @@ public:
             return false;
         }
     }
+
     bool isOpened()
     {
         return opened;
@@ -204,7 +205,7 @@ public:
     int height;
 };
 #define USE_CVCAP 1
-#undef USE_CVCAP
+//#undef USE_CVCAP
 //#include <list>
 
 class VideoSource
@@ -212,7 +213,8 @@ class VideoSource
 public:
 
     VideoSource(string path);
-    ~VideoSource();
+    VideoSource(string path,bool only_key_frame);
+     ~VideoSource();
     inline string get_url()
     {
         return url;
@@ -335,6 +337,9 @@ private:
     thread *src_trd;
     Mat png_frame;
     bool is_pic;
+    int try_times;
+
+    bool only_key_frame;
 };
 #endif
 #endif // VIDEOSOURCE_H

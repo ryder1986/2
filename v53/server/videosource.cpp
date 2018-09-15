@@ -5,6 +5,8 @@
 VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),
     frame_rate(0),vcap(path),is_pic(false),src_trd(NULL)
 {
+    only_key_frame=false;
+    try_times=0;
     //  Timer1 t1(bind(&VideoSource::check_point,this));
     t1.start(1000);
     prt(info,"%s",path.data());
@@ -12,6 +14,26 @@ VideoSource::VideoSource(string path):t1(bind(&VideoSource::check_point,this)),
     quit_flg=false;
     //  thread(bind(&VideoSource::run,this)).detach();
     // _start_async(bind(&VideoSource::run,this));
+
+    if(end_with_str(url,"png")){
+        imread(url).copyTo(png_frame);
+        prt(info,"read png");
+        is_pic=true;
+    }else
+         src_trd=new thread(bind(&VideoSource::run,this));
+}
+
+VideoSource::VideoSource(string path,bool only_keyframe):t1(bind(&VideoSource::check_point,this)),
+    frame_rate(0),vcap(path),is_pic(false),src_trd(NULL)
+{
+    only_key_frame=only_keyframe;
+
+    try_times=0;
+    //  Timer1 t1(bind(&VideoSource::check_point,this));
+    t1.start(1000);
+    prt(info,"%s",path.data());
+    url=path;
+    quit_flg=false;
 
     if(end_with_str(url,"png")){
         imread(url).copyTo(png_frame);
@@ -72,7 +94,7 @@ void VideoSource::run()
                 //   vcap=VideoCapture( url.data());
                 //vcap=PdVideoCapture( url.data());
             }
-            if(frame.cols==0){
+            if(frame.cols==0&&++try_times==100){
                 vcap.release();
                 prt(info,"%s get frame error,retrying ... ", url.data());
                 continue;
