@@ -18,7 +18,6 @@ typedef  short 			Int16;
 typedef  int             BOOL;
 typedef  unsigned char	Uint8;
 
-extern int frame;
 
 #define MAX_DETECTOR_TYPES		2			//最大支持两种检测器
 #define MAX_DETECTOR_ONETYPE	8			//每种检测器最大支持8个

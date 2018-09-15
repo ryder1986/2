@@ -46,7 +46,7 @@ void DetectRegion::modify(RequestPkt pkt)
         break;
     }
     case OP::CHANGE_PROCESSOR:
-   {
+    {
         if(p){
             delete p;
             p=NULL;
@@ -85,7 +85,8 @@ void DetectRegion::modify(RequestPkt pkt)
     case OP::MODIFY_PROCESSOR:
     {
 
-       p-> modify_processor(pkt.Argument);
+        p-> modify_processor(pkt.Argument);
+        private_data.set_processor_data(pkt.Argument);
         break;
     }
 

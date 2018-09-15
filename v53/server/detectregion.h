@@ -45,6 +45,13 @@ public:
         ExpectedAreaVers=p;
         encode();
     }
+
+    void set_processor_data(JsonPacket p)
+    {
+        ProcessorData=p;
+        encode();
+    }
+
     void set_processor(string p,JsonPacket pd)
     {
         SelectedProcessor=p;
