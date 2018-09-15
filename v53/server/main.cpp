@@ -15,7 +15,7 @@ int main()
 //    FILE* fd=freopen("data.out","w",stdout);
     //    FILE* fd1=freopen("data.out1","w",fd);
 
-    freopen("data.err","w",stderr);
+ //   freopen("data.err","w",stderr);
     fflush(NULL);
     cout<<"Video Detection ";
     prt(info,"Start!!!");
