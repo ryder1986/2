@@ -383,6 +383,16 @@ public:
     {
         encode();
     }
+    void set_point(VdPoint p,int index)
+    {
+        if(index<=4)
+            LaneArea[index-1]=p;
+        if(index>4&&index<=4*2)
+            NearArea[(index-1)%4]=p;
+        if(index>4*2&&index<=4*3)
+            FarArea[(index-1)%4]=p;
+        encode();
+    }
     void decode()
     {
         DECODE_INT_MEM(LaneNo);
@@ -602,6 +612,17 @@ public:
             ret=true;
             DetectLine[index-1]=VdPoint(new_p.x,new_p.y);
             encode();
+        }
+        //int lane_cout=LaneData.size();
+        if(index>2){
+            index-=2;
+            int lane_index=(index-1)/12+1;
+            index=(index-1)%12+1;
+            LaneDataJsonData d=LaneData[lane_index-1];
+            d.set_point(new_p,index);
+            LaneData[lane_index-1]=d;
+            encode();
+            ret=true;
         }
         return ret;
     }

@@ -364,6 +364,33 @@ public:
                 ret=true;
                 selected_data_point_index=idx;
             }
+            for(int i=0;i<pi.LaneData.size();i++){
+              //  for(int j=0;i<4;j++){
+
+                    idx=p_on_vs(pi.LaneData[i].LaneArea,p);
+                    if(idx){
+                        ret=true;
+                        selected_data_point_index=i*4+idx+2;
+                        return true;
+                    }
+
+                    idx=p_on_vs(pi.LaneData[i].NearArea,p);
+                    if(idx){
+                        ret=true;
+                        selected_data_point_index=i*4+idx+4*1+2;
+                        return true;
+                    }
+
+                    idx=p_on_vs(pi.LaneData[i].FarArea,p);
+                    if(idx){
+                        ret=true;
+                        selected_data_point_index=i*4+idx+4*2+2;
+                        return true;
+                    }
+//                }
+
+            }
+
 
         }
 
@@ -382,6 +409,7 @@ public:
         }
         if(rd.SelectedProcessor==LABLE_PROCESSOR_MVD){
 
+            prt(info,"get index %d",selected_data_point_index);
             MvdProcessorInputData pi(rd.ProcessorData);
             pi.set_point(VdPoint(new_p.x()-offx,new_p.y()-offy),selected_data_point_index);
             rd.set_processor(rd.SelectedProcessor,pi.data());
@@ -416,14 +444,30 @@ public:
             }
         }
         if(processor==LABLE_PROCESSOR_MVD){
-             MvdProcessorInputData data(out);
-             if(data.DetectLine.size()==2){
-                 VdPoint point_begin=data.DetectLine[0];
-                 QPoint pb(point_begin.x+offset_x,point_begin.y+offset_y);
-                 VdPoint end_begin=data.DetectLine[1];
-                 QPoint pe(end_begin.x+offset_x,end_begin.y+offset_y);
-                 pt.drawLine(pb,pe);
-             }
+            MvdProcessorInputData data(out);
+            if(data.DetectLine.size()==2){
+                VdPoint point_begin=data.DetectLine[0];
+                QPoint pb(point_begin.x+offset_x,point_begin.y+offset_y);
+                VdPoint end_begin=data.DetectLine[1];
+                QPoint pe(end_begin.x+offset_x,end_begin.y+offset_y);
+                pt.drawLine(pb,pe);
+            }
+
+            for(LaneDataJsonData r: data.LaneData)
+            {
+                QVector<QPoint> ps;
+                for(VdPoint v:r.FarArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                pt.drawPolyline(QPolygon(ps));
+                pt.drawLine(ps.front(),ps.last());
+                ps.clear();
+                for(VdPoint v:r.NearArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                pt.drawPolyline(QPolygon(ps));
+                pt.drawLine(ps.front(),ps.last());
+                ps.clear();
+                for(VdPoint v:r.LaneArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                pt.drawPolyline(QPolygon(ps));
+                pt.drawLine(ps.front(),ps.last());
+            }
 
         }
         if(processor==LABLE_PROCESSOR_FVD){
