@@ -440,6 +440,8 @@ public:
 
             prt(info,"get index %d",selected_data_point_index);
             MvdProcessorInputData pi(rd.ProcessorData);
+            if(pi.LaneData.size()<1)
+                return rd.data();
             LaneDataJsonData d(get_test_lane());
             pi.del_lane();
 
@@ -487,15 +489,15 @@ public:
             for(LaneDataJsonData r: data.LaneData)
             {
                 QVector<QPoint> ps;
-                for(VdPoint v:r.FarArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                for(VdPoint v:r.FarArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));  pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),3,3);pt.setPen(blue_pen4());}
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
                 ps.clear();
-                for(VdPoint v:r.NearArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                for(VdPoint v:r.NearArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),3,3);pt.setPen(blue_pen4());}
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
                 ps.clear();
-                for(VdPoint v:r.LaneArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));}
+                for(VdPoint v:r.LaneArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),3,3);pt.setPen(blue_pen4());}
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
             }
@@ -1143,7 +1145,10 @@ private:
     {
         return QPen (QBrush (QColor(0,0,222)),10);
     }
-
+    QPen blue_pen4()
+    {
+        return QPen (QBrush (QColor(0,0,222)),2);
+    }
     QPen blue_pen2()
     {
         return QPen (QBrush (QColor(0,0,222)),5);

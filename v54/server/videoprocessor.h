@@ -389,6 +389,7 @@ public:
     {
         encode();
     }
+
     void set_point(VdPoint p,int index)
     {
         if(index<=4)
@@ -399,15 +400,105 @@ public:
             FarArea[(index-1)%4]=p;
         encode();
     }
-    void set_point_final(VdPoint p,int index)
+    int get_valid_x(int x1,int y1,int x2,int y2,int valid_y)
     {
-        int index_choose=0;
-        if(index<=4)
-            LaneArea[index-1]=p;
-        if(index>4&&index<=4*2)
-            NearArea[(index-1)%4]=p;
-        if(index>4*2&&index<=4*3)
-            FarArea[(index-1)%4]=p;
+        int valid_x;
+        valid_x=(x1-x2)*(valid_y-y1)/(y1-y2)+x1;
+        return valid_x;
+    }
+    void adjust_lane_points(VdPoint p1,VdPoint p2, bool left_line)
+    {
+        int i=0;
+        if(left_line){
+            i=0; LaneArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,LaneArea[i].y),LaneArea[i].y);
+            i=3; LaneArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,LaneArea[i].y),LaneArea[i].y);
+
+            i=0; NearArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,NearArea[i].y),NearArea[i].y);
+            i=3; NearArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,NearArea[i].y),NearArea[i].y);
+
+            i=0; FarArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,FarArea[i].y),FarArea[i].y);
+            i=3; FarArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,FarArea[i].y),FarArea[i].y);
+        }else{
+            i=1; LaneArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,LaneArea[i].y),LaneArea[i].y);
+            i=2; LaneArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,LaneArea[i].y),LaneArea[i].y);
+
+            i=1; NearArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,NearArea[i].y),NearArea[i].y);
+            i=2; NearArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,NearArea[i].y),NearArea[i].y);
+
+            i=1; FarArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,FarArea[i].y),FarArea[i].y);
+            i=2; FarArea[i]=VdPoint(get_valid_x(p1.x,p1.y,p2.x,p2.y,FarArea[i].y),FarArea[i].y);
+        }
+    }
+    void set_point_adjust(VdPoint p,int index)
+    {
+        VdPoint p_e;
+        int  rect_index=(index-1)/4+1;
+        bool adjust_left_line;
+        int tmp=(index-1)%4;
+        if(tmp==1||tmp==2){
+            adjust_left_line=false;
+        }else{
+            adjust_left_line=true;
+        }
+        if(rect_index==1){
+            LaneArea[tmp]=p;
+            if(tmp==1){
+                VdPoint e(LaneArea[tmp+1]);
+                p_e=e;
+            }
+            if(tmp==2){
+                VdPoint e(LaneArea[tmp-1]);
+                p_e=e;
+            }
+            if(tmp==0){
+                VdPoint e(LaneArea[tmp+3]);
+                p_e=e;
+            }
+            if(tmp==3){
+                VdPoint e(LaneArea[tmp-3]);
+                p_e=e;
+            }
+        }
+        if(rect_index==2){
+            NearArea[tmp]=p;
+            if(tmp==1){
+                VdPoint e(NearArea[tmp+1]);
+                p_e=e;
+            }
+            if(tmp==2){
+                VdPoint e(NearArea[tmp-1]);
+                p_e=e;
+            }
+            if(tmp==0){
+                VdPoint e(NearArea[tmp+3]);
+                p_e=e;
+            }
+            if(tmp==3){
+                VdPoint e(NearArea[tmp-3]);
+                p_e=e;
+            }
+        }
+        if(rect_index==3){
+            FarArea[tmp]=p;
+            if(tmp==1){
+                VdPoint e(FarArea[tmp+1]);
+                p_e=e;
+            }
+            if(tmp==2){
+                VdPoint e(FarArea[tmp-1]);
+                p_e=e;
+            }
+            if(tmp==0){
+                VdPoint e(FarArea[tmp+3]);
+                p_e=e;
+            }
+            if(tmp==3){
+                VdPoint e(FarArea[tmp-3]);
+                p_e=e;
+            }
+        }
+
+        adjust_lane_points(p,p_e,adjust_left_line);
         encode();
     }
     void decode()
@@ -629,7 +720,7 @@ public:
     }
     void del_lane()
     {
-       // LaneDataJsonData dt(pkt);
+        // LaneDataJsonData dt(pkt);
         LaneData.erase(LaneData.end()-1);
         encode();
     }
@@ -646,9 +737,15 @@ public:
             index-=2;
             int lane_index=(index-1)/12+1;
             index=(index-1)%12+1;
+
             LaneDataJsonData d=LaneData[lane_index-1];
+#if 0
             d.set_point(new_p,index);
+#else
+            d.set_point_adjust(new_p,index);
+#endif
             LaneData[lane_index-1]=d;
+
             encode();
             ret=true;
         }
