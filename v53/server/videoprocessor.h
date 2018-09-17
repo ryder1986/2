@@ -90,6 +90,12 @@ public:
 
     //    }
     virtual bool process(Mat img_src,JsonPacket &pkt)=0;
+
+    virtual bool process_whole_pic(Mat img_src,JsonPacket &pkt,Rect rct)
+    {
+
+    }
+
     //    {
     //        prt(info,"actual processor needed");
     //    }
@@ -619,6 +625,12 @@ public:
     {
         LaneDataJsonData dt(pkt);
         LaneData.push_back(dt);
+        encode();
+    }
+    void del_lane()
+    {
+       // LaneDataJsonData dt(pkt);
+        LaneData.erase(LaneData.end()-1);
         encode();
     }
     bool set_point(VdPoint new_p,int index)

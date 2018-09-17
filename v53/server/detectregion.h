@@ -191,7 +191,11 @@ public:
                 &&detect_rect.height>0&&detect_rect.height<10000
                 &&frame.cols>0&&frame.rows>0
                 ){
+#if 1
             p->process(tmp,rst_r);
+#else
+            p->process_whole_pic(frame,rst_r,detect_rect);
+#endif
         }else{
             prt(info,"err arg");
         }

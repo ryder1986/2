@@ -418,7 +418,7 @@ public:
         return rd.data();
 
     }
-    JsonPacket reform_data1(const JsonPacket data,int offx,int offy)
+    JsonPacket add_last_lane(const JsonPacket data,int offx,int offy)
     {
         DetectRegionInputData rd(data);
         if(rd.SelectedProcessor==LABLE_PROCESSOR_MVD){
@@ -433,13 +433,29 @@ public:
         return rd.data();
 
     }
+    JsonPacket del_last_lane(const JsonPacket data,int offx,int offy)
+    {
+        DetectRegionInputData rd(data);
+        if(rd.SelectedProcessor==LABLE_PROCESSOR_MVD){
+
+            prt(info,"get index %d",selected_data_point_index);
+            MvdProcessorInputData pi(rd.ProcessorData);
+            LaneDataJsonData d(get_test_lane());
+            pi.del_lane();
+
+            rd.set_processor(rd.SelectedProcessor,pi.data());
+
+        }
+        return rd.data();
+
+    }
     QPoint map_point(QPoint p)
     {
         return QPoint(p.x()*img.width()/this->width(),p.y()*img.height()/this->height());
     }
     void draw_process_input(QPainter &pt,string processor,JsonPacket out,int &offset_x,int &offset_y)
     {
-        pt.setPen(blue_pen1());
+        pt.setPen(blue_pen2());
 
         if(processor==LABLE_PROCESSOR_C4){
         }
@@ -1067,6 +1083,7 @@ public slots:
             region_data_picked=false;
         }
     }
+
     void mouseDoubleClickEvent(QMouseEvent *e)
     {
 
@@ -1077,11 +1094,11 @@ public slots:
             // match region vers
             vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
             int point_index=p_on_vs(pnts,map_point(e->pos()));
-            if(point_index>0){
+            if(point_index>0&&point_index<=2){
                 int index=i+1;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
                // cfg.DetectRegion[index-1]= reform_data1(input.data(),11,22);
-                cfg.set_region(reform_data1(input.data(),11,22),index);
+                cfg.set_region(add_last_lane(input.data(),11,22),index);
                 prt(info,"double clk");
                 emit cam_data_change(cfg,this);
                 set_region_data(true);
@@ -1090,6 +1107,26 @@ public slots:
                 return;
             }
         }
+
+        for(int i=0;i<detect_regions.size();i++){
+            // match region vers
+            vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
+            int point_index=p_on_vs(pnts,map_point(e->pos()));
+            if(point_index>2){
+                int index=i+1;
+                DetectRegionInputData input= cfg.DetectRegion[index-1];
+               // cfg.DetectRegion[index-1]= reform_data1(input.data(),11,22);
+                cfg.set_region(del_last_lane(input.data(),11,22),index);
+                prt(info,"double clk");
+                emit cam_data_change(cfg,this);
+                set_region_data(true);
+
+                //mn.set_checked_processor(input.SelectedProcessor);
+                return;
+            }
+        }
+
+
 
         if(++double_click_flag%2)
             emit click_event(this,ClickEvent::SHOW_ONE);

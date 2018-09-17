@@ -123,6 +123,10 @@ public:
 		RestParams(p_cfg->pCfgs, DetLine, &p_cfg->pDetectCfg->FvdDetectCfg, p_cfg->pParams);//÷ÿ÷√≤Œ ˝
         return true;
     }
+    virtual bool process_whole_pic(Mat img_src,JsonPacket &pkt,Rect rct)
+    {
+
+    }
 
     bool process(Mat img_src,JsonPacket &pkt)
     {
