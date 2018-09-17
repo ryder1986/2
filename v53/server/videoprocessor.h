@@ -277,6 +277,16 @@ public:
     {
 
     }
+    bool set_point(VdPoint new_p,int index)
+    {
+        bool ret=false;
+        if(index>0&&index<=2){
+            ret=true;
+            DetectLine[index-1]=VdPoint(new_p.x,new_p.y);
+            encode();
+        }
+        return ret;
+    }
     void decode()
     {
         DECODE_JSONDATA_ARRAY_MEM(DetectLine);
@@ -583,6 +593,17 @@ public:
         ENCODE_INT_MEM(FarPointDistance);
         ENCODE_JSONDATA_ARRAY_MEM(LaneData);
         ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
+    }
+
+    bool set_point(VdPoint new_p,int index)
+    {
+        bool ret=false;
+        if(index>0&&index<=2){
+            ret=true;
+            DetectLine[index-1]=VdPoint(new_p.x,new_p.y);
+            encode();
+        }
+        return ret;
     }
 };
 class MvdProcessorOutputData:public JsonData{

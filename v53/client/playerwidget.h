@@ -198,6 +198,7 @@ public:
         loop=0;
         region_ver_picked=false;
         region_line_picked=false;
+        region_data_picked=false;
         cfg=data;
         frame_rate=0;
         tick_timer=new QTimer();
@@ -298,7 +299,7 @@ public:
             pt.drawEllipse(p_center,10,10);
         }
     }
-    int is_match_region_ver(const vector <VdPoint> points,QPoint p,int distance=20)
+    inline int p_on_vs(const vector <VdPoint> points,QPoint p,int distance=20)
     {
         for(int i=0;i<points.size();i++){
             if(abs(points[i].x-p.x())<distance&&(abs(points[i].y-p.y()))<distance){
@@ -336,9 +337,58 @@ public:
         return false;
 
     }
-    bool is_match_region_data_ver(const vector <VdPoint> points,QPoint p,int distance=20)
+    bool is_match_region_data(const JsonPacket data,QPoint pnt,int distance=20)
     {
+        bool ret=false;
+        int idx;
+        DetectRegionInputData rd(data);
+        int offx;
+        int offy;
+        get_min_point(rd.ExpectedAreaVers,offx,offy);
+        QPoint p(pnt.x()-offx,pnt.y()-offy);
+        if(rd.SelectedProcessor==LABLE_PROCESSOR_PVD){
+
+            PvdProcessorInputData pi(rd.ProcessorData);
+            idx=p_on_vs(pi.DetectLine,p);
+            if(idx){
+                ret=true;
+                selected_data_point_index=idx;
+            }
+
+        }
+        if(rd.SelectedProcessor==LABLE_PROCESSOR_MVD){
+
+            MvdProcessorInputData pi(rd.ProcessorData);
+            idx=p_on_vs(pi.DetectLine,p);
+            if(idx){
+                ret=true;
+                selected_data_point_index=idx;
+            }
+
+        }
+
+        return ret;
         // is_match_region_ver(points,p);
+    }
+    JsonPacket reform_data(const JsonPacket data,QPoint new_p,int offx,int offy)
+    {
+        DetectRegionInputData rd(data);
+        if(rd.SelectedProcessor==LABLE_PROCESSOR_PVD){
+
+            PvdProcessorInputData pi(rd.ProcessorData);
+            pi.set_point(VdPoint(new_p.x()-offx,new_p.y()-offy),selected_data_point_index);
+            rd.set_processor(rd.SelectedProcessor,pi.data());
+
+        }
+        if(rd.SelectedProcessor==LABLE_PROCESSOR_MVD){
+
+            MvdProcessorInputData pi(rd.ProcessorData);
+            pi.set_point(VdPoint(new_p.x()-offx,new_p.y()-offy),selected_data_point_index);
+            rd.set_processor(rd.SelectedProcessor,pi.data());
+
+        }
+        return rd.data();
+
     }
     QPoint map_point(QPoint p)
     {
@@ -356,9 +406,24 @@ public:
 
 #ifdef WITH_CUDA
         if(processor==LABLE_PROCESSOR_PVD){
-
+            PvdProcessorInputData data(out);
+            if(data.DetectLine.size()==2){
+                VdPoint point_begin=data.DetectLine[0];
+                QPoint pb(point_begin.x+offset_x,point_begin.y+offset_y);
+                VdPoint end_begin=data.DetectLine[1];
+                QPoint pe(end_begin.x+offset_x,end_begin.y+offset_y);
+                pt.drawLine(pb,pe);
+            }
         }
         if(processor==LABLE_PROCESSOR_MVD){
+             MvdProcessorInputData data(out);
+             if(data.DetectLine.size()==2){
+                 VdPoint point_begin=data.DetectLine[0];
+                 QPoint pb(point_begin.x+offset_x,point_begin.y+offset_y);
+                 VdPoint end_begin=data.DetectLine[1];
+                 QPoint pe(end_begin.x+offset_x,end_begin.y+offset_y);
+                 pt.drawLine(pb,pe);
+             }
 
         }
         if(processor==LABLE_PROCESSOR_FVD){
@@ -780,7 +845,7 @@ public slots:
 #endif
     void set_region(bool)
     {
-        prt(info,"mod region ");
+        prt(info,"mod region shape");
         vector <DetectRegionInputData >detect_regions;
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         DetectRegionInputData tmp=detect_regions[selected_region_index-1];
@@ -790,9 +855,31 @@ public slots:
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,r_pkt.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
     }
+
+    void set_region_data(bool)
+    {
+        prt(info,"mod region data");
+        vector <DetectRegionInputData >detect_regions;
+        detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
+        DetectRegionInputData tmp=detect_regions[selected_region_index-1];
+        RequestPkt r_pkt(DetectRegion::OP::MODIFY_PROCESSOR,0,tmp.ProcessorData);
+        RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,r_pkt.data());
+        signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
+    }
     void timeout()
     {
         this->update();
+    }
+    void get_min_point(vector <VdPoint>ExpectedAreaVers,int &x,int &y)
+    {
+        x=10000;
+        y=10000;
+        for(VdPoint p:ExpectedAreaVers){
+            if(p.x<x)
+                x=p.x;
+            if(p.y<y)
+                y=p.y;
+        }
     }
     void mouseMoveEvent(QMouseEvent *e)
     {
@@ -821,14 +908,32 @@ public slots:
             ori_point=e->pos();
             //prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
         }
+        if(region_data_picked){
+            DetectRegionInputData r=cfg.DetectRegion[selected_data_index-1];
+            //vector <VdPoint> ps;
+            QPoint end_p= map_point(e->pos());
+            // QPoint ori_p= map_point(ori_point);
+            //            for(VdPoint p:r.ExpectedAreaVers){
+            //                ps.push_back(VdPoint(p.x+(end_p.x()-ori_p.x()),p.y+(end_p.y()-ori_p.y())));
+            //            }
+            //            r.set_points(ps);
+            int off_x;
+            int off_y;
+            get_min_point( r.ExpectedAreaVers,off_x,off_y);
+            JsonPacket jp= reform_data(r.data(),end_p,off_x,off_y);
+            cfg.set_region(jp,selected_data_index);
+            //  ori_point=e->pos();
+            //prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
+        }
     }
     void mousePressEvent(QMouseEvent *e)
     {
         vector <DetectRegionInputData >detect_regions;
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         for(int i=0;i<detect_regions.size();i++){
+            // match region vers
             vector <VdPoint> pnts(detect_regions[i].ExpectedAreaVers.begin(),detect_regions[i].ExpectedAreaVers.end());
-            int point_index=is_match_region_ver(pnts,map_point(e->pos()));
+            int point_index=p_on_vs(pnts,map_point(e->pos()));
             if(point_index>0){
                 region_ver_picked=true;
                 selected_point_index=point_index;
@@ -839,13 +944,19 @@ public slots:
                 mn.set_checked_processor(input.SelectedProcessor);
                 return;
             }
-
+            // match region lines
             bool online=is_match_region_line(pnts,map_point(e->pos()));
             if(online){
                 region_line_picked=true;
                 ori_point=QPoint(e->pos());
                 selected_region_index=i+1;
                 return;
+            }
+            // match region data
+            bool ondata=is_match_region_data(cfg.DetectRegion[i],map_point(e->pos()));
+            if(ondata){
+                selected_data_index=i+1;
+                region_data_picked=true;
             }
         }
         selected_point_index=0;
@@ -863,6 +974,13 @@ public slots:
             emit cam_data_change(cfg,this);
             set_region(true);
             region_line_picked=false;
+        }
+
+        if(region_data_picked){
+            emit cam_data_change(cfg,this);
+            selected_region_index=selected_data_index;
+            set_region_data(true);
+            region_data_picked=false;
         }
     }
     void mouseDoubleClickEvent(QMouseEvent *event)
@@ -935,11 +1053,14 @@ private:
     bool region_line_picked;
     bool region_data_picked;
 
+
     QPoint ori_point;
     QPoint maped_point;
 
     int selected_region_index;
     int selected_point_index;
+    int selected_data_index;
+    int selected_data_point_index;
 
     int cnt;
     QTimer *tick_timer;
