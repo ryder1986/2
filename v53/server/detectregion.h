@@ -162,7 +162,7 @@ class DetectRegion : public VdData<DetectRegionInputData>
     mutex lock;
 public:
     enum OP{
-        CHANGE_RECT,
+        CHANGE_RECT=1,
         CHANGE_PROCESSOR,
         MODIFY_PROCESSOR
     };

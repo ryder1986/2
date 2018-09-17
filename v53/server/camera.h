@@ -122,7 +122,7 @@ class Camera:public VdData<CameraInputData>
 {
 public:
     enum OP{
-        CHANGE_URL,
+        CHANGE_URL=1,
         INSERT_REGION,
         DELETE_REGION,
         MODIFY_REGION

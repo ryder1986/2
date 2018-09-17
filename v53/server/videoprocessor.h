@@ -615,7 +615,12 @@ public:
         ENCODE_JSONDATA_ARRAY_MEM(LaneData);
         ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
     }
-
+    void add_lane(JsonPacket pkt)
+    {
+        LaneDataJsonData dt(pkt);
+        LaneData.push_back(dt);
+        encode();
+    }
     bool set_point(VdPoint new_p,int index)
     {
         bool ret=false;
