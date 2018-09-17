@@ -393,6 +393,17 @@ public:
             FarArea[(index-1)%4]=p;
         encode();
     }
+    void set_point_final(VdPoint p,int index)
+    {
+        int index_choose=0;
+        if(index<=4)
+            LaneArea[index-1]=p;
+        if(index>4&&index<=4*2)
+            NearArea[(index-1)%4]=p;
+        if(index>4*2&&index<=4*3)
+            FarArea[(index-1)%4]=p;
+        encode();
+    }
     void decode()
     {
         DECODE_INT_MEM(LaneNo);
