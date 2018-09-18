@@ -343,7 +343,10 @@ public:
     {
         return val;
     }
-
+    bool is_null()
+    {
+        return val.isNull();
+    }
 private:
     bool name_exist(string name,string str)
     {

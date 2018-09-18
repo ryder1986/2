@@ -529,6 +529,10 @@ public:
     {
         pt.setPen(red_pen1());
         DetectRegionOutputData ro(out);
+        if(ro.Result.is_null()){
+            prt(info,"result is NULL ");
+            return ;
+        }
         int rect_x=ro.DetectionRect.x;
         int rect_y=ro.DetectionRect.y;
         offset_x=rect_x;
