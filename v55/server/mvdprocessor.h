@@ -5,7 +5,7 @@
 #include "jsonpacket.h"
 #include "algorithm.h"
 #define TEST_CLIENT
-//#undef TEST_CLIENT
+#undef TEST_CLIENT
 #define  SAVE_VIDEO 
 #ifdef SAVE_VIDEO
 Mat imgSave;
@@ -354,9 +354,9 @@ public:
             putText(imgSave, str5, Point(i * 80 ,330),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
 
         }
-        namedWindow("detect",CV_WINDOW_NORMAL);
-        imshow("detect", imgSave);
-        waitKey(1);
+    //    namedWindow("detect",CV_WINDOW_NORMAL);
+   //     imshow("detect", imgSave);
+    //    waitKey(1);
 #endif
 #endif
     }
@@ -505,8 +505,8 @@ public:
 
         }
         namedWindow("detect",CV_WINDOW_NORMAL);
-        imshow("detect", imgSave);
-        waitKey(1);
+      //  imshow("detect", imgSave);
+      //  waitKey(1);
 #endif
 #endif
     }
