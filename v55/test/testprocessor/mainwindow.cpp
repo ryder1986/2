@@ -10,8 +10,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
    // DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_dummy_test_data().data(),LABLE_PROCESSOR_DUMMY);
-    DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_c4_test_data().data(),LABLE_PROCESSOR_C4);
-        vector <JsonPacket> rs;
+ //   DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_c4_test_data().data(),LABLE_PROCESSOR_C4);
+  //  DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_fvd_test_data().data(),LABLE_PROCESSOR_FVD);
+
+    DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_mvd_test_data().data(),LABLE_PROCESSOR_FVD);
+
+    vector <JsonPacket> rs;
     rs.push_back(input.data());
     CameraInputData d(rs,"/root/test.264");
     wgt=new PlayerWidget(d);

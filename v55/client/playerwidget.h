@@ -755,7 +755,7 @@ public slots:
 
     }
 #ifdef WITH_CUDA
-    LaneDataJsonData get_test_lane()
+    static LaneDataJsonData get_test_lane()
     {
         vector <VdPoint> FarArea1; // far rect
         FarArea1.push_back(VdPoint(0,0));
@@ -776,7 +776,7 @@ public slots:
         LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
         return d1;
     }
-    FvdProcessorInputData get_fvd_test_data()
+    static FvdProcessorInputData get_fvd_test_data()
     {
         vector <VdPoint> BasicCoil;// standard rect
         BasicCoil.push_back(VdPoint(0,0));
@@ -808,12 +808,12 @@ public slots:
         FvdProcessorInputData d(BasicCoil,BaseLine,NearPointDistance,FarPointDistance,LineData);
         return d;
     }
-    PvdProcessorInputData get_pvd_test_data()
+     static PvdProcessorInputData get_pvd_test_data()
     {
         PvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
 
     }
-    MvdProcessorInputData get_mvd_test_data()
+    static MvdProcessorInputData get_mvd_test_data()
     {
         // MvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
         vector <VdPoint> BasicCoil;// standard rect
