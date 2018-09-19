@@ -206,7 +206,9 @@ public:
     int to_int()
     {
         if(val.empty()){
-            prt(info,"to int error :no content");
+            int t=1/0;//sig fault deal to error.
+
+            prt(info,"to int error :no content,%d",t);
             print_backstrace();
             return 0;
         }

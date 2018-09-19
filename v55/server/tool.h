@@ -594,7 +594,7 @@ void _start_async(callable&& f, arguments&&... args)
     //prt(info,"test end<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 }
 #include <sys/time.h>
-inline int get_time()
+inline long get_time()
 {
     time_t tt;
     struct timeval tv;
@@ -602,7 +602,7 @@ inline int get_time()
     gettimeofday(&tv,NULL);
     return tv.tv_sec*1000+tv.tv_usec/1000;
 }
-inline int get_time_point_ms()
+inline long get_time_point_ms()
 {
     return get_time();
 }

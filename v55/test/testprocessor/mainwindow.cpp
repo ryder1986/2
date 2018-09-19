@@ -17,8 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     vector <JsonPacket> rs;
     rs.push_back(input.data());
-    CameraInputData d(rs,"/root/test.264");
-    wgt=new PlayerWidget(d);
+    //CameraInputData d(rs,"/root/test.264");
+    CameraInputData d(rs,"rtsp://192.168.1.95:554/av0_1");
+        wgt=new PlayerWidget(d);
 
     cam=(new Camera(d.data(),bind(&MainWindow::process_camera_data,
                                     this,placeholders::_1,

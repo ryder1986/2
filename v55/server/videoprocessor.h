@@ -374,9 +374,11 @@ public:
 class LaneDataJsonData:public JsonData{
 public:
     int LaneNo;// lane name index;
-    vector <VdPoint> FarArea; // far rect
-    vector <VdPoint> NearArea; // near rect
+
+
     vector <VdPoint> LaneArea; // whole rect
+    vector <VdPoint> NearArea; // near rect
+    vector <VdPoint> FarArea; // far rect
     LaneDataJsonData(JsonPacket p):JsonData(p)
     {
         decode();
@@ -589,11 +591,13 @@ public:
     int VehicleSpeed;// near rect car's speed
     int NearActualLength;// near rect real size
     int FarActualLength;// far rect real size
+    bool FarCarExist;
+    bool NearCarExist;
     LaneOutputJsonData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-    LaneOutputJsonData(int lo,int qh,VdPoint st,VdPoint et,int lr,int vw,int vd,int nh,int fh):
+    LaneOutputJsonData(int lo,int qh,VdPoint st,VdPoint et,int lr,int vw,int vd,int nh,int fh,bool fe,bool ne):
         LaneNo(lo),
         QueueLength(qh),
         StartQueuePoint(st),
@@ -602,35 +606,37 @@ public:
         VehicleFlow(vw),
         VehicleSpeed(vd),
         NearActualLength(nh),
-        FarActualLength(fh)
+        FarActualLength(fh),FarCarExist(fe),NearCarExist(ne)
     {
         encode();
     }
     void decode()
     {
         DECODE_INT_MEM(LaneNo);
-        DECODE_INT_MEM(LaneNo);
+        DECODE_INT_MEM(QueueLength);
         DECODE_JSONDATA_MEM(StartQueuePoint);
         DECODE_JSONDATA_MEM(EndQueuePoint);
-        DECODE_INT_MEM(LaneNo);
-        DECODE_INT_MEM(LaneNo);
-        DECODE_INT_MEM(LaneNo);
-        DECODE_INT_MEM(LaneNo);
-        DECODE_INT_MEM(LaneNo);
-
-
+        DECODE_INT_MEM(LaneVehicleNumber);
+        DECODE_INT_MEM(VehicleFlow);
+        DECODE_INT_MEM(VehicleSpeed);
+        DECODE_INT_MEM(NearActualLength);
+        DECODE_INT_MEM(FarActualLength);
+        DECODE_BOOL_MEM(FarCarExist);
+        DECODE_BOOL_MEM(NearCarExist);
     }
     void encode()
     {
         ENCODE_INT_MEM(LaneNo);
-        ENCODE_INT_MEM(LaneNo);
+        ENCODE_INT_MEM(QueueLength);
         ENCODE_JSONDATA_MEM(StartQueuePoint);
         ENCODE_JSONDATA_MEM(EndQueuePoint);
-        ENCODE_INT_MEM(LaneNo);
-        ENCODE_INT_MEM(LaneNo);
-        ENCODE_INT_MEM(LaneNo);
-        ENCODE_INT_MEM(LaneNo);
-        ENCODE_INT_MEM(LaneNo);
+        ENCODE_INT_MEM(LaneVehicleNumber);
+        ENCODE_INT_MEM(VehicleFlow);
+        ENCODE_INT_MEM(VehicleSpeed);
+        ENCODE_INT_MEM(NearActualLength);
+        ENCODE_INT_MEM(FarActualLength);
+        ENCODE_BOOL_MEM(FarCarExist);
+        ENCODE_BOOL_MEM(NearCarExist);
     }
 };
 class DegreeJsonData:public JsonData{
@@ -707,7 +713,6 @@ public:
     int NearPointDistance;//distance to camera
     int FarPointDistance;
     vector <LaneDataJsonData> LaneData; // lane info
-
     vector <VdPoint> DetectLine;
     MvdProcessorInputData(){}
     MvdProcessorInputData(JsonPacket pkt):JsonData(pkt)
@@ -792,6 +797,9 @@ public:
     MvdProcessorOutputData(JsonPacket p):JsonData(p)
     {
         decode();
+    }
+    MvdProcessorOutputData()
+    {
     }
     MvdProcessorOutputData(vector <ObjectRect> fs, int cr, int vy, int ve,
                            vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,int ct):

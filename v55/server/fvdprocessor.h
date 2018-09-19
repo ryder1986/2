@@ -90,7 +90,7 @@ public:
         vector <LaneOutputJsonData> LaneOutputData;
         for( i = 0;  i <p_cfg->p_outbuf->FVDoutbuf.uLaneNum; i++)
          {
-            int laneNo, queLen, vehiNum, flow, speed;
+            int laneNo, queLen, vehiNum, flow, speed,Farcarexist, Nearcarexist;
             laneNo = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].LaneNo;
             queLen = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleQueueLength;
             vehiNum = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uRegionVehicleNumber;
@@ -101,9 +101,12 @@ public:
             VdPoint pt2(p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].x,
                 p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].y );
 
-            LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
-                                                                ,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
-                                                                p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i]  );
+			Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
+			Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
+
+			LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
+				,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
+				p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist);
             LaneOutputData.push_back(detLaneData);
         }
         vector <DegreeJsonData> DegreeData; // on  lane points

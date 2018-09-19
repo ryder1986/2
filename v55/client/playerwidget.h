@@ -171,6 +171,7 @@ signals:
     void action_done(int level1,int level2);
 };
 
+//class PlayerWidget : public QOpenGLWidget
 class PlayerWidget : public QWidget
 {
     Q_OBJECT
@@ -272,7 +273,10 @@ public:
             img=QImage((const uchar*)(rgb_frame.data),
                        rgb_frame.cols,rgb_frame.rows,
                        QImage::Format_RGB888);
+            img_old=img;
+            img_old.bits();
             img.bits();
+
         }
         return ret;
     }
@@ -489,20 +493,69 @@ public:
                 pt.drawLine(pb,pe);
             }
 
+
+            int point_index=(selected_data_point_index-2-1)%12+1;
+            int lane_index=(selected_data_point_index-2-1)/12+1;
+
+
+           // prt(info,"%d:%d",lane_index,point_index);
+            int lane_loop=1;
+            bool highlight=false;
             for(LaneDataJsonData r: data.LaneData)
             {
+                if(mvd_current_data.LaneOutputData.size()>0)
+                if(mvd_current_data.LaneOutputData[lane_loop-1].FarCarExist){
+                    prt(info,"######## far car exit");
+                }
                 QVector<QPoint> ps;
+
+                if((region_data_picked&&lane_index==lane_loop&&point_index<=12&&point_index>8)||(lane_index==lane_loop&&mvd_current_data.LaneOutputData[lane_loop-1].FarCarExist))
+                    highlight=true;
                 for(VdPoint v:r.FarArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));  pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),1,1);pt.setPen(blue_pen4());}
+                if(highlight){
+                    pt.setPen(red_pen2());
+                    prt(info,"highlight far");
+                }
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
+                pt.drawText(ps.front(),"far");
                 ps.clear();
+                if(highlight)
+                    pt.setPen(blue_pen4());
+                highlight=false;
+
                 for(VdPoint v:r.NearArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),1,1);pt.setPen(blue_pen4());}
+                if((region_data_picked&&lane_index==lane_loop&&point_index<=8&&point_index>4)||(lane_index==lane_loop&&mvd_current_data.LaneOutputData[lane_loop-1].NearCarExist))
+                    highlight=true;
+                if(highlight){
+                    pt.setPen(red_pen2());
+                    prt(info,"highlight near");
+                }
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
+                pt.drawText(ps.front(),"near");
                 ps.clear();
+                if(highlight)
+                    pt.setPen(blue_pen4());
+                highlight=false;
+
+
                 for(VdPoint v:r.LaneArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),1,1);pt.setPen(blue_pen4());}
+
+                if(region_data_picked&&lane_index==lane_loop&&point_index<=4)
+                    highlight=true;
+                if(highlight){
+                    pt.setPen(red_pen2());
+                    prt(info,"highlight lane");
+                }
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
+                pt.drawText(ps.front(),"lane");
+                ps.clear();
+                if(highlight)
+                    pt.setPen(blue_pen4());
+                highlight=false;
+                lane_loop++;
             }
 
         }
@@ -562,12 +615,28 @@ public:
 
         if(processor==LABLE_PROCESSOR_MVD){
             MvdProcessorOutputData d(ro.Result);
+            mvd_current_data=d;
             for(ObjectRect r:d.MvdDetectedObjects){
                 int x=r.x+ro.DetectionRect.x;
                 int y=r.y+ro.DetectionRect.y;
                 pt.drawRect(QRect(x,y,r.w,r.h));
                 pt.drawText(x,y,QString(r.label.data()).append("(").append(QString::number(r.confidence_rate)).append(")"));
             }
+
+            int pos_y=10;
+            pt.drawText(ro.DetectionRect.x,ro.DetectionRect.y+pos_y,QString(QString("PersonFlow North:")+QString::number(d.PersonFlow1)));pos_y+=20;
+            pt.drawText(ro.DetectionRect.x,ro.DetectionRect.y+pos_y,QString(QString("PersonFlow South:")+QString::number(d.PersonFlow2)));pos_y+=20;
+            pt.drawText(ro.DetectionRect.x,ro.DetectionRect.y+pos_y,QString(QString("CurrentVehicleNumber:")+QString::number(d.CurrentVehicleNumber)));pos_y+=20;
+            pt.drawText(ro.DetectionRect.x,ro.DetectionRect.y+pos_y,QString(QString("CurrentPersionCount:")+QString::number(d.CurrentPersionCount)));pos_y+=20;
+            int pos_x=0;
+            int cnt=0;
+            for(LaneOutputJsonData ld:d.LaneOutputData){
+                cnt++;
+                pt.drawText(ro.DetectionRect.x+pos_x,ro.DetectionRect.y+pos_y,QString(QString("lane")+QString::number(cnt)+QString(":")+QString::number(ld.VehicleFlow)));
+                pos_x+=100;
+            }
+            pos_y+=20;
+
         }
 
         if(processor==LABLE_PROCESSOR_FVD){
@@ -596,10 +665,21 @@ protected:
     {
         lock.lock();
         QPainter this_painter(this);
+#if 0
+        paint_tick=get_time_point_ms()%(1000*60*60);
+        prt(info,"use %ld ms",paint_tick-paint_tick_old);
+        paint_tick_old=paint_tick;
+#endif
         if(!get_img()){
+#if 0
+            prt(info,"get img fail");
             lock.unlock();
             return;
+#else
+            img=img_old;
+#endif
         }
+
         QPainter img_painter(&img);
         QString fps(QString::number(output_data_fps_result));
         QString url(QString(cfg.Url.data()));
@@ -757,6 +837,7 @@ public slots:
 #ifdef WITH_CUDA
     static LaneDataJsonData get_test_lane()
     {
+#if 0
         vector <VdPoint> FarArea1; // far rect
         FarArea1.push_back(VdPoint(0,0));
         FarArea1.push_back(VdPoint(100,0));
@@ -774,6 +855,28 @@ public slots:
         LaneArea1.push_back(VdPoint(0,400));
         int lane_no=18;
         LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
+#else
+
+        int ox=100;
+        int oy=100;
+        vector <VdPoint> FarArea1; // far rect
+        FarArea1.push_back(VdPoint(0+ox,100+oy));
+        FarArea1.push_back(VdPoint(100+ox,100+oy));
+        FarArea1.push_back(VdPoint(100+ox,150+oy));
+        FarArea1.push_back(VdPoint(0+ox,150+oy));
+        vector <VdPoint> NearArea1; // near rect
+        NearArea1.push_back(VdPoint(0+ox,0+200+oy));
+        NearArea1.push_back(VdPoint(100+ox,0+200+oy));
+        NearArea1.push_back(VdPoint(100+ox,250+oy));
+        NearArea1.push_back(VdPoint(0+ox,0+250+oy));
+        vector <VdPoint> LaneArea1; // whole rect
+        LaneArea1.push_back(VdPoint(0+ox,0+oy));
+        LaneArea1.push_back(VdPoint(100+ox,0+oy));
+        LaneArea1.push_back(VdPoint(100+ox,300+oy));
+        LaneArea1.push_back(VdPoint(0+ox,300+oy));
+        int lane_no=18;
+        LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
+#endif
         return d1;
     }
     static FvdProcessorInputData get_fvd_test_data()
@@ -808,13 +911,15 @@ public slots:
         FvdProcessorInputData d(BasicCoil,BaseLine,NearPointDistance,FarPointDistance,LineData);
         return d;
     }
-     static PvdProcessorInputData get_pvd_test_data()
+    static PvdProcessorInputData get_pvd_test_data()
     {
         PvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
 
     }
     static MvdProcessorInputData get_mvd_test_data()
     {
+
+
         // MvdProcessorInputData d(VdPoint(100,200),VdPoint(400,200)); return d;
         vector <VdPoint> BasicCoil;// standard rect
         BasicCoil.push_back(VdPoint(0,0));
@@ -825,24 +930,31 @@ public slots:
         int NearPointDistance=20;//distance to camera
         int FarPointDistance=100;
         vector <LaneDataJsonData> LineData; // lane info
+ #if 0
+        int ox=200;
+        int oy=100;
         vector <VdPoint> FarArea1; // far rect
-        FarArea1.push_back(VdPoint(0,0));
-        FarArea1.push_back(VdPoint(100,0));
-        FarArea1.push_back(VdPoint(100,100));
-        FarArea1.push_back(VdPoint(0,100));
+        FarArea1.push_back(VdPoint(0+ox,100+oy));
+        FarArea1.push_back(VdPoint(100+ox,100+oy));
+        FarArea1.push_back(VdPoint(100+ox,200+oy));
+        FarArea1.push_back(VdPoint(0+ox,200+oy));
         vector <VdPoint> NearArea1; // near rect
-        NearArea1.push_back(VdPoint(0,0+100));
-        NearArea1.push_back(VdPoint(100,0+100));
-        NearArea1.push_back(VdPoint(100,200));
-        NearArea1.push_back(VdPoint(0,0+200));
+        NearArea1.push_back(VdPoint(0+ox,0+200+50+oy));
+        NearArea1.push_back(VdPoint(100+ox,0+200+50+oy));
+        NearArea1.push_back(VdPoint(100+ox,300+50+oy));
+        NearArea1.push_back(VdPoint(0+ox,0+300+50+oy));
         vector <VdPoint> LaneArea1; // whole rect
-        LaneArea1.push_back(VdPoint(0,0));
-        LaneArea1.push_back(VdPoint(100,0));
-        LaneArea1.push_back(VdPoint(100,400));
-        LaneArea1.push_back(VdPoint(0,400));
+        LaneArea1.push_back(VdPoint(0+ox,0+oy));
+        LaneArea1.push_back(VdPoint(100+ox,0+oy));
+        LaneArea1.push_back(VdPoint(100+ox,400+oy));
+        LaneArea1.push_back(VdPoint(0+ox,400+oy));
         int lane_no=18;
         LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
-        LineData.push_back(d1);
+
+   #endif
+
+
+        LineData.push_back(get_test_lane());
 
 
         vector <VdPoint> detect_line;
@@ -1203,6 +1315,7 @@ private:
     QMutex lock;
     int frame_rate;
     QImage img;
+    QImage img_old;
     QList <QPoint> area_v;
     bool show_info;
     int channel_num;
@@ -1233,6 +1346,14 @@ private:
     QTimer tmr;
     int output_data_fps;
     int output_data_fps_result;
+
+    int paint_tick;
+    int paint_tick_old;
+
+
+#ifdef WITH_CUDA
+    MvdProcessorOutputData mvd_current_data;
+#endif
 };
 
 #endif // PLAYERWIDGET_H
