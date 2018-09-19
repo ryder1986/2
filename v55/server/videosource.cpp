@@ -69,7 +69,7 @@ void VideoSource::run()
         prt(info,"ok to open %s", url.data());
     }
 
-    if(0){
+    if(1){
         frame_wait_time=0;
     }else{
         frame_wait_time=40;

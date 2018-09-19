@@ -12,6 +12,9 @@
 WITH_CUDA{
     DEFINES+=WITH_CUDA
 }
+WITH_OPENGL{
+    DEFINES+=WITH_OPENGL
+}
 
 QT += widgets network
 TARGET = client

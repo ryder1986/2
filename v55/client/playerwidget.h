@@ -170,9 +170,12 @@ public slots:
 signals:
     void action_done(int level1,int level2);
 };
-
-//class PlayerWidget : public QOpenGLWidget
+#ifdef WITH_OPENGL
+class PlayerWidget : public QOpenGLWidget
+#else
 class PlayerWidget : public QWidget
+#endif
+
 {
     Q_OBJECT
     PlayerWidgetMenu mn;
@@ -273,8 +276,11 @@ public:
             img=QImage((const uchar*)(rgb_frame.data),
                        rgb_frame.cols,rgb_frame.rows,
                        QImage::Format_RGB888);
+#ifndef WITH_OPENGL
             img_old=img;
+
             img_old.bits();
+#endif
             img.bits();
 
         }
@@ -498,15 +504,15 @@ public:
             int lane_index=(selected_data_point_index-2-1)/12+1;
 
 
-           // prt(info,"%d:%d",lane_index,point_index);
+            // prt(info,"%d:%d",lane_index,point_index);
             int lane_loop=1;
             bool highlight=false;
             for(LaneDataJsonData r: data.LaneData)
             {
                 if(mvd_current_data.LaneOutputData.size()>0)
-                if(mvd_current_data.LaneOutputData[lane_loop-1].FarCarExist){
-                    prt(info,"######## far car exit");
-                }
+                    if(mvd_current_data.LaneOutputData[lane_loop-1].FarCarExist){
+                        //prt(info,"######## far car exit");
+                    }
                 QVector<QPoint> ps;
 
                 if((region_data_picked&&lane_index==lane_loop&&point_index<=12&&point_index>8)||(lane_index==lane_loop&&mvd_current_data.LaneOutputData[lane_loop-1].FarCarExist))
@@ -514,7 +520,7 @@ public:
                 for(VdPoint v:r.FarArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));  pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),1,1);pt.setPen(blue_pen4());}
                 if(highlight){
                     pt.setPen(red_pen2());
-                    prt(info,"highlight far");
+                    // prt(info,"highlight far");
                 }
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
@@ -529,7 +535,7 @@ public:
                     highlight=true;
                 if(highlight){
                     pt.setPen(red_pen2());
-                    prt(info,"highlight near");
+                    // prt(info,"highlight near");
                 }
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
@@ -542,11 +548,11 @@ public:
 
                 for(VdPoint v:r.LaneArea){ps.push_back(QPoint(v.x+offset_x,v.y+offset_y));pt.setPen(red_pen2());pt.drawEllipse(QPoint(v.x+offset_x,v.y+offset_y),1,1);pt.setPen(blue_pen4());}
 
-                if(region_data_picked&&lane_index==lane_loop&&point_index<=4)
+                if(region_data_picked&&lane_index==lane_loop&&point_index<=4&&point_index>0)
                     highlight=true;
                 if(highlight){
                     pt.setPen(red_pen2());
-                    prt(info,"highlight lane");
+                    // prt(info,"highlight lane");
                 }
                 pt.drawPolyline(QPolygon(ps));
                 pt.drawLine(ps.front(),ps.last());
@@ -671,7 +677,7 @@ protected:
         paint_tick_old=paint_tick;
 #endif
         if(!get_img()){
-#if 0
+#ifdef WITH_OPENGL
             prt(info,"get img fail");
             lock.unlock();
             return;
@@ -930,7 +936,7 @@ public slots:
         int NearPointDistance=20;//distance to camera
         int FarPointDistance=100;
         vector <LaneDataJsonData> LineData; // lane info
- #if 0
+#if 0
         int ox=200;
         int oy=100;
         vector <VdPoint> FarArea1; // far rect
@@ -951,7 +957,7 @@ public slots:
         int lane_no=18;
         LaneDataJsonData d1(lane_no,FarArea1,NearArea1,LaneArea1);
 
-   #endif
+#endif
 
 
         LineData.push_back(get_test_lane());
@@ -1280,7 +1286,7 @@ private:
     }
     QPen red_pen1()
     {
-        return QPen (QBrush (QColor(255,0,0)),1);
+        return QPen (QBrush (QColor(255,0,0)),3);
     }
     QPen red_pen2()
     {
@@ -1288,7 +1294,7 @@ private:
     }
     QPen green_pen1()
     {
-        return QPen (QBrush (QColor(0,255,0)),1);
+        return QPen (QBrush (QColor(0,255,0)),3);
     }
     QPen green_pen2()
     {
@@ -1315,7 +1321,9 @@ private:
     QMutex lock;
     int frame_rate;
     QImage img;
+#ifndef WITH_OPENGL
     QImage img_old;
+#endif
     QList <QPoint> area_v;
     bool show_info;
     int channel_num;
