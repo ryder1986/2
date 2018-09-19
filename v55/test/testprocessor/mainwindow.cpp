@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
  //   DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_c4_test_data().data(),LABLE_PROCESSOR_C4);
   //  DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_fvd_test_data().data(),LABLE_PROCESSOR_FVD);
 
-    DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_mvd_test_data().data(),LABLE_PROCESSOR_FVD);
+    DetectRegionInputData input=PlayerWidget::get_region_test_data( PlayerWidget::get_mvd_test_data().data(),LABLE_PROCESSOR_MVD);
 
     vector <JsonPacket> rs;
     rs.push_back(input.data());

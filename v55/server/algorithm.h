@@ -99,6 +99,7 @@ typedef struct{
 	int lane_id;
 	bool cal_speed;
 	bool cal_flow;
+	int direction;//目标方向
 }CTarget;
 
 ///////////////////////////////////////////////////////////////////////////////////////////检测参数
@@ -409,7 +410,8 @@ extern "C"{
 	bool ArithInit(ALGCFGS *pCfgs, CPoint* ptDetLine, FVDDETECTCFG *pDownDetectCfg, ALGPARAMS *pParams);//算法初始化
 	bool RestParams(ALGCFGS *pCfgs, CPoint* ptDetLine, FVDDETECTCFG *pDownDetectCfg, ALGPARAMS *pParams);//重置参数
 	Uint16 ArithDetect(IplImage* img, ALGCFGS *pCfgs);
-	Uint16 ArithProc(IplImage* img, CRect1 detROI, OUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//算法执行
+	Uint16 ArithProc(IplImage* img, OUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);
+	Uint16 ArithProc_whole(IplImage* img, CRect1 detROI, OUTBUF* outBuf, ALGCFGS *pCfgs, ALGPARAMS	*pParams);//算法执行
 
 #ifdef __cplusplus
 }
