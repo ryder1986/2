@@ -22,7 +22,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
+#CONFIG+=WITH_CUDA
+WITH_CUDA{
+    DEFINES+=WITH_CUDA
+    LIBS+=-L/lib -ldarknet
+    HEADERS+= fvdprocessor.h \
+    pvdprocessor.h    mvdprocessor.h
+    SOURCES+= fvdprocessor.cpp \
+    pvdprocessor.cpp
+    INCLUDEPATH+=/usr/include/python2.7
+    LIBS+=-lpython2.7
+}else{
+    #message("no cuda")
+   # LIBS+=-lopencv_imgcodecs
+}
 SOURCES += \
         main.cpp \
         mainwindow.cpp
@@ -33,7 +46,7 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-DEFINES +=WITH_CUDA
+#DEFINES +=WITH_CUDA
 
 SERVER_PATH=../../server/
 CLIENT_PATH=../../client/
@@ -71,3 +84,6 @@ LIBS+=-lopencv_core -lopencv_highgui -lopencv_objdetect \
 -lopencv_imgproc -lopencv_ml -lopencv_highgui\
 -lopencv_video -lopencv_videostab  -lpthread -lopencv_videoio -lopencv_imgcodecs
 LIBS+=-lavformat -lavcodec  -lavutil -lswresample
+install_files1.files+=$$SERVER_PATH/res/
+install_files1.path=$$OUT_PWD/
+INSTALLS+=install_files1

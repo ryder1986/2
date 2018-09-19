@@ -337,6 +337,7 @@ public:
         return false;
 
     }
+#ifdef WITH_CUDA
     bool is_match_region_data(const JsonPacket data,QPoint pnt,int distance=20)
     {
         bool ret=false;
@@ -365,29 +366,29 @@ public:
                 selected_data_point_index=idx;
             }
             for(int i=0;i<pi.LaneData.size();i++){
-              //  for(int j=0;i<4;j++){
+                //  for(int j=0;i<4;j++){
 
-                    idx=p_on_vs(pi.LaneData[i].LaneArea,p);
-                    if(idx){
-                        ret=true;
-                        selected_data_point_index=i*12+idx+2;
-                        return true;
-                    }
+                idx=p_on_vs(pi.LaneData[i].LaneArea,p);
+                if(idx){
+                    ret=true;
+                    selected_data_point_index=i*12+idx+2;
+                    return true;
+                }
 
-                    idx=p_on_vs(pi.LaneData[i].NearArea,p);
-                    if(idx){
-                        ret=true;
-                        selected_data_point_index=i*12+idx+4*1+2;
-                        return true;
-                    }
+                idx=p_on_vs(pi.LaneData[i].NearArea,p);
+                if(idx){
+                    ret=true;
+                    selected_data_point_index=i*12+idx+4*1+2;
+                    return true;
+                }
 
-                    idx=p_on_vs(pi.LaneData[i].FarArea,p);
-                    if(idx){
-                        ret=true;
-                        selected_data_point_index=i*12+idx+4*2+2;
-                        return true;
-                    }
-//                }
+                idx=p_on_vs(pi.LaneData[i].FarArea,p);
+                if(idx){
+                    ret=true;
+                    selected_data_point_index=i*12+idx+4*2+2;
+                    return true;
+                }
+                //                }
 
             }
 
@@ -451,6 +452,8 @@ public:
         return rd.data();
 
     }
+
+#endif
     QPoint map_point(QPoint p)
     {
         return QPoint(p.x()*img.width()/this->width(),p.y()*img.height()/this->height());
@@ -853,7 +856,7 @@ public slots:
         return dt;
     }
 #endif
-    DetectRegionInputData get_region_test_data(JsonPacket pkt,string SelectedProcessor)
+    static DetectRegionInputData get_region_test_data(JsonPacket pkt,string SelectedProcessor)
     {
 
         vector <VdPoint>ExpectedAreaVers;
@@ -865,12 +868,12 @@ public slots:
         DetectRegionInputData rd(pkt,SelectedProcessor,ExpectedAreaVers);
         return rd;
     }
-    DummyProcessorInputData get_dummy_test_data()
+    static DummyProcessorInputData get_dummy_test_data()
     {
         DummyProcessorInputData d(true,false,17);
         return d;
     }
-    C4ProcessorInputData get_c4_test_data()
+    static C4ProcessorInputData get_c4_test_data()
     {
         C4ProcessorInputData d(8,0.7);   return d;
     }
@@ -1011,6 +1014,7 @@ public slots:
             ori_point=e->pos();
             //prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
         }
+#ifdef WITH_CUDA
         if(region_data_picked){
             DetectRegionInputData r=cfg.DetectRegion[selected_data_index-1];
             //vector <VdPoint> ps;
@@ -1028,6 +1032,7 @@ public slots:
             //  ori_point=e->pos();
             //prt(info,"line move (%d, %d) to (%d, %d)",ori_point.x(),ori_point.y(),e->pos().x(),e->pos().y());
         }
+#endif
     }
 
     void mousePressEvent(QMouseEvent *e)
@@ -1056,6 +1061,8 @@ public slots:
                 selected_region_index=i+1;
                 return;
             }
+
+#ifdef WITH_CUDA
             // match region data
             bool ondata=is_match_region_data(cfg.DetectRegion[i],map_point(e->pos()));
             if(ondata){
@@ -1064,6 +1071,7 @@ public slots:
                 region_data_picked=true;
                 return;
             }
+#endif
         }
         selected_point_index=0;
         selected_region_index=0;
@@ -1089,7 +1097,7 @@ public slots:
             region_data_picked=false;
         }
     }
-
+#ifdef WITH_CUDA
     void mouseDoubleClickEvent(QMouseEvent *e)
     {
 
@@ -1103,7 +1111,7 @@ public slots:
             if(point_index>0&&point_index<=2){
                 int index=i+1;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
-               // cfg.DetectRegion[index-1]= reform_data1(input.data(),11,22);
+                // cfg.DetectRegion[index-1]= reform_data1(input.data(),11,22);
                 cfg.set_region(add_last_lane(input.data(),11,22),index);
                 prt(info,"double clk");
                 emit cam_data_change(cfg,this);
@@ -1121,7 +1129,7 @@ public slots:
             if(point_index>2){
                 int index=i+1;
                 DetectRegionInputData input= cfg.DetectRegion[index-1];
-               // cfg.DetectRegion[index-1]= reform_data1(input.data(),11,22);
+                // cfg.DetectRegion[index-1]= reform_data1(input.data(),11,22);
                 cfg.set_region(del_last_lane(input.data(),11,22),index);
                 prt(info,"double clk");
                 emit cam_data_change(cfg,this);
@@ -1139,6 +1147,7 @@ public slots:
         else
             emit click_event(this,ClickEvent::SHOW_ALL);
     }
+#endif
 private:
     int double_click_flag;
     QPen blue_pen1()

@@ -26,7 +26,8 @@ extern "C" {
 }
 #endif
 #if 1
-
+#define USE_CVCAP 1
+#undef USE_CVCAP
 class PdVideoCapture{
 public:
     PdVideoCapture(string url):url(url)
@@ -204,8 +205,7 @@ public:
     int width;
     int height;
 };
-#define USE_CVCAP 1
-//#undef USE_CVCAP
+
 //#include <list>
 
 class VideoSource
