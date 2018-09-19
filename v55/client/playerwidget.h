@@ -171,7 +171,7 @@ signals:
     void action_done(int level1,int level2);
 };
 
-class PlayerWidget : public QOpenGLWidget
+class PlayerWidget : public QWidget
 {
     Q_OBJECT
     PlayerWidgetMenu mn;
