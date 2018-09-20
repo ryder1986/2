@@ -15,7 +15,8 @@
 
 //#include <ifaddrs.h>
 //#include "tool.h"
-
+//#define NDEBUG
+#include "assert.h"
 using namespace std;
 
 #ifdef IS_WIN
