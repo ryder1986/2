@@ -14,7 +14,14 @@
 #include "datapacket.h"
 using namespace std;
 using namespace cv;
+#define LABLE_PROCESSOR_C4 "C4"
+#define LABLE_PROCESSOR_DUMMY "Dummy"
 
+#ifdef WITH_CUDA
+#define LABLE_PROCESSOR_PVD "Pvd"
+#define LABLE_PROCESSOR_FVD "Fvd"
+#define LABLE_PROCESSOR_MVD "Mvd"
+#endif
 namespace VideoProcessorNS{
 typedef struct args{
     double scale_ratio;

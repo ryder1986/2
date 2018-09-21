@@ -77,7 +77,12 @@ class DummyProcessor:public VideoProcessor
     int loopy;
     DummyProcessorInputData input;
 public:
-    DummyProcessor(JsonPacket input_packet):input(input_packet)
+//    DummyProcessor(JsonPacket input_packet):input(input_packet)
+//    {
+//        loopx=0;
+//        loopy=0;
+//    }
+    DummyProcessor(DummyProcessorInputData input_packet):input(input_packet)
     {
         loopx=0;
         loopy=0;

@@ -172,9 +172,9 @@ signals:
 };
 #ifdef WITH_OPENGL
 class PlayerWidget : public QOpenGLWidget
-#else
+        #else
 class PlayerWidget : public QWidget
-#endif
+        #endif
 
 {
     Q_OBJECT
@@ -229,7 +229,7 @@ public:
         DummyProcessorInputData dd(true,true,5);
         // DummyProcessor
         DetectRegionInputData rdata(dd.data(),SelectedProcessor,ExpectedAreaVers);
-        vector<JsonPacket> rs;
+        vector<DetectRegionInputData> rs;
         rs.push_back(rdata.data());
         CameraInputData data(rs,url);
         return data;
@@ -259,7 +259,7 @@ public:
         show_info=flg;
     }
 
-    void set_overlay(JsonPacket cam_out)
+    void set_overlay(CameraOutputData cam_out)
     {
         lock.lock();
         output_data=cam_out;
@@ -348,11 +348,11 @@ public:
 
     }
 #ifdef WITH_CUDA
-    bool is_match_region_data(const JsonPacket data,QPoint pnt,int distance=20)
+    bool is_match_region_data(const    DetectRegionInputData rd,QPoint pnt,int distance=20)
     {
         bool ret=false;
         int idx;
-        DetectRegionInputData rd(data);
+
         int offx;
         int offy;
         get_min_point(rd.ExpectedAreaVers,offx,offy);
@@ -587,10 +587,9 @@ public:
 #endif
     }
 
-    void draw_process_output(QPainter &pt,string processor,JsonPacket out,int &offset_x,int &offset_y)
+    void draw_process_output(QPainter &pt,string processor,DetectRegionOutputData ro,int &offset_x,int &offset_y)
     {
         pt.setPen(red_pen1());
-        DetectRegionOutputData ro(out);
         if(ro.Result.is_null()){
             prt(info,"result is NULL ");
             return ;
@@ -811,7 +810,7 @@ public slots:
     void add_region(bool)
     {
         DetectRegionInputData drid( get_region_test_data(get_dummy_test_data().data(),LABLE_PROCESSOR_DUMMY));
-        vector <JsonPacket >::iterator begin=cfg.DetectRegion.begin();
+        vector <DetectRegionInputData >::iterator begin=cfg.DetectRegion.begin();
 
         RequestPkt pkt(
                     Camera::OP::INSERT_REGION,cfg.DetectRegion.size(),
@@ -828,7 +827,7 @@ public slots:
         if(selected_region_index<1||selected_region_index>cfg.DetectRegion.size())
             return;
         RequestPkt pkt(Camera::OP::DELETE_REGION,selected_region_index,JsonPacket());
-        vector <JsonPacket >::iterator begin=cfg.DetectRegion.begin();
+        vector <DetectRegionInputData >::iterator begin=cfg.DetectRegion.begin();
         cfg.DetectRegion.erase(begin+selected_region_index-1);
 
         signal_camera(this,Camera::OP::DELETE_REGION,pkt.data());
@@ -1023,7 +1022,7 @@ public slots:
             processor_pkt=get_mvd_test_data().data();
         }
 #endif
-        ProcessorDataJsonData pd(processor_label,processor_pkt);
+        ProcessorDataJsonDataRequest pd(processor_label,processor_pkt);
         RequestPkt req(DetectRegion::OP::CHANGE_PROCESSOR,0,pd.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,req.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());
@@ -1073,7 +1072,7 @@ public slots:
         detect_regions.assign(cfg.DetectRegion.begin(),cfg.DetectRegion.end());
         DetectRegionInputData tmp=detect_regions[selected_region_index-1];
         vector <VdPoint  > vers=tmp.ExpectedAreaVers;
-        AreaVersJsonData vs(vers);
+        AreaVersJsonDataRequest vs(vers);
         RequestPkt r_pkt(DetectRegion::OP::CHANGE_RECT,0,vs.data());
         RequestPkt pkt(Camera::OP::MODIFY_REGION,selected_region_index,r_pkt.data());
         signal_camera(this,Camera::OP::MODIFY_REGION,pkt.data());

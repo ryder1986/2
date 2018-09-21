@@ -206,9 +206,10 @@ public:
     int to_int()
     {
         if(val.empty()){
-            int t=1/0;//sig fault deal to error.
+            //assert(false);
+            //int t=1/0;//sig fault deal to error.
 
-            prt(info,"to int error :no content,%d",t);
+          //  prt(info,"to int error :no content,%d",t);
             print_backstrace();
             return 0;
         }
@@ -403,22 +404,22 @@ public:
         return config;
     }
 };
-class TitledJsonData{
+class JsonObject{
 private:
     string title;
 protected:
     JsonPacket config;
 public:
-    TitledJsonData(JsonPacket pkt,string tt):title(tt)
+    JsonObject(JsonPacket pkt,string tt):title(tt)
     {
         config=pkt.get(title);
 
     }
-    TitledJsonData()
+    JsonObject()
     {
 
     }
-    TitledJsonData(string tt):title(tt)
+    JsonObject(string tt):title(tt)
     {
 
     }

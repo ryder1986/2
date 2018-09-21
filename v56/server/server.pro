@@ -25,7 +25,10 @@ INSTALLS+=install_files1
 INCLUDEPATH +=cppjson/include
 INCLUDEPATH+=/usr/local/opencv-without-cuda/include
 LIBS+=-L/usr/local/opencv-without-cuda/lib
-HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/include/json/value.h
+HEADERS += cppjson/include/json/reader.h cppjson/include/json/writer.h cppjson/include/json/value.h \
+    app_data.h \
+    camera_data.h \
+    detectregion_data.h
 HEADERS +=  tool.h socket.h
 SOURCES += cppjson/json_reader.cpp cppjson/json_writer.cpp  cppjson/json_value.cpp
 SOURCES +=tool.cpp socket.cpp

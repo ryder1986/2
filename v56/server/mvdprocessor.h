@@ -6,7 +6,7 @@
 #include "algorithm.h"
 #define TEST_CLIENT
 #undef TEST_CLIENT
-#define  SAVE_VIDEO 
+//#define  SAVE_VIDEO
 #ifdef SAVE_VIDEO
 Mat imgSave;
 #endif
@@ -133,7 +133,9 @@ public:
     }
     virtual bool process_whole_pic(Mat img_src,JsonPacket &pkt,Rect rct)
     {
+#ifdef SAVE_VIDEO
         img_src.copyTo(imgSave);
+#endif
         //imshow("1",img_src);
         // prt(info,"%d %d",img_src.rows,img_src.cols);
         int i = 0;
@@ -192,12 +194,12 @@ public:
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[0].y);
             VdPoint pt2(p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].x,
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].y );
-			Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
-			Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
+            Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
+            Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
 
-			LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
-				,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
-				p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist);
+            LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
+                                                                ,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
+                                                                p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist);
             LaneOutputData.push_back(detLaneData);
         }
         vector <DegreeJsonData> DegreeData; // on  lane points
@@ -356,17 +358,18 @@ public:
             putText(imgSave, str5, Point(i * 80 ,330),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
 
         }
-    //    namedWindow("detect",CV_WINDOW_NORMAL);
-   //     imshow("detect", imgSave);
-    //    waitKey(1);
+        //    namedWindow("detect",CV_WINDOW_NORMAL);
+        //     imshow("detect", imgSave);
+        //    waitKey(1);
 #endif
 #endif
     }
 
     bool process(Mat img_src,JsonPacket &pkt)
     {
-
+#ifdef SAVE_VIDEO
         img_src.copyTo(imgSave);
+#endif
         //imshow("1",img_src);
         //prt(info,"%d %d",img_src.rows,img_src.cols);
         int i = 0;
@@ -411,8 +414,8 @@ public:
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[0].y);
             VdPoint pt2(p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].x,
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].y );
-			Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
-			Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
+            Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
+            Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
 
             LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
                                                                 ,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
