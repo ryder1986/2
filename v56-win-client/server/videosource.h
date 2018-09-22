@@ -2,13 +2,17 @@
 #define VIDEOSOURCE_H
 
 #include "tool.h"
-
+#ifdef IS_UNIX
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-
+#endif
+#ifdef IS_WIN
+#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
+#endif
 using namespace std;
 //using namespace cv;
 #define USE_CVCAP 1

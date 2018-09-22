@@ -33,7 +33,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 CONFIG +=c++11
-DEFINES+=IS_UNIX
+#DEFINES+=IS_UNIX
 
 SRC_PATH =../server
 HEADERS  += $$SRC_PATH/tool.h
@@ -50,9 +50,10 @@ SOURCES += $$SRC_PATH/videosource.cpp
 #-lopencv_imgproc -lopencv_ml -lopencv_highgui -lopencv_video -lopencv_videostab -lpthread  -lX11 -lopencv_imgcodecs  -lopencv_videoio #
 #LIBS+=-lavformat -lavcodec  -lavutil -lswresample
 
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../opencv3.2/opencv/build/x64/vc14/lib/ -lopencv_world320
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../opencv3.2/opencv/build/x64/vc14/lib/ -lopencv_world320d
-
-INCLUDEPATH += $$PWD/../../../../../opencv3.2/opencv/build/include
-DEPENDPATH += $$PWD/../../../../../opencv3.2/opencv/build/x64/vc14
+INCLUDEPATH+=C:\opencv3.2\opencv\build\include
+debug{
+LIBS+=-LC:\opencv3.2\opencv\build\x64\vc14\lib -lopencv_world320d
+}
+release{
+LIBS+=-LC:\opencv3.2\opencv\build\x64\vc14\lib -lopencv_world320
+}
